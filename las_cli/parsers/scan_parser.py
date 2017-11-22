@@ -1,6 +1,3 @@
-import sys
-
-from argparse import FileType
 from configparser import ConfigParser
 from functools import partial
 from las import Client, Receipt
