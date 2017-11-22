@@ -1,6 +1,6 @@
 import sys
 
-from setuptools import setup
+from setuptools import setup, find_packages
 from setuptools.command.test import test
 
 
@@ -29,7 +29,7 @@ with open('README.md') as fp:
 
 setup(
     name='lucidtech-las-cli',
-    version='0.0.1',
+    version='0.0.2',
     description='Command Line Interface for Lucidtech AI Services',
     long_description=readme,
     license='Apache 2.0',
@@ -38,7 +38,7 @@ setup(
     maintainer='August Kvernmo',
     maintainer_email='august@lucidtech.ai',
     url='https://github.com/LucidtechAI/las-cli',
-    packages=['las_cli'],
+    packages=find_packages(exclude=['tests']),
     scripts=['bin/las'],
     install_requires=install_requires,
     tests_require=[
