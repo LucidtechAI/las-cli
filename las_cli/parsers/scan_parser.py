@@ -1,3 +1,5 @@
+import json
+
 from configparser import ConfigParser
 from functools import partial
 from las import Client, Receipt, Invoice
@@ -16,14 +18,14 @@ def scan(args):
         elif args.url:
             receipt = Receipt(url=args.url)
 
-        print(client.scan_receipt(receipt))
+        print(json.dumps(client.scan_receipt(receipt), indent=2))
     elif args.document_type == 'invoice':
         if args.filename:
             invoice = Invoice(filename=args.filename)
         elif args.url:
             invoice = Invoice(url=args.url)
 
-        print(client.scan_invoice(invoice))
+        print(json.dumps(client.scan_invoice(invoice), indent=2))
 
 
 def scan_parser(subparsers):
