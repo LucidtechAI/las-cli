@@ -17,6 +17,13 @@ las configure
 Scan Receipt
 
 ```bash
-las scan --filename img.jpeg
-las scan --url https://example.com/img.jpeg
+las scan receipt --filename img.jpeg
+las scan receipt --url https://example.com/img.jpeg
+```
+
+Scan Invoice
+
+```bash
+las scan invoice --filename img.jpeg
+las scan invoice --url https://example.com/img.jpeg
 ```
