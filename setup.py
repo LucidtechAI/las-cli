@@ -29,7 +29,7 @@ with open('README.md') as fp:
 
 setup(
     name='lucidtech-las-cli',
-    version='0.0.4',
+    version='0.0.5',
     description='Command Line Interface for Lucidtech AI Services',
     long_description=readme,
     license='Apache 2.0',
@@ -51,11 +51,6 @@ setup(
         'Intended Audience :: Developers',
         'License :: OSI Approved :: Apache Software License',
         'Operating System :: OS Independent',
-        'Programming Language :: Python :: 2',
-        'Programming Language :: Python :: 2.7',
-        'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.4',
-        'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6',
         'Topic :: Internet',
     ]
