@@ -17,15 +17,18 @@ def scan(args):
             receipt = Receipt(filename=args.filename)
         elif args.url:
             receipt = Receipt(url=args.url)
-
-        print(json.dumps(client.scan_receipt(receipt), indent=2))
+        response = client.scan_receipt(receipt)
     elif args.document_type == 'invoice':
         if args.filename:
             invoice = Invoice(filename=args.filename)
         elif args.url:
             invoice = Invoice(url=args.url)
+        response = client.scan_invoice(invoice)
 
-        print(json.dumps(client.scan_invoice(invoice), indent=2))
+    if response.status_code == 200:
+        print(json.dumps(response.detections, indent=2))
+    else:
+        print(response.error_message)
 
 
 def scan_parser(subparsers):

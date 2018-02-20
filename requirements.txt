@@ -1,2 +1,2 @@
 requests
-lucidtech-las >= 0.0.8
+lucidtech-las >= 0.1.0
