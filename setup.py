@@ -29,7 +29,7 @@ with open('README.md') as fp:
 
 setup(
     name='lucidtech-las-cli',
-    version='0.0.7',
+    version='0.0.8',
     description='Command Line Interface for Lucidtech AI Services',
     long_description=readme,
     license='Apache 2.0',
