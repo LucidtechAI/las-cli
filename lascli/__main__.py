@@ -8,20 +8,16 @@ import json
 
 from las import Client
 
-from .parser import (
-    create_documents_parser
-)
-
-
-def create_client():
-    return Client()
+from .parser import create_batches_parser
+from .parser import create_documents_parser
 
 
 def create_parser():
     parser = argparse.ArgumentParser()
-    parser.set_defaults(las_client=create_client())
+    parser.set_defaults(las_client=Client())
     subparsers = parser.add_subparsers()
 
+    create_batches_parser(subparsers)
     create_documents_parser(subparsers)
 
     argcomplete.autocomplete(parser)

@@ -1,3 +1,4 @@
+import json
 import filetype
 import pathlib
 
@@ -18,6 +19,12 @@ def post_documents(las_client: Client, document_path, content_type, consent_id):
     return las_client.post_documents(content, content_type, consent_id)
 
 
+def post_feedback(las_client: Client, document_id, fields):
+    feedback = [f.split('=', 1) for f in fields]
+    feedback = [{'label': k, 'value': v} for k, v in feedback]
+    return las_client.post_document_id(document_id, feedback)
+
+
 def create_documents_parser(subparsers):
     parser = subparsers.add_parser('documents')
     subparsers = parser.add_subparsers()
@@ -27,5 +34,10 @@ def create_documents_parser(subparsers):
     create_document_parser.add_argument('--content-type')
     create_document_parser.add_argument('--consent-id')
     create_document_parser.set_defaults(cmd=post_documents)
+
+    feedback_document_parser = subparsers.add_parser('feedback')
+    feedback_document_parser.add_argument('document_id')
+    feedback_document_parser.add_argument('--fields', metavar='KEY=VALUE', nargs='+')
+    feedback_document_parser.set_defaults(cmd=post_feedback)
 
     return parser
