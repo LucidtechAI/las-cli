@@ -1,11 +1,10 @@
-import json
 import filetype
 import pathlib
 
 from las import Client
 
 
-def post_documents(las_client: Client, document_path, content_type, consent_id):
+def post_documents(las_client: Client, document_path, content_type, consent_id, batch_id):
     content = pathlib.Path(document_path).read_bytes()
 
     if not content_type:
@@ -15,8 +14,7 @@ def post_documents(las_client: Client, document_path, content_type, consent_id):
         content_type = guessed_type.mime
 
     consent_id = consent_id or 'default'
-
-    return las_client.post_documents(content, content_type, consent_id)
+    return las_client.post_documents(content, content_type, consent_id, batch_id)
 
 
 def post_feedback(las_client: Client, document_id, fields):
@@ -33,6 +31,7 @@ def create_documents_parser(subparsers):
     create_document_parser.add_argument('document_path')
     create_document_parser.add_argument('--content-type')
     create_document_parser.add_argument('--consent-id')
+    create_document_parser.add_argument('--batch-id')
     create_document_parser.set_defaults(cmd=post_documents)
 
     feedback_document_parser = subparsers.add_parser('feedback')
