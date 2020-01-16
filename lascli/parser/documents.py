@@ -4,6 +4,10 @@ import pathlib
 from las import Client
 
 
+def get_documents(las_client: Client, batch_id):
+    return las_client.get_documents(batch_id)
+
+
 def post_documents(las_client: Client, document_path, content_type, consent_id, batch_id):
     content = pathlib.Path(document_path).read_bytes()
 
@@ -26,6 +30,10 @@ def post_feedback(las_client: Client, document_id, fields):
 def create_documents_parser(subparsers):
     parser = subparsers.add_parser('documents')
     subparsers = parser.add_subparsers()
+
+    list_documents_parser = subparsers.add_parser('list')
+    list_documents_parser.add_argument('--batch-id')
+    list_documents_parser.set_defaults(cmd=get_documents)
 
     create_document_parser = subparsers.add_parser('create')
     create_document_parser.add_argument('document_path')
