@@ -10,6 +10,7 @@ from las import Client
 
 from .parser import create_batches_parser
 from .parser import create_documents_parser
+from .parser import create_users_parser
 
 
 def create_parser():
@@ -19,6 +20,7 @@ def create_parser():
 
     create_batches_parser(subparsers)
     create_documents_parser(subparsers)
+    create_users_parser(subparsers)
 
     argcomplete.autocomplete(parser)
     return parser

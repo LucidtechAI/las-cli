@@ -22,7 +22,7 @@ def get_documents(las_client: Client, batch_id):
     return las_client.get_documents(batch_id)
 
 
-def post_documents(las_client: Client, document_path, content_type, consent_id, batch_id):
+def post_documents(las_client: Client, document_path, content_type, consent_id, batch_id, fields):
     content = pathlib.Path(document_path).read_bytes()
 
     if not content_type:
@@ -32,7 +32,13 @@ def post_documents(las_client: Client, document_path, content_type, consent_id, 
         content_type = guessed_type.mime
 
     consent_id = consent_id or 'default'
-    return las_client.post_documents(content, content_type, consent_id, batch_id)
+
+    if fields:
+        feedback = [f.split('=', 1) for f in fields]
+        feedback = [{'label': k, 'value': v} for k, v in feedback]
+        return las_client.post_documents(content, content_type, consent_id, batch_id, feedback)
+    else:
+        return las_client.post_documents(content, content_type, consent_id, batch_id)
 
 
 def post_feedback(las_client: Client, document_id, fields):
@@ -59,6 +65,7 @@ def create_documents_parser(subparsers):
     create_document_parser.add_argument('--content-type')
     create_document_parser.add_argument('--consent-id')
     create_document_parser.add_argument('--batch-id')
+    create_document_parser.add_argument('--fields', metavar='KEY=VALUE', nargs='+')
     create_document_parser.set_defaults(cmd=post_documents)
 
     feedback_document_parser = subparsers.add_parser('feedback')
