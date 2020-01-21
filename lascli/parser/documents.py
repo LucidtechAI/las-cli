@@ -18,8 +18,8 @@ def get_document(las_client: Client, document_id, download_content):
     return {**document_resp, 'content': document_resp['content'][:10] + '... [TRUNCATED]'}
 
 
-def get_documents(las_client: Client, batch_id):
-    return las_client.get_documents(batch_id)
+def get_documents(las_client: Client, batch_id, consent_id):
+    return las_client.get_documents(batch_id, consent_id)
 
 
 def post_documents(las_client: Client, document_path, content_type, consent_id, batch_id, fields):
@@ -58,6 +58,7 @@ def create_documents_parser(subparsers):
 
     list_documents_parser = subparsers.add_parser('list')
     list_documents_parser.add_argument('--batch-id')
+    list_documents_parser.add_argument('--consent-id')
     list_documents_parser.set_defaults(cmd=get_documents)
 
     create_document_parser = subparsers.add_parser('create')
