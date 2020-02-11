@@ -18,11 +18,11 @@ def get_document(las_client: Client, document_id, download_content):
     return {**document_resp, 'content': document_resp['content'][:10] + '... [TRUNCATED]'}
 
 
-def get_documents(las_client: Client, batch_id, consent_id):
+def list_documents(las_client: Client, batch_id, consent_id):
     return las_client.get_documents(batch_id, consent_id)
 
 
-def post_documents(las_client: Client, document_path, content_type, consent_id, batch_id, fields):
+def create_document(las_client: Client, document_path, content_type, consent_id, batch_id, fields):
     content = pathlib.Path(document_path).read_bytes()
 
     if not content_type:
@@ -41,7 +41,7 @@ def post_documents(las_client: Client, document_path, content_type, consent_id, 
         return las_client.post_documents(content, content_type, consent_id, batch_id)
 
 
-def post_feedback(las_client: Client, document_id, fields):
+def update_document(las_client: Client, document_id, fields):
     feedback = [f.split('=', 1) for f in fields]
     feedback = [{'label': k, 'value': v} for k, v in feedback]
     return las_client.post_document_id(document_id, feedback)
@@ -59,7 +59,7 @@ def create_documents_parser(subparsers):
     list_documents_parser = subparsers.add_parser('list')
     list_documents_parser.add_argument('--batch-id')
     list_documents_parser.add_argument('--consent-id')
-    list_documents_parser.set_defaults(cmd=get_documents)
+    list_documents_parser.set_defaults(cmd=list_documents)
 
     create_document_parser = subparsers.add_parser('create')
     create_document_parser.add_argument('document_path')
@@ -67,11 +67,11 @@ def create_documents_parser(subparsers):
     create_document_parser.add_argument('--consent-id')
     create_document_parser.add_argument('--batch-id')
     create_document_parser.add_argument('--fields', metavar='KEY=VALUE', nargs='+')
-    create_document_parser.set_defaults(cmd=post_documents)
+    create_document_parser.set_defaults(cmd=create_document)
 
-    feedback_document_parser = subparsers.add_parser('feedback')
-    feedback_document_parser.add_argument('document_id')
-    feedback_document_parser.add_argument('--fields', metavar='KEY=VALUE', nargs='+')
-    feedback_document_parser.set_defaults(cmd=post_feedback)
+    update_document_parser = subparsers.add_parser('update')
+    update_document_parser.add_argument('document_id')
+    update_document_parser.add_argument('--fields', metavar='KEY=VALUE', nargs='+')
+    update_document_parser.set_defaults(cmd=update_document)
 
     return parser
