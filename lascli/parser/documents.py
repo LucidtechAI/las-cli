@@ -31,8 +31,6 @@ def create_document(las_client: Client, document_path, content_type, consent_id,
                              'Please provide it manually with --content-type'
         content_type = guessed_type.mime
 
-    consent_id = consent_id or 'default'
-
     if fields:
         feedback = [f.split('=', 1) for f in fields]
         feedback = [{'label': k, 'value': v} for k, v in feedback]
@@ -64,7 +62,7 @@ def create_documents_parser(subparsers):
     create_document_parser = subparsers.add_parser('create')
     create_document_parser.add_argument('document_path')
     create_document_parser.add_argument('--content-type')
-    create_document_parser.add_argument('--consent-id')
+    create_document_parser.add_argument('--consent-id', default='default')
     create_document_parser.add_argument('--batch-id')
     create_document_parser.add_argument('--fields', metavar='KEY=VALUE', nargs='+')
     create_document_parser.set_defaults(cmd=create_document)
