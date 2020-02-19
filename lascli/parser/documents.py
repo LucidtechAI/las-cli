@@ -7,7 +7,7 @@ from las import Client
 
 
 def get_document(las_client: Client, document_id, download_content):
-    document_resp = las_client.get_document_id(document_id)
+    document_resp = las_client.get_document(document_id)
     content = document_resp['content']
 
     if download_content:
@@ -19,7 +19,7 @@ def get_document(las_client: Client, document_id, download_content):
 
 
 def list_documents(las_client: Client, batch_id, consent_id):
-    return las_client.get_documents(batch_id, consent_id)
+    return las_client.list_documents(batch_id, consent_id)
 
 
 def create_document(las_client: Client, document_path, content_type, consent_id, batch_id, fields):
@@ -36,15 +36,15 @@ def create_document(las_client: Client, document_path, content_type, consent_id,
     if fields:
         feedback = [f.split('=', 1) for f in fields]
         feedback = [{'label': k, 'value': v} for k, v in feedback]
-        return las_client.post_documents(content, content_type, consent_id, batch_id, feedback)
+        return las_client.create_document(content, content_type, consent_id, batch_id, feedback)
     else:
-        return las_client.post_documents(content, content_type, consent_id, batch_id)
+        return las_client.create_document(content, content_type, consent_id, batch_id)
 
 
 def update_document(las_client: Client, document_id, fields):
     feedback = [f.split('=', 1) for f in fields]
     feedback = [{'label': k, 'value': v} for k, v in feedback]
-    return las_client.post_document_id(document_id, feedback)
+    return las_client.update_document(document_id, feedback)
 
 
 def create_documents_parser(subparsers):

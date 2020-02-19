@@ -2,11 +2,11 @@ from las import Client
 
 
 def get_user(las_client: Client, user_id):
-    return las_client.get_user_id(user_id)
+    return las_client.get_user(user_id)
 
 
 def patch_user(las_client: Client, user_id, consent_hash):
-    return las_client.patch_user_id(user_id, consent_hash)
+    return las_client.update_user(user_id, consent_hash)
 
 
 def create_users_parser(subparsers):

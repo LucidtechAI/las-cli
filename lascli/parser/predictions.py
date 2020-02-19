@@ -2,7 +2,7 @@ from las import Client
 
 
 def post_predictions(las_client: Client, document_id, model_name):
-    return las_client.post_predictions(document_id, model_name)
+    return las_client.create_prediction(document_id, model_name)
 
 
 def create_predictions_parser(subparsers):

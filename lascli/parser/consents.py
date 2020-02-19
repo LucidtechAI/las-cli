@@ -2,7 +2,7 @@ from las import Client
 
 
 def delete_consent(las_client: Client, consent_id):
-    return las_client.delete_consent_id(consent_id)
+    return las_client.delete_consent(consent_id)
 
 
 def create_consents_parser(subparsers):

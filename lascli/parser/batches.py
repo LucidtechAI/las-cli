@@ -3,7 +3,7 @@ from las import Client
 
 def post_batches(las_client: Client, description):
     description = description or 'default'
-    return las_client.post_batches(description)
+    return las_client.create_batch(description)
 
 
 def create_batches_parser(subparsers):
