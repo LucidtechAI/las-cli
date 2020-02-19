@@ -6,7 +6,8 @@ import inspect
 import logging
 import json
 
-from las import Client
+from las import Client, Credentials
+from las.credentials import read_from_file
 
 from .parser import (create_batches_parser, create_documents_parser, create_users_parser, create_predictions_parser,
                      create_consents_parser)
@@ -14,7 +15,7 @@ from .parser import (create_batches_parser, create_documents_parser, create_user
 
 def create_parser():
     parser = argparse.ArgumentParser()
-    parser.set_defaults(las_client=Client())
+    parser.add_argument('--profile')
     subparsers = parser.add_subparsers()
 
     create_batches_parser(subparsers)
@@ -38,6 +39,12 @@ def args_to_kwargs(args):
 def main():
     parser = create_parser()
     args = parser.parse_args()
+
+    if args.profile:
+        credentials = Credentials(*read_from_file(section=args.profile))
+        args.las_client = Client(credentials)
+    else:
+        args.las_client = Client()
     kwargs = args_to_kwargs(args)
 
     logging.getLogger().setLevel(logging.INFO)
