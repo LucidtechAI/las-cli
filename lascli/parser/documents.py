@@ -6,7 +6,7 @@ import base64
 from las import Client
 
 
-def get_document(las_client: Client, document_id, download_content):
+def get_document(las_client: Client, document_id, download_content, no_truncate_content):
     document_resp = las_client.get_document(document_id)
     content = document_resp['content']
 
@@ -15,7 +15,10 @@ def get_document(las_client: Client, document_id, download_content):
         binary = base64.b64decode(content)
         pathlib.Path(download_content).write_bytes(binary)
 
-    return {**document_resp, 'content': document_resp['content'][:10] + '... [TRUNCATED]'}
+    if no_truncate_content:
+        return document_resp
+    else:
+        return {**document_resp, 'content': document_resp['content'][:10] + '... [TRUNCATED]'}
 
 
 def list_documents(las_client: Client, batch_id, consent_id):
@@ -51,6 +54,7 @@ def create_documents_parser(subparsers):
 
     get_document_parser = subparsers.add_parser('get')
     get_document_parser.add_argument('document_id')
+    get_document_parser.add_argument('--no-truncate-content', action='store_true')
     get_document_parser.add_argument('-d', '--download-content')
     get_document_parser.set_defaults(cmd=get_document)
 
