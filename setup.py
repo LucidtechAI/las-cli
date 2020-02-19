@@ -1,22 +1,4 @@
-import sys
-
-from setuptools import setup, find_packages
-from setuptools.command.test import test
-
-
-class PyTest(test):
-    user_options = [('args=', 'a', 'arguments for pytest')]
-    args = ''
-
-    def initialize_options(self):
-        super().initialize_options()
-
-    def run_tests(self):
-        import pytest
-        import shlex
-
-        error = pytest.main(shlex.split(self.args))
-        sys.exit(error)
+from setuptools import setup
 
 
 with open('requirements.txt') as fp:
@@ -29,8 +11,8 @@ with open('README.md') as fp:
 
 setup(
     name='lucidtech-las-cli',
-    version='0.0.8',
-    description='Command Line Interface for Lucidtech AI Services',
+    version='1.0.0',
+    description='CLI for Lucidtech AI Services',
     long_description=readme,
     license='Apache 2.0',
     platforms='Posix; MacOS X; Windows',
@@ -38,20 +20,20 @@ setup(
     maintainer='August Kvernmo',
     maintainer_email='august@lucidtech.ai',
     url='https://github.com/LucidtechAI/las-cli',
-    packages=find_packages(exclude=['tests']),
-    scripts=['bin/las'],
+    packages=['lascli'],
+    entry_points={
+        'console_scripts': [
+            'las = lascli.__main__:main'
+        ]
+    },
     install_requires=install_requires,
-    tests_require=[
-        'pytest',
-        'requests'
-    ],
-    cmdclass={'pytest': PyTest},
     classifiers=[
-        'Development Status :: 3 - Alpha',
+        'Development Status :: 4 - Beta',
         'Intended Audience :: Developers',
         'License :: OSI Approved :: Apache Software License',
         'Operating System :: OS Independent',
         'Programming Language :: Python :: 3.6',
-        'Topic :: Internet',
+        'Programming Language :: Python :: 3.7',
+        'Topic :: Internet'
     ]
 )

@@ -1,2 +1,2 @@
-requests
-lucidtech-las >= 0.1.11
+lucidtech-las >= 2.0.0
+argcomplete
