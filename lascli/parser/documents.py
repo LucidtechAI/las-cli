@@ -1,7 +1,8 @@
-import filetype
+import base64
 import logging
 import pathlib
-import base64
+
+import filetype
 
 from las import Client
 
