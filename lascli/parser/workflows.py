@@ -8,8 +8,13 @@ def list_workflows(las_client: Client):
 
 
 def create_workflow(las_client: Client, path, name, description, type, version):
+    input_dict = json.loads(pathlib.Path(path).read_text())
+    return las_client.create_workflow(input_dict, name, description, type, version)
+
+
+def execute_workflow(las_client: Client, workflow_id, path):
     content = json.loads(pathlib.Path(path).read_text())
-    return las_client.create_workflow(content, name, description, type, version)
+    return las_client.execute_workflow(workflow_id, content)
 
 
 def create_workflows_parser(subparsers):
@@ -26,5 +31,10 @@ def create_workflows_parser(subparsers):
     create_workflow_parser.add_argument('--type', default='ASL')
     create_workflow_parser.add_argument('--version', default='1.0')
     create_workflow_parser.set_defaults(cmd=create_workflow)
+
+    execute_workflow_parser = subparsers.add_parser('execute')
+    execute_workflow_parser.add_argument('workflow_id')
+    execute_workflow_parser.add_argument('path', help='path to json-file with input to the first state of the workflow')
+    execute_workflow_parser.set_defaults(cmd=execute_workflow)
 
     return parser
