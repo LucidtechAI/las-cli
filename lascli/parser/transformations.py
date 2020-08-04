@@ -7,7 +7,8 @@ def create_transformation(las_client: Client, transformation_type, in_schema_pat
     in_schema = json.loads(pathlib.Path(in_schema_path).read_text())
     out_schema = json.loads(pathlib.Path(out_schema_path).read_text())
     params = json.loads(pathlib.Path(params_path).read_text())
-    return las_client.create_workflow(transformation_type, in_schema, out_schema, params)
+    return las_client.create_transformation(transformation_type, in_schema, out_schema, params)
+
 
 def execute_transformation(las_client: Client, transformation_id, path):
     content = json.loads(pathlib.Path(path).read_text())
@@ -19,10 +20,10 @@ def create_transformations_parser(subparsers):
     subparsers = parser.add_subparsers()
 
     create_transformation_parser = subparsers.add_parser('create')
-    create_transformation_parser.add_argument('transformation-type', help='either "docker" or "manual"')
-    create_transformation_parser.add_argument('in-schema-path')
-    create_transformation_parser.add_argument('out-schema-path')
-    create_transformation_parser.add_argument('params-path')
+    create_transformation_parser.add_argument('transformation_type', help='either "docker" or "manual"')
+    create_transformation_parser.add_argument('in_schema_path')
+    create_transformation_parser.add_argument('out_schema_path')
+    create_transformation_parser.add_argument('params_path')
     create_transformation_parser.set_defaults(cmd=create_transformation)
 
     execute_transformation_parser = subparsers.add_parser('execute')

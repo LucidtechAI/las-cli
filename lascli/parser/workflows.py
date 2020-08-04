@@ -26,7 +26,7 @@ def create_workflows_parser(subparsers):
 
     create_workflow_parser = subparsers.add_parser('create')
     create_workflow_parser.add_argument('path')
-    create_workflow_parser.add_argument('--name', default='no name provided')
+    create_workflow_parser.add_argument('--name', default='no_name_provided')
     create_workflow_parser.add_argument('--description', default='no description provided')
     create_workflow_parser.add_argument('--language', default='ASL')
     create_workflow_parser.add_argument('--version', default='1.0')
