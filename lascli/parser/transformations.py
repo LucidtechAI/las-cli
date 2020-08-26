@@ -6,7 +6,7 @@ import pathlib
 def create_transformation(las_client: Client, transformation_type, in_schema_path, out_schema_path, params_path):
     in_schema = json.loads(pathlib.Path(in_schema_path).read_text())
     out_schema = json.loads(pathlib.Path(out_schema_path).read_text())
-    params = json.loads(pathlib.Path(params_path).read_text())
+    params = json.loads(pathlib.Path(params_path).read_text()) if params_path else None
     return las_client.create_transformation(transformation_type, in_schema, out_schema, params)
 
 
@@ -27,7 +27,7 @@ def create_transformations_parser(subparsers):
     create_parser.add_argument('transformation_type', help='either "docker" or "manual"')
     create_parser.add_argument('in_schema_path')
     create_parser.add_argument('out_schema_path')
-    create_parser.add_argument('params_path')
+    create_parser.add_argument('params_path', default=None, nargs='?')
     create_parser.set_defaults(cmd=create_transformation)
 
     execute_parser = subparsers.add_parser('execute')
