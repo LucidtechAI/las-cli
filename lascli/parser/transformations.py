@@ -10,9 +10,8 @@ def create_transformation(las_client: Client, transformation_type, in_schema_pat
     return las_client.create_transformation(transformation_type, in_schema, out_schema, params)
 
 
-def execute_transformation(las_client: Client, transformation_id, path):
-    content = json.loads(pathlib.Path(path).read_text())
-    return las_client.execute_transformation(transformation_id, content)
+def execute_transformation(las_client: Client, transformation_id):
+    return las_client.execute_transformation(transformation_id)
 
 
 def update_transformation_execution(las_client: Client, transformation_id, execution_id, output_path):
@@ -33,7 +32,6 @@ def create_transformations_parser(subparsers):
 
     execute_parser = subparsers.add_parser('execute')
     execute_parser.add_argument('transformation_id')
-    execute_parser.add_argument('path', help='path to json-file with input to the first state of the transformation')
     execute_parser.set_defaults(cmd=execute_transformation)
 
     update_parser = subparsers.add_parser('update')
