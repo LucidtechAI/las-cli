@@ -15,8 +15,9 @@ def execute_transformation(las_client: Client, transformation_id, path):
     return las_client.execute_transformation(transformation_id, content)
 
 
-def update_transformation_execution(las_client: Client, transformation_id, execution_id, output):
-    return las_client.update_transformation_execution(transformation_id, execution_id, output)
+def update_transformation_execution(las_client: Client, transformation_id, execution_id, output_path):
+    output_dict = json.loads(pathlib.Path(output_path).read_text())
+    return las_client.update_transformation_execution(transformation_id, execution_id, output_dict)
 
 
 def create_transformations_parser(subparsers):
@@ -38,7 +39,7 @@ def create_transformations_parser(subparsers):
     update_parser = subparsers.add_parser('update')
     update_parser.add_argument('transformation_id')
     update_parser.add_argument('execution_id')
-    update_parser.add_argument('output')
+    update_parser.add_argument('output_path')
     update_parser.set_defaults(cmd=update_transformation_execution)
 
     return parser
