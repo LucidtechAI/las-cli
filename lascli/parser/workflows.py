@@ -7,15 +7,19 @@ def list_workflows(las_client: Client):
     return las_client.list_workflows()
 
 
-def create_workflow(las_client: Client, path, name, description, language, version, error_config):
-    input_dict = json.loads(pathlib.Path(path).read_text())
+def create_workflow(las_client: Client, specification_path, name, description, error_config):
+    specification = json.loads(pathlib.Path(specification_path).read_text())
     error_config = json.loads(error_config) if error_config else None
-    return las_client.create_workflow(input_dict, name, description, language, version, error_config)
+    return las_client.create_workflow(specification, name, description, error_config)
 
 
 def execute_workflow(las_client: Client, workflow_id, path):
     content = json.loads(pathlib.Path(path).read_text())
     return las_client.execute_workflow(workflow_id, content)
+
+
+def list_workflow_executions(las_client: Client, workflow_id, status=None):
+    return las_client.list_workflow_executions(workflow_id, status)
 
 
 def create_workflows_parser(subparsers):
@@ -26,11 +30,9 @@ def create_workflows_parser(subparsers):
     list_workflows_parser.set_defaults(cmd=list_workflows)
 
     create_workflow_parser = subparsers.add_parser('create')
-    create_workflow_parser.add_argument('path')
+    create_workflow_parser.add_argument('specification_path')
     create_workflow_parser.add_argument('--name', default='no_name_provided')
-    create_workflow_parser.add_argument('--description', default='no description provided')
-    create_workflow_parser.add_argument('--language', default='ASL')
-    create_workflow_parser.add_argument('--version', default='1.0.0')
+    create_workflow_parser.add_argument('--description', default=None)
     create_workflow_parser.add_argument('--error-config', type=str, default=None)
     create_workflow_parser.set_defaults(cmd=create_workflow)
 
@@ -38,5 +40,10 @@ def create_workflows_parser(subparsers):
     execute_workflow_parser.add_argument('workflow_id')
     execute_workflow_parser.add_argument('path', help='path to json-file with input to the first state of the workflow')
     execute_workflow_parser.set_defaults(cmd=execute_workflow)
+
+    list_excutions_parser = subparsers.add_parser('list-executions')
+    list_excutions_parser.add_argument('workflow_id')
+    list_excutions_parser.add_argument('--status', '-s', default=None, help='Only return those with the given status')
+    list_excutions_parser.set_defaults(cmd=list_workflow_executions)
 
     return parser
