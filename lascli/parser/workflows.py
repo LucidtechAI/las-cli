@@ -22,6 +22,10 @@ def list_workflow_executions(las_client: Client, workflow_id, status=None):
     return las_client.list_workflow_executions(workflow_id, status)
 
 
+def delete_workflow(las_client: Client, workflow_id):
+    return las_client.delete_workflow(workflow_id)
+
+
 def create_workflows_parser(subparsers):
     parser = subparsers.add_parser('workflows')
     subparsers = parser.add_subparsers()
@@ -31,7 +35,7 @@ def create_workflows_parser(subparsers):
 
     create_workflow_parser = subparsers.add_parser('create')
     create_workflow_parser.add_argument('specification_path')
-    create_workflow_parser.add_argument('--name', default='no_name_provided')
+    create_workflow_parser.add_argument('name')
     create_workflow_parser.add_argument('--description', default=None)
     create_workflow_parser.add_argument('--error-config', type=str, default=None)
     create_workflow_parser.set_defaults(cmd=create_workflow)
@@ -41,9 +45,13 @@ def create_workflows_parser(subparsers):
     execute_workflow_parser.add_argument('path', help='path to json-file with input to the first state of the workflow')
     execute_workflow_parser.set_defaults(cmd=execute_workflow)
 
-    list_excutions_parser = subparsers.add_parser('list-executions')
-    list_excutions_parser.add_argument('workflow_id')
-    list_excutions_parser.add_argument('--status', '-s', default=None, help='Only return those with the given status')
-    list_excutions_parser.set_defaults(cmd=list_workflow_executions)
+    list_executions_parser = subparsers.add_parser('list-executions')
+    list_executions_parser.add_argument('workflow_id')
+    list_executions_parser.add_argument('--status', '-s', default=None, help='Only return those with the given status')
+    list_executions_parser.set_defaults(cmd=list_workflow_executions)
+
+    delete_workflow_parser = subparsers.add_parser('delete')
+    delete_workflow_parser.add_argument('workflow_id')
+    delete_workflow_parser.set_defaults(cmd=delete_workflow)
 
     return parser

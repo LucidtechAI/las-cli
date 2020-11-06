@@ -11,7 +11,7 @@ import argcomplete
 from las import Client, Credentials
 from las.credentials import MissingCredentials, read_from_file
 
-from .parser import (create_batches_parser, create_consents_parser,
+from .parser import (create_batches_parser,
                      create_documents_parser, create_predictions_parser,
                      create_users_parser, create_workflows_parser,
                      create_transitions_parser)
@@ -27,7 +27,6 @@ def create_parser():
     create_documents_parser(subparsers)
     create_users_parser(subparsers)
     create_predictions_parser(subparsers)
-    create_consents_parser(subparsers)
     create_workflows_parser(subparsers)
     create_transitions_parser(subparsers)
 

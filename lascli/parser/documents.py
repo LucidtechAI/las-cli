@@ -26,6 +26,10 @@ def list_documents(las_client: Client, batch_id, consent_id):
     return las_client.list_documents(batch_id, consent_id)
 
 
+def delete_documents(las_client: Client, consent_id):
+    return las_client.delete_documents(consent_id)
+
+
 def create_document(las_client: Client, document_path, content_type, consent_id, batch_id, fields):
     content = pathlib.Path(document_path).read_bytes()
 
@@ -67,7 +71,7 @@ def create_documents_parser(subparsers):
     create_document_parser = subparsers.add_parser('create')
     create_document_parser.add_argument('document_path')
     create_document_parser.add_argument('--content-type')
-    create_document_parser.add_argument('--consent-id', default='default')
+    create_document_parser.add_argument('--consent-id', default=None)
     create_document_parser.add_argument('--batch-id')
     create_document_parser.add_argument('--fields', metavar='KEY=VALUE', nargs='+')
     create_document_parser.set_defaults(cmd=create_document)
@@ -76,5 +80,9 @@ def create_documents_parser(subparsers):
     update_document_parser.add_argument('document_id')
     update_document_parser.add_argument('--fields', metavar='KEY=VALUE', nargs='+')
     update_document_parser.set_defaults(cmd=update_document)
+
+    delete_documents_parser = subparsers.add_parser('delete')
+    delete_documents_parser.add_argument('--consent-id', default=None)
+    delete_documents_parser.set_defaults(cmd=delete_documents)
 
     return parser
