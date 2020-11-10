@@ -11,7 +11,7 @@ import argcomplete
 from las import Client, Credentials
 from las.credentials import MissingCredentials, read_from_file
 
-from .parser import (create_batches_parser,
+from .parser import (create_assets_parser, create_batches_parser,
                      create_documents_parser, create_predictions_parser,
                      create_users_parser, create_workflows_parser,
                      create_transitions_parser)
@@ -23,6 +23,7 @@ def create_parser():
     parser.add_argument('--verbose', '-v', action='count', default=0)
     subparsers = parser.add_subparsers()
 
+    create_assets_parser(subparsers)
     create_batches_parser(subparsers)
     create_documents_parser(subparsers)
     create_users_parser(subparsers)
