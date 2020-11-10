@@ -22,8 +22,8 @@ def get_document(las_client: Client, document_id, download_content, output_conte
         return {**document_resp, 'content': document_resp['content'][:10] + '... [TRUNCATED]'}
 
 
-def list_documents(las_client: Client, batch_id, consent_id):
-    return las_client.list_documents(batch_id, consent_id)
+def list_documents(las_client: Client, batch_id, consent_id, max_results, next_token):
+    return las_client.list_documents(batch_id, consent_id, max_results=max_results, next_token=next_token)
 
 
 def delete_documents(las_client: Client, consent_id):
@@ -66,6 +66,8 @@ def create_documents_parser(subparsers):
     list_documents_parser = subparsers.add_parser('list')
     list_documents_parser.add_argument('--batch-id')
     list_documents_parser.add_argument('--consent-id')
+    list_documents_parser.add_argument('--max-results', '-m', type=int, default=None)
+    list_documents_parser.add_argument('--next-token', '-n', type=str, default=None)
     list_documents_parser.set_defaults(cmd=list_documents)
 
     create_document_parser = subparsers.add_parser('create')

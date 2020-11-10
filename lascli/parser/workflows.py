@@ -3,8 +3,8 @@ import json
 import pathlib
 
 
-def list_workflows(las_client: Client):
-    return las_client.list_workflows()
+def list_workflows(las_client: Client, max_results, next_token):
+    return las_client.list_workflows(max_results=max_results, next_token=next_token)
 
 
 def create_workflow(las_client: Client, specification_path, name, description, error_config):
@@ -31,6 +31,8 @@ def create_workflows_parser(subparsers):
     subparsers = parser.add_subparsers()
 
     list_workflows_parser = subparsers.add_parser('list')
+    list_workflows_parser.add_argument('--max-results', '-m', type=int, default=None)
+    list_workflows_parser.add_argument('--next-token', '-n', type=str, default=None)
     list_workflows_parser.set_defaults(cmd=list_workflows)
 
     create_workflow_parser = subparsers.add_parser('create')

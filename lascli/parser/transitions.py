@@ -10,8 +10,8 @@ def create_transition(las_client: Client, transition_type, in_schema_path, out_s
     return las_client.create_transition(transition_type, in_schema, out_schema, params)
 
 
-def list_transitions(las_client: Client, transition_type):
-    return las_client.list_transitions(transition_type)
+def list_transitions(las_client: Client, transition_type, max_results, next_token):
+    return las_client.list_transitions(transition_type, max_results=max_results, next_token=next_token)
 
 
 def execute_transition(las_client: Client, transition_id):
@@ -35,9 +35,11 @@ def create_transitions_parser(subparsers):
     create_parser.add_argument('params_path', default=None, nargs='?', help='parameters to the docker image')
     create_parser.set_defaults(cmd=create_transition)
 
-    execute_parser = subparsers.add_parser('list')
-    execute_parser.add_argument('--transition-type', '-t', default=None)
-    execute_parser.set_defaults(cmd=list_transitions)
+    list_parser = subparsers.add_parser('list')
+    list_parser.add_argument('--transition-type', '-t', default=None)
+    list_parser.add_argument('--max-results', '-m', type=int, default=None)
+    list_parser.add_argument('--next-token', '-n', type=str, default=None)
+    list_parser.set_defaults(cmd=list_transitions)
 
     execute_parser = subparsers.add_parser('execute')
     execute_parser.add_argument('transition_id')

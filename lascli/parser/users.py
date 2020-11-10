@@ -1,8 +1,8 @@
 from las import Client
 
 
-def list_users(las_client: Client):
-    return las_client.list_users()
+def list_users(las_client: Client, max_results, next_token):
+    return las_client.list_users(max_results=max_results, next_token=next_token)
 
 
 def get_user(las_client: Client, user_id):
@@ -26,6 +26,8 @@ def create_users_parser(subparsers):
     create_user_parser.set_defaults(cmd=create_user)
 
     list_users_parser = subparsers.add_parser('list')
+    list_users_parser.add_argument('--max-results', '-m', type=int, default=None)
+    list_users_parser.add_argument('--next-token', '-n', type=str, default=None)
     list_users_parser.set_defaults(cmd=list_users)
 
     get_user_parser = subparsers.add_parser('get')
