@@ -31,6 +31,11 @@ def create_asset(las_client: Client, asset_path):
     return las_client.create_asset(content)
 
 
+def update_asset(las_client: Client, asset_id, asset_path):
+    content = pathlib.Path(asset_path).read_bytes()
+    return las_client.update_asset(asset_id, content)
+
+
 def create_assets_parser(subparsers):
     parser = subparsers.add_parser('assets')
     subparsers = parser.add_subparsers()
@@ -49,5 +54,10 @@ def create_assets_parser(subparsers):
     create_asset_parser = subparsers.add_parser('create')
     create_asset_parser.add_argument('asset_path')
     create_asset_parser.set_defaults(cmd=create_asset)
+
+    update_asset_parser = subparsers.add_parser('update')
+    update_asset_parser.add_argument('asset_id')
+    update_asset_parser.add_argument('asset_path')
+    update_asset_parser.set_defaults(cmd=update_asset)
 
     return parser
