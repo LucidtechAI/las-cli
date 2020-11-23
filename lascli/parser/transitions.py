@@ -3,11 +3,12 @@ import json
 import pathlib
 
 
-def create_transition(las_client: Client, transition_type, in_schema_path, out_schema_path, params_path):
+def create_transition(las_client: Client, name, transition_type,
+                      in_schema_path, out_schema_path, params_path, description):
     in_schema = json.loads(pathlib.Path(in_schema_path).read_text())
     out_schema = json.loads(pathlib.Path(out_schema_path).read_text())
     params = json.loads(pathlib.Path(params_path).read_text()) if params_path else None
-    return las_client.create_transition(transition_type, in_schema, out_schema, params)
+    return las_client.create_transition(name, transition_type, in_schema, out_schema, params, description)
 
 
 def list_transitions(las_client: Client, transition_type, max_results, next_token):
@@ -29,10 +30,12 @@ def create_transitions_parser(subparsers):
     subparsers = parser.add_subparsers()
 
     create_parser = subparsers.add_parser('create')
+    create_parser.add_argument('name')
     create_parser.add_argument('transition_type', choices=["docker", "manual"])
     create_parser.add_argument('in_schema_path')
     create_parser.add_argument('out_schema_path')
     create_parser.add_argument('params_path', default=None, nargs='?', help='parameters to the docker image')
+    create_parser.add_argument('--description')
     create_parser.set_defaults(cmd=create_transition)
 
     list_parser = subparsers.add_parser('list')
