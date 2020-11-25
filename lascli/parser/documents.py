@@ -64,16 +64,16 @@ def create_documents_parser(subparsers):
     get_document_parser.set_defaults(cmd=get_document)
 
     list_documents_parser = subparsers.add_parser('list')
-    list_documents_parser.add_argument('--batch-id')
-    list_documents_parser.add_argument('--consent-id')
-    list_documents_parser.add_argument('--max-results', '-m', type=int, default=None)
-    list_documents_parser.add_argument('--next-token', '-n', type=str, default=None)
+    list_documents_parser.add_argument('--batch-id', nargs='+')
+    list_documents_parser.add_argument('--consent-id', nargs='+')
+    list_documents_parser.add_argument('--max-results', '-m', type=int)
+    list_documents_parser.add_argument('--next-token', '-n', type=str)
     list_documents_parser.set_defaults(cmd=list_documents)
 
     create_document_parser = subparsers.add_parser('create')
     create_document_parser.add_argument('document_path')
     create_document_parser.add_argument('--content-type')
-    create_document_parser.add_argument('--consent-id', default=None)
+    create_document_parser.add_argument('--consent-id')
     create_document_parser.add_argument('--batch-id')
     create_document_parser.add_argument('--fields', metavar='KEY=VALUE', nargs='+')
     create_document_parser.set_defaults(cmd=create_document)
@@ -84,7 +84,7 @@ def create_documents_parser(subparsers):
     update_document_parser.set_defaults(cmd=update_document)
 
     delete_documents_parser = subparsers.add_parser('delete')
-    delete_documents_parser.add_argument('--consent-id', default=None)
+    delete_documents_parser.add_argument('--consent-id', nargs='+')
     delete_documents_parser.set_defaults(cmd=delete_documents)
 
     return parser

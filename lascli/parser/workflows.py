@@ -31,15 +31,15 @@ def create_workflows_parser(subparsers):
     subparsers = parser.add_subparsers()
 
     list_workflows_parser = subparsers.add_parser('list')
-    list_workflows_parser.add_argument('--max-results', '-m', type=int, default=None)
-    list_workflows_parser.add_argument('--next-token', '-n', type=str, default=None)
+    list_workflows_parser.add_argument('--max-results', '-m', type=int)
+    list_workflows_parser.add_argument('--next-token', '-n', type=str)
     list_workflows_parser.set_defaults(cmd=list_workflows)
 
     create_workflow_parser = subparsers.add_parser('create')
     create_workflow_parser.add_argument('specification_path')
     create_workflow_parser.add_argument('name')
-    create_workflow_parser.add_argument('--description', default=None)
-    create_workflow_parser.add_argument('--error-config', type=str, default=None)
+    create_workflow_parser.add_argument('--description')
+    create_workflow_parser.add_argument('--error-config', type=str)
     create_workflow_parser.set_defaults(cmd=create_workflow)
 
     execute_workflow_parser = subparsers.add_parser('execute')
@@ -49,9 +49,9 @@ def create_workflows_parser(subparsers):
 
     list_executions_parser = subparsers.add_parser('list-executions')
     list_executions_parser.add_argument('workflow_id')
-    list_executions_parser.add_argument('--status', '-s', default=None, help='Only return those with the given status')
-    list_executions_parser.add_argument('--max-results', '-m', type=int, default=None)
-    list_executions_parser.add_argument('--next-token', '-n', type=str, default=None)
+    list_executions_parser.add_argument('--status', '-s', nargs='+', help='Only return those with the given status')
+    list_executions_parser.add_argument('--max-results', '-m', type=int)
+    list_executions_parser.add_argument('--next-token', '-n', type=str)
     list_executions_parser.set_defaults(cmd=list_workflow_executions)
 
     delete_workflow_parser = subparsers.add_parser('delete')

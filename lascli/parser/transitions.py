@@ -34,14 +34,14 @@ def create_transitions_parser(subparsers):
     create_parser.add_argument('transition_type', choices=["docker", "manual"])
     create_parser.add_argument('in_schema_path')
     create_parser.add_argument('out_schema_path')
-    create_parser.add_argument('params_path', default=None, nargs='?', help='parameters to the docker image')
+    create_parser.add_argument('params_path', nargs='?', help='parameters to the docker image')
     create_parser.add_argument('--description')
     create_parser.set_defaults(cmd=create_transition)
 
     list_parser = subparsers.add_parser('list')
-    list_parser.add_argument('--transition-type', '-t', default=None)
-    list_parser.add_argument('--max-results', '-m', type=int, default=None)
-    list_parser.add_argument('--next-token', '-n', type=str, default=None)
+    list_parser.add_argument('--transition-type', '-t', nargs='+')
+    list_parser.add_argument('--max-results', '-m', type=int)
+    list_parser.add_argument('--next-token', '-n', type=str)
     list_parser.set_defaults(cmd=list_transitions)
 
     execute_parser = subparsers.add_parser('execute')
@@ -51,9 +51,9 @@ def create_transitions_parser(subparsers):
     update_parser = subparsers.add_parser('update')
     update_parser.add_argument('transition_id')
     update_parser.add_argument('execution_id')
-    update_parser.add_argument('status', choices=['succeeded', 'failed'])
-    update_parser.add_argument('--output_path', '-o', default=None)
-    update_parser.add_argument('--error_path', '-e', default=None)
+    update_parser.add_argument('status', choices=['succeeded', 'failed', 'rejected'])
+    update_parser.add_argument('--output_path', '-o')
+    update_parser.add_argument('--error_path', '-e')
     update_parser.set_defaults(cmd=update_transition_execution)
 
     return parser
