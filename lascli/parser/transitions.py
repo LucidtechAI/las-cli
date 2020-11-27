@@ -51,7 +51,7 @@ def create_transitions_parser(subparsers):
     update_parser = subparsers.add_parser('update')
     update_parser.add_argument('transition_id')
     update_parser.add_argument('execution_id')
-    update_parser.add_argument('status', choices=['succeeded', 'failed', 'rejected'])
+    update_parser.add_argument('status', choices=['succeeded', 'failed', 'rejected', 'retry'])
     update_parser.add_argument('--output_path', '-o')
     update_parser.add_argument('--error_path', '-e')
     update_parser.set_defaults(cmd=update_transition_execution)
