@@ -13,6 +13,14 @@ def create_workflow(las_client: Client, specification_path, name, description, e
     return las_client.create_workflow(specification, name, description, error_config)
 
 
+def update_workflow(las_client: Client, workflow_id, name, description):
+    return las_client.update_workflow(
+        workflow_id,
+        name=name,
+        description=description,
+    )
+
+
 def execute_workflow(las_client: Client, workflow_id, path):
     content = json.loads(pathlib.Path(path).read_text())
     return las_client.execute_workflow(workflow_id, content)
@@ -41,6 +49,12 @@ def create_workflows_parser(subparsers):
     create_workflow_parser.add_argument('--description')
     create_workflow_parser.add_argument('--error-config', type=str)
     create_workflow_parser.set_defaults(cmd=create_workflow)
+
+    update_workflow_parser = subparsers.add_parser('update')
+    update_workflow_parser.add_argument('workflow_id')
+    update_workflow_parser.add_argument('--name')
+    update_workflow_parser.add_argument('--description')
+    update_workflow_parser.set_defaults(cmd=update_workflow)
 
     execute_workflow_parser = subparsers.add_parser('execute')
     execute_workflow_parser.add_argument('workflow_id')

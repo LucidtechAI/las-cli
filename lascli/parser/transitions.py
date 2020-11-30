@@ -11,6 +11,18 @@ def create_transition(las_client: Client, name, transition_type,
     return las_client.create_transition(name, transition_type, in_schema, out_schema, params, description)
 
 
+def update_transition(las_client: Client, transition_id, name, in_schema_path, out_schema_path, description):
+    in_schema = json.loads(pathlib.Path(in_schema_path).read_text()) if in_schema_path else None
+    out_schema = json.loads(pathlib.Path(out_schema_path).read_text()) if out_schema_path else None
+    return las_client.update_transition(
+        transition_id,
+        name=name,
+        in_schema=in_schema,
+        out_schema=out_schema,
+        description=description
+    )
+
+
 def list_transitions(las_client: Client, transition_type, max_results, next_token):
     return las_client.list_transitions(transition_type, max_results=max_results, next_token=next_token)
 
@@ -44,16 +56,24 @@ def create_transitions_parser(subparsers):
     list_parser.add_argument('--next-token', '-n', type=str)
     list_parser.set_defaults(cmd=list_transitions)
 
+    update_parser = subparsers.add_parser('update')
+    update_parser.add_argument('transition_id')
+    update_parser.add_argument('--name')
+    update_parser.add_argument('--in-schema-path')
+    update_parser.add_argument('--out-schema-path')
+    update_parser.add_argument('--description')
+    update_parser.set_defaults(cmd=update_transition)
+
     execute_parser = subparsers.add_parser('execute')
     execute_parser.add_argument('transition_id')
     execute_parser.set_defaults(cmd=execute_transition)
 
-    update_parser = subparsers.add_parser('update')
-    update_parser.add_argument('transition_id')
-    update_parser.add_argument('execution_id')
-    update_parser.add_argument('status', choices=['succeeded', 'failed', 'rejected', 'retry'])
-    update_parser.add_argument('--output_path', '-o')
-    update_parser.add_argument('--error_path', '-e')
-    update_parser.set_defaults(cmd=update_transition_execution)
+    update_execution_parser = subparsers.add_parser('update-execution')
+    update_execution_parser.add_argument('transition_id')
+    update_execution_parser.add_argument('execution_id')
+    update_execution_parser.add_argument('status', choices=['succeeded', 'failed', 'rejected', 'retry'])
+    update_execution_parser.add_argument('--output_path', '-o')
+    update_execution_parser.add_argument('--error_path', '-e')
+    update_execution_parser.set_defaults(cmd=update_transition_execution)
 
     return parser
