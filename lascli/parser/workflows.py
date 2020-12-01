@@ -26,8 +26,14 @@ def execute_workflow(las_client: Client, workflow_id, path):
     return las_client.execute_workflow(workflow_id, content)
 
 
-def list_workflow_executions(las_client: Client, workflow_id, status, max_results, next_token):
-    return las_client.list_workflow_executions(workflow_id, status, max_results=max_results, next_token=next_token)
+def list_workflow_executions(las_client: Client, workflow_id, status, order, sort_by, max_results, next_token):
+    return las_client.list_workflow_executions(
+        workflow_id,
+        status=status,
+        order=order,
+        sort_by=sort_by,
+        max_results=max_results,
+        next_token=next_token)
 
 
 def delete_workflow(las_client: Client, workflow_id):
