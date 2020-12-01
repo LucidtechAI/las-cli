@@ -19,7 +19,7 @@ def update_transition(las_client: Client, transition_id, name, in_schema_path, o
         name=name,
         in_schema=in_schema,
         out_schema=out_schema,
-        description=description
+        description=description,
     )
 
 
@@ -29,6 +29,16 @@ def list_transitions(las_client: Client, transition_type, max_results, next_toke
 
 def execute_transition(las_client: Client, transition_id):
     return las_client.execute_transition(transition_id)
+
+
+def list_transition_executions(las_client: Client, transition_id, execution_id, status, max_results, next_token):
+    return las_client.list_transition_executions(
+        transition_id,
+        execution_id=execution_id,
+        status=status,
+        max_results=max_results,
+        next_token=next_token,
+    )
 
 
 def update_transition_execution(las_client: Client, transition_id, execution_id, status, error_path, output_path):
@@ -67,6 +77,14 @@ def create_transitions_parser(subparsers):
     execute_parser = subparsers.add_parser('execute')
     execute_parser.add_argument('transition_id')
     execute_parser.set_defaults(cmd=execute_transition)
+
+    list_executions_parser = subparsers.add_parser('list-executions')
+    list_executions_parser.add_argument('transition_id')
+    list_executions_parser.add_argument('--execution-id', nargs='+', help='Perform a batch-get on the ids')
+    list_executions_parser.add_argument('--status', '-s', nargs='+', help='Only return those with the given status')
+    list_executions_parser.add_argument('--max-results', '-m', type=int)
+    list_executions_parser.add_argument('--next-token', '-n', type=str)
+    list_executions_parser.set_defaults(cmd=list_transition_executions)
 
     update_execution_parser = subparsers.add_parser('update-execution')
     update_execution_parser.add_argument('transition_id')
