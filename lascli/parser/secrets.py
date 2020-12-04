@@ -10,7 +10,7 @@ def create_secret(las_client: Client, data, description):
     for data_entry in data:
         key, val = data_entry.split('=', 1)
         secret_data[key] = val
-    return las_client.create_secret(secret_data, description)
+    return las_client.create_secret(secret_data, description=description)
 
 
 def update_secret(las_client: Client, secret_id, data, description):
@@ -18,7 +18,7 @@ def update_secret(las_client: Client, secret_id, data, description):
     for data_entry in data:
         key, val = data_entry.split('=', 1)
         secret_data[key] = val
-    return las_client.update_secret(secret_id, secret_data, description)
+    return las_client.update_secret(secret_id, secret_data, description=description)
 
 
 def create_secrets_parser(subparsers):

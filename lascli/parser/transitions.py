@@ -3,12 +3,26 @@ import json
 import pathlib
 
 
-def create_transition(las_client: Client, name, transition_type,
-                      in_schema_path, out_schema_path, params_path, description):
+def create_transition(
+    las_client: Client,
+    name,
+    transition_type,
+    in_schema_path,
+    out_schema_path,
+    params_path,
+    description,
+):
     in_schema = json.loads(pathlib.Path(in_schema_path).read_text())
     out_schema = json.loads(pathlib.Path(out_schema_path).read_text())
     params = json.loads(pathlib.Path(params_path).read_text()) if params_path else None
-    return las_client.create_transition(name, transition_type, in_schema, out_schema, params, description)
+    return las_client.create_transition(
+        name,
+        transition_type,
+        in_schema,
+        out_schema,
+        params=params,
+        description=description,
+    )
 
 
 def update_transition(las_client: Client, transition_id, name, in_schema_path, out_schema_path, description):
@@ -24,7 +38,7 @@ def update_transition(las_client: Client, transition_id, name, in_schema_path, o
 
 
 def list_transitions(las_client: Client, transition_type, max_results, next_token):
-    return las_client.list_transitions(transition_type, max_results=max_results, next_token=next_token)
+    return las_client.list_transitions(transition_type=transition_type, max_results=max_results, next_token=next_token)
 
 
 def execute_transition(las_client: Client, transition_id):
@@ -44,7 +58,13 @@ def list_transition_executions(las_client: Client, transition_id, execution_id, 
 def update_transition_execution(las_client: Client, transition_id, execution_id, status, error_path, output_path):
     output_dict = json.loads(pathlib.Path(output_path).read_text()) if output_path else None
     error_dict = json.loads(pathlib.Path(error_path).read_text()) if error_path else None
-    return las_client.update_transition_execution(transition_id, execution_id, status, output_dict, error_dict)
+    return las_client.update_transition_execution(
+        transition_id,
+        execution_id,
+        status,
+        output=output_dict,
+        error=error_dict,
+    )
 
 
 def create_transitions_parser(subparsers):

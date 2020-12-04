@@ -10,7 +10,7 @@ def list_workflows(las_client: Client, max_results, next_token):
 def create_workflow(las_client: Client, specification_path, name, description, error_config):
     specification = json.loads(pathlib.Path(specification_path).read_text())
     error_config = json.loads(error_config) if error_config else None
-    return las_client.create_workflow(specification, name, description, error_config)
+    return las_client.create_workflow(specification, name=name, description=description, error_config=error_config)
 
 
 def update_workflow(las_client: Client, workflow_id, name, description):
@@ -33,7 +33,8 @@ def list_workflow_executions(las_client: Client, workflow_id, status, order, sor
         order=order,
         sort_by=sort_by,
         max_results=max_results,
-        next_token=next_token)
+        next_token=next_token,
+    )
 
 
 def delete_workflow(las_client: Client, workflow_id):
