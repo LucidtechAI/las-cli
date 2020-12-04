@@ -1,6 +1,7 @@
 from .assets import create_assets_parser
 from .batches import create_batches_parser
 from .documents import create_documents_parser
+from .models import create_models_parser
 from .predictions import create_predictions_parser
 from .secrets import create_secrets_parser
 from .transitions import create_transitions_parser
