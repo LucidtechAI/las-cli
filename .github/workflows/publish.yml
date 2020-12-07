@@ -27,4 +27,4 @@ jobs:
         TWINE_PASSWORD: ${{ secrets.PIP_PASSWORD }}
       run: |
         python setup.py sdist bdist_wheel
-        twine upload --repository-url https://pypi.lucidtech.io/pypi dist/*
+        twine upload dist/*
