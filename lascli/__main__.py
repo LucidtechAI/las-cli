@@ -18,9 +18,6 @@ from .parser import (
 )
 
 
-COMMON_ARGS = ['profile', 'verbose', 'cmd']
-
-
 def create_parser():
     parser = argparse.ArgumentParser()
     parser.add_argument('--profile')
@@ -48,7 +45,7 @@ def nullify(value):
 
 
 def parse_args(args):
-    specified_args = {k: v for k, v in vars(args).items() if v is not None and k not in COMMON_ARGS}
+    specified_args = {k: v for k, v in args.items() if v is not None}
     parsed_args = {k: nullify(v) for k, v in specified_args.items()}
     return parsed_args
 
@@ -62,15 +59,17 @@ def set_verbosity(verbose):
 
 def main():
     parser = create_parser()
-    args = parser.parse_args()
-    set_verbosity(args.verbose)
+    args = vars(parser.parse_args())
+    set_verbosity(args.pop('verbose'))
+    profile = args.pop('profile', None)
+    cmd = args.pop('cmd')
 
     try:
-        if args.profile:
-            credentials = Credentials(*read_from_file(section=args.profile))
-            args.las_client = Client(credentials)
+        if profile:
+            credentials = Credentials(*read_from_file(section=profile))
+            args['las_client'] = Client(credentials)
         else:
-            args.las_client = Client()
+            args['las_client'] = Client()
     except (configparser.NoOptionError, configparser.NoSectionError, MissingCredentials) as e:
         logging.exception(e)
         print('Could not locate credentials.')
@@ -78,7 +77,7 @@ def main():
 
     kwargs = parse_args(args)
     if kwargs:
-        print(json.dumps(args.cmd(**kwargs), indent=2))
+        print(json.dumps(cmd(**kwargs), indent=2))
     else:
         parser.print_help()
 
