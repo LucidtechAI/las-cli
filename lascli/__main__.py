@@ -18,6 +18,9 @@ from .parser import (
 )
 
 
+COMMON_ARGS = ['profile', 'verbose', 'cmd']
+
+
 def create_parser():
     parser = argparse.ArgumentParser()
     parser.add_argument('--profile')
@@ -38,12 +41,16 @@ def create_parser():
     return parser
 
 
-def args_to_kwargs(args):
-    try:
-        params = inspect.signature(args.cmd).parameters
-        return {p: vars(args)[p] for p in params}
-    except AttributeError:
-        return {}
+def nullify(value):
+    if isinstance(value, str) and value == 'null':
+        return None
+    return value
+
+
+def parse_args(args):
+    specified_args = {k: v for k, v in vars(args).items() if v is not None and k not in COMMON_ARGS}
+    parsed_args = {k: nullify(v) for k, v in specified_args.items()}
+    return parsed_args
 
 
 def set_verbosity(verbose):
@@ -69,7 +76,7 @@ def main():
         print('Could not locate credentials.')
         return
 
-    kwargs = args_to_kwargs(args)
+    kwargs = parse_args(args)
     if kwargs:
         print(json.dumps(args.cmd(**kwargs), indent=2))
     else:

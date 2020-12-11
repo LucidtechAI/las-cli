@@ -24,9 +24,9 @@ def list_assets(las_client: Client, max_results, next_token):
     return las_client.list_assets(max_results=max_results, next_token=next_token)
 
 
-def create_asset(las_client: Client, asset_path, name, description):
+def create_asset(las_client: Client, asset_path, **kwargs):
     content = pathlib.Path(asset_path).read_bytes()
-    return las_client.create_asset(content, name=name, description=description)
+    return las_client.create_asset(content, **kwargs)
 
 
 def update_asset(las_client: Client, asset_id, asset_path, name, description):
