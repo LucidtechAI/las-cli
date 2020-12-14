@@ -1,8 +1,8 @@
 from las import Client
 
 
-def post_batches(las_client: Client, name, description):
-    return las_client.create_batch(name=name, description=description)
+def post_batches(las_client: Client, **optional_args):
+    return las_client.create_batch(**optional_args)
 
 
 def create_batches_parser(subparsers):

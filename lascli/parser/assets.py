@@ -20,18 +20,20 @@ def get_asset(las_client: Client, asset_id, download_content, output_content):
         return {**asset_resp, 'content': asset_resp['content'][:10] + '... [TRUNCATED]'}
 
 
-def list_assets(las_client: Client, max_results, next_token):
+def list_assets(las_client: Client, max_results=None, next_token=None):
     return las_client.list_assets(max_results=max_results, next_token=next_token)
 
 
-def create_asset(las_client: Client, asset_path, **kwargs):
+def create_asset(las_client: Client, asset_path, **optional_args):
     content = pathlib.Path(asset_path).read_bytes()
-    return las_client.create_asset(content, **kwargs)
+    return las_client.create_asset(content, **optional_args)
 
 
-def update_asset(las_client: Client, asset_id, asset_path, name, description):
-    content = pathlib.Path(asset_path).read_bytes() if asset_path else None
-    return las_client.update_asset(asset_id, content=content, name=name, description=description)
+def update_asset(las_client: Client, asset_id, asset_path=None, **optional_args):
+    if asset_path:
+        optional_args['content'] = pathlib.Path(asset_path).read_bytes()
+
+    return las_client.update_asset(asset_id, **optional_args)
 
 
 def create_assets_parser(subparsers):

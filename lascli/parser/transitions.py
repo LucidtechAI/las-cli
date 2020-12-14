@@ -5,39 +5,41 @@ import pathlib
 
 def create_transition(
     las_client: Client,
-    name,
     transition_type,
-    in_schema_path,
-    out_schema_path,
-    params_path,
-    description,
+    in_schema_path=None,
+    out_schema_path=None,
+    params_path=None,
+    **optional_args,
 ):
     in_schema = json.loads(pathlib.Path(in_schema_path).read_text()) if in_schema_path else None
     out_schema = json.loads(pathlib.Path(out_schema_path).read_text()) if out_schema_path else None
     params = json.loads(pathlib.Path(params_path).read_text()) if params_path else None
     return las_client.create_transition(
         transition_type,
-        name=name,
         in_schema=in_schema,
         out_schema=out_schema,
         params=params,
-        description=description,
+        **optional_args
     )
 
 
-def update_transition(las_client: Client, transition_id, name, in_schema_path, out_schema_path, description):
+def update_transition(las_client: Client, transition_id, in_schema_path=None, out_schema_path=None, **optional_args):
     in_schema = json.loads(pathlib.Path(in_schema_path).read_text()) if in_schema_path else None
     out_schema = json.loads(pathlib.Path(out_schema_path).read_text()) if out_schema_path else None
     return las_client.update_transition(
         transition_id,
-        name=name,
         in_schema=in_schema,
         out_schema=out_schema,
-        description=description,
+        **optional_args,
     )
 
 
-def list_transitions(las_client: Client, transition_type, max_results, next_token):
+def list_transitions(
+    las_client: Client,
+    transition_type=None,
+    max_results=None,
+    next_token=None,
+):
     return las_client.list_transitions(transition_type=transition_type, max_results=max_results, next_token=next_token)
 
 
@@ -45,7 +47,14 @@ def execute_transition(las_client: Client, transition_id):
     return las_client.execute_transition(transition_id)
 
 
-def list_transition_executions(las_client: Client, transition_id, execution_id, status, max_results, next_token):
+def list_transition_executions(
+    las_client: Client,
+    transition_id,
+    execution_id=None,
+    status=None,
+    max_results=None,
+    next_token=None,
+):
     return las_client.list_transition_executions(
         transition_id,
         execution_id=execution_id,

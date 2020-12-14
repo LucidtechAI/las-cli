@@ -5,20 +5,20 @@ def list_secrets(las_client: Client, max_results, next_token):
     return las_client.list_secrets(max_results=max_results, next_token=next_token)
 
 
-def create_secret(las_client: Client, data, name, description):
+def create_secret(las_client: Client, data, **optional_args):
     secret_data = {}
     for data_entry in data:
         key, val = data_entry.split('=', 1)
         secret_data[key] = val
-    return las_client.create_secret(secret_data, name=name, description=description)
+    return las_client.create_secret(secret_data, **optional_args)
 
 
-def update_secret(las_client: Client, secret_id, data, name, description):
+def update_secret(las_client: Client, secret_id, data, **optional_args):
     secret_data = {}
     for data_entry in data:
         key, val = data_entry.split('=', 1)
         secret_data[key] = val
-    return las_client.update_secret(secret_id, data=secret_data, name=name, description=description)
+    return las_client.update_secret(secret_id, data=secret_data, **optional_args)
 
 
 def create_secrets_parser(subparsers):

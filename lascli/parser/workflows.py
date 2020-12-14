@@ -7,18 +7,14 @@ def list_workflows(las_client: Client, max_results, next_token):
     return las_client.list_workflows(max_results=max_results, next_token=next_token)
 
 
-def create_workflow(las_client: Client, specification_path, name, description, error_config):
+def create_workflow(las_client: Client, specification_path, error_config, **optional_args):
     specification = json.loads(pathlib.Path(specification_path).read_text())
     error_config = json.loads(error_config) if error_config else None
-    return las_client.create_workflow(specification, name=name, description=description, error_config=error_config)
+    return las_client.create_workflow(specification, error_config=error_config, **optional_args)
 
 
-def update_workflow(las_client: Client, workflow_id, name, description):
-    return las_client.update_workflow(
-        workflow_id,
-        name=name,
-        description=description,
-    )
+def update_workflow(las_client: Client, workflow_id, **optional_args):
+    return las_client.update_workflow(workflow_id, **optional_args)
 
 
 def execute_workflow(las_client: Client, workflow_id, path):
