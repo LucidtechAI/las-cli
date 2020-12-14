@@ -38,7 +38,7 @@ def create_parser():
     return parser
 
 
-class NoValue:
+class NotProvided:
     pass
 
 
@@ -73,7 +73,7 @@ def main():
         print('Could not locate credentials.')
         return
 
-    kwargs = {k: v for k, v in args.items() if v != NoValue}
+    kwargs = {k: v for k, v in args.items() if v != NotProvided}
     if kwargs:
         print(json.dumps(cmd(**kwargs), indent=2))
     else:
