@@ -36,11 +36,9 @@ def update_transition(las_client: Client, transition_id, in_schema_path=None, ou
 
 def list_transitions(
     las_client: Client,
-    transition_type=None,
-    max_results=None,
-    next_token=None,
+    **optional_args,
 ):
-    return las_client.list_transitions(transition_type=transition_type, max_results=max_results, next_token=next_token)
+    return las_client.list_transitions(**optional_args)
 
 
 def execute_transition(las_client: Client, transition_id):
@@ -50,21 +48,22 @@ def execute_transition(las_client: Client, transition_id):
 def list_transition_executions(
     las_client: Client,
     transition_id,
-    execution_id=None,
-    status=None,
-    max_results=None,
-    next_token=None,
+    **optional_args,
 ):
     return las_client.list_transition_executions(
         transition_id,
-        execution_id=execution_id,
-        status=status,
-        max_results=max_results,
-        next_token=next_token,
+        **optional_args,
     )
 
 
-def update_transition_execution(las_client: Client, transition_id, execution_id, status, error_path, output_path):
+def update_transition_execution(
+    las_client: Client,
+    transition_id,
+    execution_id,
+    status,
+    error_path=None,
+    output_path=None
+):
     output_dict = json.loads(pathlib.Path(output_path).read_text()) if output_path else None
     error_dict = json.loads(pathlib.Path(error_path).read_text()) if error_path else None
     return las_client.update_transition_execution(
