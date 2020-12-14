@@ -4,6 +4,8 @@ import pathlib
 
 from las import Client
 
+from ..__main__ import nullable, NoValue
+
 
 def get_asset(las_client: Client, asset_id, download_content, output_content):
     asset_resp = las_client.get_asset(asset_id)
@@ -53,15 +55,15 @@ def create_assets_parser(subparsers):
 
     create_asset_parser = subparsers.add_parser('create')
     create_asset_parser.add_argument('asset_path')
-    create_asset_parser.add_argument('--name')
-    create_asset_parser.add_argument('--description')
+    create_asset_parser.add_argument('--name', type=nullable, default=NoValue)
+    create_asset_parser.add_argument('--description', type=nullable, default=NoValue)
     create_asset_parser.set_defaults(cmd=create_asset)
 
     update_asset_parser = subparsers.add_parser('update')
     update_asset_parser.add_argument('asset_id')
     update_asset_parser.add_argument('--asset-path')
-    update_asset_parser.add_argument('--name')
-    update_asset_parser.add_argument('--description')
+    update_asset_parser.add_argument('--name', type=nullable, default=NoValue)
+    update_asset_parser.add_argument('--description', type=nullable, default=NoValue)
     update_asset_parser.set_defaults(cmd=update_asset)
 
     return parser

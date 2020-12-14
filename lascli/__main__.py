@@ -38,16 +38,14 @@ def create_parser():
     return parser
 
 
-def nullify(value):
+class NoValue:
+    pass
+
+
+def nullable(value):
     if isinstance(value, str) and value == 'null':
         return None
     return value
-
-
-def parse_args(args):
-    specified_args = {k: v for k, v in args.items() if v is not None}
-    parsed_args = {k: nullify(v) for k, v in specified_args.items()}
-    return parsed_args
 
 
 def set_verbosity(verbose):
@@ -75,7 +73,7 @@ def main():
         print('Could not locate credentials.')
         return
 
-    kwargs = parse_args(args)
+    kwargs = {k: v for k, v in args.items() if v != NoValue}
     if kwargs:
         print(json.dumps(cmd(**kwargs), indent=2))
     else:
