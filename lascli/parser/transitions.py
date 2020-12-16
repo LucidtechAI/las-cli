@@ -1,61 +1,57 @@
-from las import Client
 import json
 import pathlib
+
+from las import Client
+
+from lascli.util import nullable, NotProvided
 
 
 def create_transition(
     las_client: Client,
-    name,
     transition_type,
-    in_schema_path,
-    out_schema_path,
-    params_path,
-    description,
+    in_schema_path=None,
+    out_schema_path=None,
+    params_path=None,
+    **optional_args,
 ):
-    in_schema = json.loads(pathlib.Path(in_schema_path).read_text())
-    out_schema = json.loads(pathlib.Path(out_schema_path).read_text())
-    params = json.loads(pathlib.Path(params_path).read_text()) if params_path else None
-    return las_client.create_transition(
-        name,
-        transition_type,
-        in_schema,
-        out_schema,
-        params=params,
-        description=description,
-    )
-
-
-def update_transition(las_client: Client, transition_id, name, in_schema_path, out_schema_path, description):
     in_schema = json.loads(pathlib.Path(in_schema_path).read_text()) if in_schema_path else None
     out_schema = json.loads(pathlib.Path(out_schema_path).read_text()) if out_schema_path else None
-    return las_client.update_transition(
-        transition_id,
-        name=name,
+    params = json.loads(pathlib.Path(params_path).read_text()) if params_path else None
+    return las_client.create_transition(
+        transition_type,
         in_schema=in_schema,
         out_schema=out_schema,
-        description=description,
+        params=params,
+        **optional_args
     )
 
 
-def list_transitions(las_client: Client, transition_type, max_results, next_token):
-    return las_client.list_transitions(transition_type=transition_type, max_results=max_results, next_token=next_token)
+def update_transition(las_client: Client, transition_id, in_schema_path=None, out_schema_path=None, **optional_args):
+    in_schema = json.loads(pathlib.Path(in_schema_path).read_text()) if in_schema_path else None
+    out_schema = json.loads(pathlib.Path(out_schema_path).read_text()) if out_schema_path else None
+    return las_client.update_transition(transition_id, in_schema=in_schema, out_schema=out_schema, **optional_args)
+
+
+def list_transitions(las_client: Client, **optional_args):
+    return las_client.list_transitions(**optional_args)
 
 
 def execute_transition(las_client: Client, transition_id):
     return las_client.execute_transition(transition_id)
 
 
-def list_transition_executions(las_client: Client, transition_id, execution_id, status, max_results, next_token):
-    return las_client.list_transition_executions(
-        transition_id,
-        execution_id=execution_id,
-        status=status,
-        max_results=max_results,
-        next_token=next_token,
-    )
+def list_transition_executions(las_client: Client, transition_id, **optional_args):
+    return las_client.list_transition_executions(transition_id, **optional_args)
 
 
-def update_transition_execution(las_client: Client, transition_id, execution_id, status, error_path, output_path):
+def update_transition_execution(
+    las_client: Client,
+    transition_id,
+    execution_id,
+    status,
+    error_path=None,
+    output_path=None
+):
     output_dict = json.loads(pathlib.Path(output_path).read_text()) if output_path else None
     error_dict = json.loads(pathlib.Path(error_path).read_text()) if error_path else None
     return las_client.update_transition_execution(
@@ -72,12 +68,12 @@ def create_transitions_parser(subparsers):
     subparsers = parser.add_subparsers()
 
     create_parser = subparsers.add_parser('create')
-    create_parser.add_argument('name')
     create_parser.add_argument('transition_type', choices=["docker", "manual"])
-    create_parser.add_argument('in_schema_path')
-    create_parser.add_argument('out_schema_path')
-    create_parser.add_argument('params_path', nargs='?', help='parameters to the docker image')
-    create_parser.add_argument('--description')
+    create_parser.add_argument('--params-path', '-p', help='parameters to the docker image')
+    create_parser.add_argument('--in-schema-path')
+    create_parser.add_argument('--out-schema-path')
+    create_parser.add_argument('--name', type=nullable, default=NotProvided)
+    create_parser.add_argument('--description', type=nullable, default=NotProvided)
     create_parser.set_defaults(cmd=create_transition)
 
     list_parser = subparsers.add_parser('list')
@@ -88,10 +84,10 @@ def create_transitions_parser(subparsers):
 
     update_parser = subparsers.add_parser('update')
     update_parser.add_argument('transition_id')
-    update_parser.add_argument('--name')
+    update_parser.add_argument('--name', type=nullable, default=NotProvided)
     update_parser.add_argument('--in-schema-path')
     update_parser.add_argument('--out-schema-path')
-    update_parser.add_argument('--description')
+    update_parser.add_argument('--description', type=nullable, default=NotProvided)
     update_parser.set_defaults(cmd=update_transition)
 
     execute_parser = subparsers.add_parser('execute')
@@ -102,6 +98,8 @@ def create_transitions_parser(subparsers):
     list_executions_parser.add_argument('transition_id')
     list_executions_parser.add_argument('--execution-id', nargs='+', help='Perform a batch-get on the ids')
     list_executions_parser.add_argument('--status', '-s', nargs='+', help='Only return those with the given status')
+    list_executions_parser.add_argument('--order')
+    list_executions_parser.add_argument('--sort-by')
     list_executions_parser.add_argument('--max-results', '-m', type=int)
     list_executions_parser.add_argument('--next-token', '-n', type=str)
     list_executions_parser.set_defaults(cmd=list_transition_executions)

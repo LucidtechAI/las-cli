@@ -1,8 +1,10 @@
 from las import Client
 
+from lascli.util import nullable, NotProvided
 
-def post_batches(las_client: Client, description):
-    return las_client.create_batch(description)
+
+def post_batches(las_client: Client, **optional_args):
+    return las_client.create_batch(**optional_args)
 
 
 def create_batches_parser(subparsers):
@@ -10,7 +12,8 @@ def create_batches_parser(subparsers):
     subparsers = parser.add_subparsers()
 
     create_batch_parser = subparsers.add_parser('create')
-    create_batch_parser.add_argument('--description', default='default')
+    create_batch_parser.add_argument('--description', type=nullable, default=NotProvided)
+    create_batch_parser.add_argument('--name', type=nullable, default=NotProvided)
     create_batch_parser.set_defaults(cmd=post_batches)
 
     return parser

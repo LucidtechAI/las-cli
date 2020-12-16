@@ -1,24 +1,23 @@
-from las import Client
 import json
 import pathlib
 
+from las import Client
 
-def list_workflows(las_client: Client, max_results, next_token):
+from lascli.util import nullable, NotProvided
+
+
+def list_workflows(las_client: Client, max_results=None, next_token=None):
     return las_client.list_workflows(max_results=max_results, next_token=next_token)
 
 
-def create_workflow(las_client: Client, specification_path, name, description, error_config):
+def create_workflow(las_client: Client, specification_path, error_config, **optional_args):
     specification = json.loads(pathlib.Path(specification_path).read_text())
     error_config = json.loads(error_config) if error_config else None
-    return las_client.create_workflow(specification, name=name, description=description, error_config=error_config)
+    return las_client.create_workflow(specification, error_config=error_config, **optional_args)
 
 
-def update_workflow(las_client: Client, workflow_id, name, description):
-    return las_client.update_workflow(
-        workflow_id,
-        name=name,
-        description=description,
-    )
+def update_workflow(las_client: Client, workflow_id, **optional_args):
+    return las_client.update_workflow(workflow_id, **optional_args)
 
 
 def execute_workflow(las_client: Client, workflow_id, path):
@@ -56,15 +55,15 @@ def create_workflows_parser(subparsers):
 
     create_workflow_parser = subparsers.add_parser('create')
     create_workflow_parser.add_argument('specification_path')
-    create_workflow_parser.add_argument('name')
-    create_workflow_parser.add_argument('--description')
+    create_workflow_parser.add_argument('--name', type=nullable, default=NotProvided)
+    create_workflow_parser.add_argument('--description', type=nullable, default=NotProvided)
     create_workflow_parser.add_argument('--error-config', type=str)
     create_workflow_parser.set_defaults(cmd=create_workflow)
 
     update_workflow_parser = subparsers.add_parser('update')
     update_workflow_parser.add_argument('workflow_id')
-    update_workflow_parser.add_argument('--name')
-    update_workflow_parser.add_argument('--description')
+    update_workflow_parser.add_argument('--name', type=nullable, default=NotProvided)
+    update_workflow_parser.add_argument('--description', type=nullable, default=NotProvided)
     update_workflow_parser.set_defaults(cmd=update_workflow)
 
     execute_workflow_parser = subparsers.add_parser('execute')

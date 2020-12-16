@@ -11,6 +11,7 @@ import argcomplete
 from las import Client, Credentials
 from las.credentials import MissingCredentials, read_from_file
 
+from .util import NotProvided
 from .parser import (
     create_assets_parser, create_batches_parser, create_documents_parser,
     create_models_parser, create_predictions_parser, create_secrets_parser,
@@ -38,14 +39,6 @@ def create_parser():
     return parser
 
 
-def args_to_kwargs(args):
-    try:
-        params = inspect.signature(args.cmd).parameters
-        return {p: vars(args)[p] for p in params}
-    except AttributeError:
-        return {}
-
-
 def set_verbosity(verbose):
     verbosity_levels = [logging.CRITICAL, logging.WARNING, logging.DEBUG]
     verbosity = verbosity_levels[min(verbose, len(verbosity_levels) - 1)]
@@ -55,23 +48,25 @@ def set_verbosity(verbose):
 
 def main():
     parser = create_parser()
-    args = parser.parse_args()
-    set_verbosity(args.verbose)
+    args = vars(parser.parse_args())
+    set_verbosity(args.pop('verbose'))
+    profile = args.pop('profile', None)
+    cmd = args.pop('cmd')
 
     try:
-        if args.profile:
-            credentials = Credentials(*read_from_file(section=args.profile))
-            args.las_client = Client(credentials)
+        if profile:
+            credentials = Credentials(*read_from_file(section=profile))
+            args['las_client'] = Client(credentials)
         else:
-            args.las_client = Client()
+            args['las_client'] = Client()
     except (configparser.NoOptionError, configparser.NoSectionError, MissingCredentials) as e:
         logging.exception(e)
         print('Could not locate credentials.')
         return
 
-    kwargs = args_to_kwargs(args)
+    kwargs = {k: v for k, v in args.items() if v != NotProvided}
     if kwargs:
-        print(json.dumps(args.cmd(**kwargs), indent=2))
+        print(json.dumps(cmd(**kwargs), indent=2))
     else:
         parser.print_help()
 
