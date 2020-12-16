@@ -4,7 +4,7 @@ import pathlib
 
 from las import Client
 
-from ..__main__ import nullable, NotProvided
+from lascli.util import nullable, NotProvided
 
 
 def get_asset(las_client: Client, asset_id, download_content, output_content):

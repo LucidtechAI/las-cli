@@ -11,6 +11,7 @@ import argcomplete
 from las import Client, Credentials
 from las.credentials import MissingCredentials, read_from_file
 
+from .util import NotProvided
 from .parser import (
     create_assets_parser, create_batches_parser, create_documents_parser,
     create_models_parser, create_predictions_parser, create_secrets_parser,
@@ -36,16 +37,6 @@ def create_parser():
 
     argcomplete.autocomplete(parser)
     return parser
-
-
-class NotProvided:
-    pass
-
-
-def nullable(value):
-    if isinstance(value, str) and value == 'null':
-        return None
-    return value
 
 
 def set_verbosity(verbose):
