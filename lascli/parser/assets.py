@@ -61,7 +61,7 @@ def create_assets_parser(subparsers):
 
     update_asset_parser = subparsers.add_parser('update')
     update_asset_parser.add_argument('asset_id')
-    update_asset_parser.add_argument('--asset-path', default=NotProvided)
+    update_asset_parser.add_argument('--asset-path')
     update_asset_parser.add_argument('--name', type=nullable, default=NotProvided)
     update_asset_parser.add_argument('--description', type=nullable, default=NotProvided)
     update_asset_parser.set_defaults(cmd=update_asset)
