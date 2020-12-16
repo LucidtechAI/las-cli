@@ -29,18 +29,10 @@ def create_transition(
 def update_transition(las_client: Client, transition_id, in_schema_path=None, out_schema_path=None, **optional_args):
     in_schema = json.loads(pathlib.Path(in_schema_path).read_text()) if in_schema_path else None
     out_schema = json.loads(pathlib.Path(out_schema_path).read_text()) if out_schema_path else None
-    return las_client.update_transition(
-        transition_id,
-        in_schema=in_schema,
-        out_schema=out_schema,
-        **optional_args,
-    )
+    return las_client.update_transition(transition_id, in_schema=in_schema, out_schema=out_schema, **optional_args)
 
 
-def list_transitions(
-    las_client: Client,
-    **optional_args,
-):
+def list_transitions(las_client: Client, **optional_args):
     return las_client.list_transitions(**optional_args)
 
 
@@ -48,15 +40,8 @@ def execute_transition(las_client: Client, transition_id):
     return las_client.execute_transition(transition_id)
 
 
-def list_transition_executions(
-    las_client: Client,
-    transition_id,
-    **optional_args,
-):
-    return las_client.list_transition_executions(
-        transition_id,
-        **optional_args,
-    )
+def list_transition_executions(las_client: Client, transition_id, **optional_args):
+    return las_client.list_transition_executions(transition_id, **optional_args)
 
 
 def update_transition_execution(
