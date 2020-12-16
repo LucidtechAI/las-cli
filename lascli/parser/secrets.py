@@ -32,15 +32,15 @@ def create_secrets_parser(subparsers):
 
     create_secret_parser = subparsers.add_parser('create')
     create_secret_parser.add_argument('data', metavar='KEY=VALUE', nargs='+')
-    create_secret_parser.add_argument('--name')
-    create_secret_parser.add_argument('--description')
+    create_secret_parser.add_argument('--name, type=nullable, default=NotProvided)
+    create_secret_parser.add_argument('--description, type=nullable, default=NotProvided)
     create_secret_parser.set_defaults(cmd=create_secret)
 
     update_secret_parser = subparsers.add_parser('update')
     update_secret_parser.add_argument('secret_id')
     update_secret_parser.add_argument('--data', metavar='KEY=VALUE', nargs='+')
-    update_secret_parser.add_argument('--name')
-    update_secret_parser.add_argument('--description')
+    update_secret_parser.add_argument('--name, type=nullable, default=NotProvided)
+    update_secret_parser.add_argument('--description, type=nullable, default=NotProvided)
     update_secret_parser.set_defaults(cmd=update_secret)
 
     return parser
