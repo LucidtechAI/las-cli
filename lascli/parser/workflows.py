@@ -3,7 +3,7 @@ import json
 import pathlib
 
 
-def list_workflows(las_client: Client, max_results, next_token):
+def list_workflows(las_client: Client, max_results=None, next_token=None):
     return las_client.list_workflows(max_results=max_results, next_token=next_token)
 
 

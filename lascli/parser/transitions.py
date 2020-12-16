@@ -110,6 +110,8 @@ def create_transitions_parser(subparsers):
     list_executions_parser.add_argument('transition_id')
     list_executions_parser.add_argument('--execution-id', nargs='+', help='Perform a batch-get on the ids')
     list_executions_parser.add_argument('--status', '-s', nargs='+', help='Only return those with the given status')
+    list_executions_parser.add_argument('--order')
+    list_executions_parser.add_argument('--sort-by')
     list_executions_parser.add_argument('--max-results', '-m', type=int)
     list_executions_parser.add_argument('--next-token', '-n', type=str)
     list_executions_parser.set_defaults(cmd=list_transition_executions)
