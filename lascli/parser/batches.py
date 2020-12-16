@@ -10,8 +10,8 @@ def create_batches_parser(subparsers):
     subparsers = parser.add_subparsers()
 
     create_batch_parser = subparsers.add_parser('create')
-    create_batch_parser.add_argument('--description, type=nullable, default=NotProvided)
-    create_batch_parser.add_argument('--name, type=nullable, default=NotProvided)
+    create_batch_parser.add_argument('--description', type=nullable, default=NotProvided)
+    create_batch_parser.add_argument('--name', type=nullable, default=NotProvided)
     create_batch_parser.set_defaults(cmd=post_batches)
 
     return parser
