@@ -11,17 +11,17 @@ def create_transition(
     transition_type,
     in_schema_path=None,
     out_schema_path=None,
-    params_path=None,
+    parameters_path=None,
     **optional_args,
 ):
     in_schema = json.loads(pathlib.Path(in_schema_path).read_text()) if in_schema_path else None
     out_schema = json.loads(pathlib.Path(out_schema_path).read_text()) if out_schema_path else None
-    params = json.loads(pathlib.Path(params_path).read_text()) if params_path else None
+    parameters = json.loads(pathlib.Path(parameters_path).read_text()) if parameters_path else None
     return las_client.create_transition(
         transition_type,
         in_schema=in_schema,
         out_schema=out_schema,
-        params=params,
+        parameters=parameters,
         **optional_args
     )
 
@@ -69,7 +69,7 @@ def create_transitions_parser(subparsers):
 
     create_parser = subparsers.add_parser('create')
     create_parser.add_argument('transition_type', choices=["docker", "manual"])
-    create_parser.add_argument('--params-path', '-p', help='parameters to the docker image')
+    create_parser.add_argument('--parameters-path', '-p', help='parameters to the docker image')
     create_parser.add_argument('--in-schema-path')
     create_parser.add_argument('--out-schema-path')
     create_parser.add_argument('--name', type=nullable, default=NotProvided)
