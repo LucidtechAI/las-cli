@@ -44,7 +44,7 @@ def list_transition_executions(las_client: Client, transition_id, **optional_arg
     return las_client.list_transition_executions(transition_id, **optional_args)
 
 
-def get_transition_executions(las_client: Client, transition_id, execution_id):
+def get_transition_execution(las_client: Client, transition_id, execution_id):
     return las_client.get_transition_execution(transition_id, execution_id)
 
 
@@ -111,7 +111,7 @@ def create_transitions_parser(subparsers):
     get_executions_parser = subparsers.add_parser('get-execution')
     get_executions_parser.add_argument('transition_id')
     get_executions_parser.add_argument('execution_id')
-    get_executions_parser.set_defaults(cmd=get_transition_executions)
+    get_executions_parser.set_defaults(cmd=get_transition_execution)
 
     update_execution_parser = subparsers.add_parser('update-execution')
     update_execution_parser.add_argument('transition_id')
