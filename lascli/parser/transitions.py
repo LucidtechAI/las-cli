@@ -108,10 +108,10 @@ def create_transitions_parser(subparsers):
     list_executions_parser.add_argument('--next-token', '-n', type=str)
     list_executions_parser.set_defaults(cmd=list_transition_executions)
 
-    get_executions_parser = subparsers.add_parser('get-execution')
-    get_executions_parser.add_argument('transition_id')
-    get_executions_parser.add_argument('execution_id')
-    get_executions_parser.set_defaults(cmd=get_transition_execution)
+    get_execution_parser = subparsers.add_parser('get-execution')
+    get_execution_parser.add_argument('transition_id')
+    get_execution_parser.add_argument('execution_id')
+    get_execution_parser.set_defaults(cmd=get_transition_execution)
 
     update_execution_parser = subparsers.add_parser('update-execution')
     update_execution_parser.add_argument('transition_id')
