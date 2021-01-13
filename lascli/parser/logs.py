@@ -5,10 +5,10 @@ from las import Client
 def parse_log(response):
     log_events = []
     for event in response['events']:
-        timestamp = int(event['timestamp'])/1000
+        timestamp = event['timestamp']
         message = event['message']
         log_events.append(f'{datetime.fromtimestamp(timestamp)}: {message}')
-    return "\n".join(log_events)
+    return '\n'.join(log_events)
 
 
 def get_log(las_client: Client, log_id, pretty):
