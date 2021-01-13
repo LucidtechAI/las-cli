@@ -69,7 +69,9 @@ def main():
 
     kwargs = {k: v for k, v in args.items() if v != NotProvided}
     if kwargs:
-        print(json.dumps(cmd(**kwargs), indent=2))
+        result = cmd(**kwargs)
+        result = json.dumps(result, indent=2) if isinstance(result, dict) else result
+        print(result)
     else:
         parser.print_help()
 
