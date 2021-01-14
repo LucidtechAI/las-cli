@@ -43,10 +43,14 @@ def create_parser():
 
 
 def set_verbosity(verbose):
-    verbosity_levels = [logging.CRITICAL, logging.WARNING, logging.DEBUG]
+    verbosity_levels = [logging.WARNING, logging.INFO, logging.DEBUG]
     verbosity = verbosity_levels[min(verbose, len(verbosity_levels) - 1)]
+    log_handler = logging.StreamHandler()
+    log_handler.setLevel(logging.DEBUG)
     logging.getLogger().setLevel(verbosity)
+    logging.getLogger().addHandler(log_handler)
     logging.getLogger('las').setLevel(verbosity)
+    logging.getLogger('las').addHandler(log_handler)
 
 
 def main():
