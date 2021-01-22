@@ -6,6 +6,10 @@ from las import Client
 from lascli.util import nullable, NotProvided
 
 
+def encode_avatar(avatar):
+    return base64.b64encode(pathlib.Path(avatar).read_bytes()).decode()
+
+
 def list_users(las_client: Client, max_results, next_token):
     return las_client.list_users(max_results=max_results, next_token=next_token)
 
@@ -14,13 +18,16 @@ def get_user(las_client: Client, user_id):
     return las_client.get_user(user_id)
 
 
-def create_user(las_client: Client, email):
-    return las_client.create_user(email)
+def create_user(las_client: Client, email, **optional_args):
+    if avatar := optional_args.get('avatar'):
+        optional_args['avatar'] = encode_avatar(avatar)
+
+    return las_client.create_user(email, **optional_args)
 
 
 def update_user(las_client: Client, user_id, **optional_args):
     if avatar := optional_args.get('avatar'):
-        optional_args['avatar'] = base64.b64encode(pathlib.Path(avatar).read_bytes()).decode()
+        optional_args['avatar'] = encode_avatar(avatar)
 
     return las_client.update_user(user_id, **optional_args)
 
@@ -35,6 +42,8 @@ def create_users_parser(subparsers):
 
     create_user_parser = subparsers.add_parser('create')
     create_user_parser.add_argument('email')
+    create_user_parser.add_argument('--name', type=nullable, default=NotProvided)
+    create_user_parser.add_argument('--avatar', help='Path to avatar JPEG image.')
     create_user_parser.set_defaults(cmd=create_user)
 
     update_user_parser = subparsers.add_parser('update')
