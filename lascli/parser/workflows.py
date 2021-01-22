@@ -55,8 +55,8 @@ def create_workflows_parser(subparsers):
 
     create_workflow_parser = subparsers.add_parser('create')
     create_workflow_parser.add_argument('specification_path')
-    create_workflow_parser.add_argument('--name', type=nullable, default=NotProvided)
-    create_workflow_parser.add_argument('--description', type=nullable, default=NotProvided)
+    create_workflow_parser.add_argument('--name')
+    create_workflow_parser.add_argument('--description')
     create_workflow_parser.add_argument('--error-config', type=str)
     create_workflow_parser.set_defaults(cmd=create_workflow)
 

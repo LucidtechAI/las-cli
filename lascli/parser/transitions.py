@@ -76,8 +76,8 @@ def create_transitions_parser(subparsers):
     create_parser.add_argument('--parameters-path', '-p', help='parameters to the docker image')
     create_parser.add_argument('--in-schema-path')
     create_parser.add_argument('--out-schema-path')
-    create_parser.add_argument('--name', type=nullable, default=NotProvided)
-    create_parser.add_argument('--description', type=nullable, default=NotProvided)
+    create_parser.add_argument('--name')
+    create_parser.add_argument('--description')
     create_parser.set_defaults(cmd=create_transition)
 
     list_parser = subparsers.add_parser('list')
