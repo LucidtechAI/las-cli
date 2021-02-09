@@ -19,14 +19,16 @@ def get_user(las_client: Client, user_id):
 
 
 def create_user(las_client: Client, email, **optional_args):
-    if avatar := optional_args.get('avatar'):
+    avatar = optional_args.get('avatar')
+    if avatar:
         optional_args['avatar'] = encode_avatar(avatar)
 
     return las_client.create_user(email, **optional_args)
 
 
 def update_user(las_client: Client, user_id, **optional_args):
-    if avatar := optional_args.get('avatar'):
+    avatar = optional_args.get('avatar')
+    if avatar:
         optional_args['avatar'] = encode_avatar(avatar)
 
     return las_client.update_user(user_id, **optional_args)
