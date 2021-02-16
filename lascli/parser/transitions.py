@@ -110,7 +110,7 @@ def create_transitions_parser(subparsers):
     execute_parser.add_argument('transition_id')
     execute_parser.set_defaults(cmd=execute_transition)
 
-    delete_parser = subparsers.add_parser('delete')
+    delete_parser = subparsers.add_parser('delete', description='Will fail if transition is in use by one or more workflows')
     delete_parser.add_argument('transition_id')
     delete_parser.set_defaults(cmd=delete_transition)
 
