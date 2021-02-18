@@ -16,6 +16,10 @@ def create_workflow(las_client: Client, specification_path, error_config, **opti
     return las_client.create_workflow(specification, error_config=error_config, **optional_args)
 
 
+def get_workflow(las_client: Client, workflow_id):
+    return las_client.get_workflow(workflow_id)
+
+
 def update_workflow(las_client: Client, workflow_id, **optional_args):
     return las_client.update_workflow(workflow_id, **optional_args)
 
@@ -79,6 +83,10 @@ def create_workflows_parser(subparsers):
     list_executions_parser.add_argument('--max-results', '-m', type=int)
     list_executions_parser.add_argument('--next-token', '-n', type=str)
     list_executions_parser.set_defaults(cmd=list_workflow_executions)
+
+    get_workflow_parser = subparsers.add_parser('get')
+    get_workflow_parser.add_argument('workflow_id')
+    get_workflow_parser.set_defaults(cmd=get_workflow)
 
     delete_workflow_parser = subparsers.add_parser('delete')
     delete_workflow_parser.add_argument('workflow_id')

@@ -26,18 +26,26 @@ def create_transition(
     )
 
 
+def list_transitions(las_client: Client, **optional_args):
+    return las_client.list_transitions(**optional_args)
+
+
+def get_transition(las_client: Client, transition_id):
+    return las_client.get_transition(transition_id)
+
+
 def update_transition(las_client: Client, transition_id, in_schema_path=None, out_schema_path=None, **optional_args):
     in_schema = json.loads(pathlib.Path(in_schema_path).read_text()) if in_schema_path else None
     out_schema = json.loads(pathlib.Path(out_schema_path).read_text()) if out_schema_path else None
     return las_client.update_transition(transition_id, in_schema=in_schema, out_schema=out_schema, **optional_args)
 
 
-def list_transitions(las_client: Client, **optional_args):
-    return las_client.list_transitions(**optional_args)
-
-
 def execute_transition(las_client: Client, transition_id):
     return las_client.execute_transition(transition_id)
+
+
+def delete_transition(las_client: Client, transition_id):
+    return las_client.delete_transition(transition_id)
 
 
 def list_transition_executions(las_client: Client, transition_id, **optional_args):
@@ -86,6 +94,10 @@ def create_transitions_parser(subparsers):
     list_parser.add_argument('--next-token', '-n', type=str)
     list_parser.set_defaults(cmd=list_transitions)
 
+    get_parser = subparsers.add_parser('get')
+    get_parser.add_argument('transition_id')
+    get_parser.set_defaults(cmd=get_transition)
+
     update_parser = subparsers.add_parser('update')
     update_parser.add_argument('transition_id')
     update_parser.add_argument('--name', type=nullable, default=NotProvided)
@@ -97,6 +109,10 @@ def create_transitions_parser(subparsers):
     execute_parser = subparsers.add_parser('execute')
     execute_parser.add_argument('transition_id')
     execute_parser.set_defaults(cmd=execute_transition)
+
+    delete_parser = subparsers.add_parser('delete', description='Will fail if transition is in use by one or more workflows')
+    delete_parser.add_argument('transition_id')
+    delete_parser.set_defaults(cmd=delete_transition)
 
     list_executions_parser = subparsers.add_parser('list-executions')
     list_executions_parser.add_argument('transition_id')
