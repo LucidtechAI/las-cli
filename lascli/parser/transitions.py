@@ -77,6 +77,10 @@ def update_transition_execution(
     )
 
 
+def send_heartbeat(las_client: Client, transition_id, execution_id):
+    return las_client.send_heartbeat(transition_id, execution_id)
+
+
 def create_transitions_parser(subparsers):
     parser = subparsers.add_parser('transitions')
     subparsers = parser.add_subparsers()
@@ -139,5 +143,10 @@ def create_transitions_parser(subparsers):
     update_execution_parser.add_argument('--error_path', '-e')
     update_execution_parser.add_argument('--start-time')
     update_execution_parser.set_defaults(cmd=update_transition_execution)
+
+    heartbeat_parser = subparsers.add_parser('heartbeat')
+    heartbeat_parser.add_argument('transition_id')
+    heartbeat_parser.add_argument('execution_id')
+    heartbeat_parser.set_defaults(cmd=send_heartbeat)
 
     return parser
