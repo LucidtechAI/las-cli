@@ -62,7 +62,8 @@ def update_transition_execution(
     execution_id,
     status,
     error_path=None,
-    output_path=None
+    output_path=None,
+    start_time=None,
 ):
     output_dict = json.loads(pathlib.Path(output_path).read_text()) if output_path else None
     error_dict = json.loads(pathlib.Path(error_path).read_text()) if error_path else None
@@ -72,6 +73,7 @@ def update_transition_execution(
         status,
         output=output_dict,
         error=error_dict,
+        start_time=start_time,
     )
 
 
@@ -135,6 +137,7 @@ def create_transitions_parser(subparsers):
     update_execution_parser.add_argument('status', choices=['succeeded', 'failed', 'rejected', 'retry'])
     update_execution_parser.add_argument('--output_path', '-o')
     update_execution_parser.add_argument('--error_path', '-e')
+    update_execution_parser.add_argument('--start-time')
     update_execution_parser.set_defaults(cmd=update_transition_execution)
 
     return parser
