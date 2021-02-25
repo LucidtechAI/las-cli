@@ -10,7 +10,7 @@ with open('README.md') as fp:
 
 setup(
     name='lucidtech-las-cli',
-    version='2.2.6',
+    version='2.2.7',
     description='CLI for Lucidtech AI Services',
     long_description=readme,
     license='Apache 2.0',
