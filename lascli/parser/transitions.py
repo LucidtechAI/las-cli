@@ -144,9 +144,9 @@ def create_transitions_parser(subparsers):
     update_execution_parser.add_argument('--start-time')
     update_execution_parser.set_defaults(cmd=update_transition_execution)
 
-    heartbeat_parser = subparsers.add_parser('heartbeat')
-    heartbeat_parser.add_argument('transition_id')
-    heartbeat_parser.add_argument('execution_id')
-    heartbeat_parser.set_defaults(cmd=send_heartbeat)
+    send_heartbeat_parser = subparsers.add_parser('heartbeat')
+    send_heartbeat_parser.add_argument('transition_id')
+    send_heartbeat_parser.add_argument('execution_id')
+    send_heartbeat_parser.set_defaults(cmd=send_heartbeat)
 
     return parser

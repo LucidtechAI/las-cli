@@ -7,7 +7,7 @@ def post_predictions(las_client: Client, document_id, model_id, auto_rotate, max
         model_id,
         auto_rotate=auto_rotate,
         max_pages=max_pages,
-        image_quality = image_quality,
+        image_quality=image_quality,
     )
 
 
@@ -24,7 +24,7 @@ def create_predictions_parser(subparsers):
     create_predicton_parser.add_argument('model_id')
     create_predicton_parser.add_argument('--auto-rotate', action='store_true', default=False)
     create_predicton_parser.add_argument('--max-pages', type=int, default=1)
-    create_predicton_parser.add_argument('--image-quality', type=str, default='low')
+    create_predicton_parser.add_argument('--image-quality', type=str, default='LOW', choices={'LOW', 'HIGH'})
     create_predicton_parser.set_defaults(cmd=post_predictions)
 
     list_predictions_parser = subparsers.add_parser('list')
