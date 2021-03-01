@@ -62,7 +62,8 @@ def update_transition_execution(
     execution_id,
     status,
     error_path=None,
-    output_path=None
+    output_path=None,
+    start_time=None,
 ):
     output_dict = json.loads(pathlib.Path(output_path).read_text()) if output_path else None
     error_dict = json.loads(pathlib.Path(error_path).read_text()) if error_path else None
@@ -72,7 +73,12 @@ def update_transition_execution(
         status,
         output=output_dict,
         error=error_dict,
+        start_time=start_time,
     )
+
+
+def send_heartbeat(las_client: Client, transition_id, execution_id):
+    return las_client.send_heartbeat(transition_id, execution_id)
 
 
 def create_transitions_parser(subparsers):
@@ -135,6 +141,12 @@ def create_transitions_parser(subparsers):
     update_execution_parser.add_argument('status', choices=['succeeded', 'failed', 'rejected', 'retry'])
     update_execution_parser.add_argument('--output_path', '-o')
     update_execution_parser.add_argument('--error_path', '-e')
+    update_execution_parser.add_argument('--start-time')
     update_execution_parser.set_defaults(cmd=update_transition_execution)
+
+    send_heartbeat_parser = subparsers.add_parser('heartbeat')
+    send_heartbeat_parser.add_argument('transition_id')
+    send_heartbeat_parser.add_argument('execution_id')
+    send_heartbeat_parser.set_defaults(cmd=send_heartbeat)
 
     return parser
