@@ -1,19 +1,22 @@
 import json
-import pathlib
+from pathlib import Path
 
 from las import Client
 
-from lascli.util import nullable, NotProvided
+from lascli.util import nullable, NotProvided, dictionary
 
 
 def list_workflows(las_client: Client, max_results=None, next_token=None):
     return las_client.list_workflows(max_results=max_results, next_token=next_token)
 
 
-def create_workflow(las_client: Client, specification_path, error_config, **optional_args):
-    specification = json.loads(pathlib.Path(specification_path).read_text())
-    error_config = json.loads(error_config) if error_config else None
-    return las_client.create_workflow(specification, error_config=error_config, **optional_args)
+def create_workflow(las_client: Client, specification, error_config, completed_config, **optional_args):
+    return las_client.create_workflow(
+        specification,
+        error_config=error_config,
+        completed_config=completed_config,
+        **optional_args
+    )
 
 
 def get_workflow(las_client: Client, workflow_id):
@@ -25,7 +28,7 @@ def update_workflow(las_client: Client, workflow_id, **optional_args):
 
 
 def execute_workflow(las_client: Client, workflow_id, path):
-    content = json.loads(pathlib.Path(path).read_text())
+    content = json.loads(Path(path).read_text())
     return las_client.execute_workflow(workflow_id, content)
 
 
@@ -58,10 +61,11 @@ def create_workflows_parser(subparsers):
     list_workflows_parser.set_defaults(cmd=list_workflows)
 
     create_workflow_parser = subparsers.add_parser('create')
-    create_workflow_parser.add_argument('specification_path')
+    create_workflow_parser.add_argument('specification', type=dictionary)
     create_workflow_parser.add_argument('--name')
     create_workflow_parser.add_argument('--description')
-    create_workflow_parser.add_argument('--error-config', type=str)
+    create_workflow_parser.add_argument('--error-config', type=dictionary)
+    create_workflow_parser.add_argument('--completed-config', type=dictionary)
     create_workflow_parser.set_defaults(cmd=create_workflow)
 
     update_workflow_parser = subparsers.add_parser('update')
