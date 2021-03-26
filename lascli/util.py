@@ -12,7 +12,8 @@ def nullable(value):
     return value
 
 
-def dictionary(value):
+def dictionary(value: str):
+    """ Parse input as a .json or .yaml file if the file exists, if not parse input directly as a json string"""
     if not value:
         return None
 
