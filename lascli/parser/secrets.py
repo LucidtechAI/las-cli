@@ -17,7 +17,6 @@ def create_secret(las_client: Client, data, **optional_args):
 
 def update_secret(las_client: Client, secret_id, data, **optional_args):
     secret_data = {}
-    data = data or []
     for data_entry in data:
         key, val = data_entry.split('=', 1)
         secret_data[key] = val
@@ -41,7 +40,7 @@ def create_secrets_parser(subparsers):
 
     update_secret_parser = subparsers.add_parser('update')
     update_secret_parser.add_argument('secret_id')
-    update_secret_parser.add_argument('--data', metavar='KEY=VALUE', nargs='+')
+    update_secret_parser.add_argument('--data', metavar='KEY=VALUE', nargs='+', default=[])
     update_secret_parser.add_argument('--name', type=nullable, default=NotProvided)
     update_secret_parser.add_argument('--description', type=nullable, default=NotProvided)
     update_secret_parser.set_defaults(cmd=update_secret)
