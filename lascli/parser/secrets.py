@@ -17,6 +17,7 @@ def create_secret(las_client: Client, data, **optional_args):
 
 def update_secret(las_client: Client, secret_id, data, **optional_args):
     secret_data = {}
+    data = data or []
     for data_entry in data:
         key, val = data_entry.split('=', 1)
         secret_data[key] = val
