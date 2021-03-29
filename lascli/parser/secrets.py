@@ -1,4 +1,5 @@
 from las import Client
+from datetime import datetime
 
 from lascli.util import nullable, NotProvided
 
@@ -13,6 +14,20 @@ def create_secret(las_client: Client, data, **optional_args):
         key, val = data_entry.split('=', 1)
         secret_data[key] = val
     return las_client.create_secret(secret_data, **optional_args)
+
+
+def create_las_credentials_secret(las_client: Client):
+    return las_client.create_secret(
+        name='las-credentials',
+        description=f'LAS credentials created for client {las_client.credentials.client_id} on {datetime.today()}',
+        data={
+            'LAS_CLIENT_ID': las_client.credentials.client_id,
+            'LAS_CLIENT_SECRET': las_client.credentials.client_secret,
+            'LAS_API_KEY': las_client.credentials.api_key,
+            'LAS_AUTH_ENDPOINT': las_client.credentials.auth_endpoint,
+            'LAS_API_ENDPOINT': las_client.credentials.api_endpoint,
+        },
+    )
 
 
 def update_secret(las_client: Client, secret_id, data, **optional_args):
@@ -37,6 +52,13 @@ def create_secrets_parser(subparsers):
     create_secret_parser.add_argument('--name')
     create_secret_parser.add_argument('--description')
     create_secret_parser.set_defaults(cmd=create_secret)
+
+    create_las_credentials_secret_parser = subparsers.add_parser(
+        'create-las-credentials',
+        help='Create a secret that contains your las-credentials,'
+             ' that can be used as environment variables for docker-transitions'
+    )
+    create_las_credentials_secret_parser.set_defaults(cmd=create_las_credentials_secret)
 
     update_secret_parser = subparsers.add_parser('update')
     update_secret_parser.add_argument('secret_id')
