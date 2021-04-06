@@ -18,7 +18,8 @@ def create_workflow(las_client: Client, specification_path, error_config, comple
         specification,
         error_config=error_config,
         completed_config=completed_config,
-        **optional_args)
+        **optional_args,
+    )
 
 
 def get_workflow(las_client: Client, workflow_id):
@@ -76,7 +77,9 @@ def create_workflows_parser(subparsers):
     create_workflow_parser.add_argument('--description')
     create_workflow_parser.add_argument('--error-config', help='path to the error configuration for the workflow')
     create_workflow_parser.add_argument(
-        '--completed-config', help='path to the configuration for the job that runs on completion of an execution')
+        '--completed-config',
+        help='path to the execution completed configuration for the workflow',
+    )
     create_workflow_parser.set_defaults(cmd=create_workflow)
 
     update_workflow_parser = subparsers.add_parser('update')
@@ -116,7 +119,8 @@ def create_workflows_parser(subparsers):
     update_workflow_execution_parser.add_argument('workflow_id')
     update_workflow_execution_parser.add_argument('execution_id')
     update_workflow_execution_parser.add_argument(
-        'next_transition_id', help='use las:transition:commons-failed to end an execution'
+        'next_transition_id',
+        help='use las:transition:commons-failed to end an execution',
     )
     update_workflow_execution_parser.set_defaults(cmd=update_workflow_execution)
 
