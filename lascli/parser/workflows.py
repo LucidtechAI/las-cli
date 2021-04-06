@@ -10,10 +10,15 @@ def list_workflows(las_client: Client, max_results=None, next_token=None):
     return las_client.list_workflows(max_results=max_results, next_token=next_token)
 
 
-def create_workflow(las_client: Client, specification_path, error_config, **optional_args):
+def create_workflow(las_client: Client, specification_path, error_config, completed_config, **optional_args):
     specification = json.loads(pathlib.Path(specification_path).read_text())
-    error_config = json.loads(error_config) if error_config else None
-    return las_client.create_workflow(specification, error_config=error_config, **optional_args)
+    error_config = json.loads(pathlib.Path(error_config)) if error_config else None
+    completed_config = json.loads(pathlib.Path(completed_config)) if completed_config else None
+    return las_client.create_workflow(
+        specification,
+        error_config=error_config,
+        completed_config=completed_config,
+        **optional_args)
 
 
 def get_workflow(las_client: Client, workflow_id):
@@ -65,7 +70,9 @@ def create_workflows_parser(subparsers):
     create_workflow_parser.add_argument('specification_path')
     create_workflow_parser.add_argument('--name')
     create_workflow_parser.add_argument('--description')
-    create_workflow_parser.add_argument('--error-config', type=str)
+    create_workflow_parser.add_argument('--error-config', help='path to the error configuration for the workflow')
+    create_workflow_parser.add_argument(
+        '--completed-config', help='path to the configuration for the job that runs on completion of an execution')
     create_workflow_parser.set_defaults(cmd=create_workflow)
 
     update_workflow_parser = subparsers.add_parser('update')
@@ -99,7 +106,9 @@ def create_workflows_parser(subparsers):
     update_workflow_execution_parser = subparsers.add_parser('update-execution')
     update_workflow_execution_parser.add_argument('workflow_id')
     update_workflow_execution_parser.add_argument('execution_id')
-    update_workflow_execution_parser.add_argument('next_transition_id')
+    update_workflow_execution_parser.add_argument(
+        'next_transition_id', help='use las:transition:commons-failed to end an execution'
+    )
     update_workflow_execution_parser.set_defaults(cmd=update_workflow_execution)
 
     delete_workflow_execution_parser = subparsers.add_parser('delete-execution')
