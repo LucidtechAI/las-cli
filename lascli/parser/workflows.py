@@ -49,6 +49,10 @@ def delete_workflow(las_client: Client, workflow_id):
     return las_client.delete_workflow(workflow_id)
 
 
+def get_workflow_execution(las_client: Client, workflow_id, execution_id):
+    return las_client.get_workflow_execution(workflow_id, execution_id)
+
+
 def update_workflow_execution(las_client: Client, workflow_id, execution_id, next_transition_id):
     return las_client.update_workflow_execution(workflow_id, execution_id, next_transition_id)
 
@@ -102,6 +106,11 @@ def create_workflows_parser(subparsers):
     delete_workflow_parser = subparsers.add_parser('delete')
     delete_workflow_parser.add_argument('workflow_id')
     delete_workflow_parser.set_defaults(cmd=delete_workflow)
+
+    get_workflow_execution_parser = subparsers.add_parser('get-execution')
+    get_workflow_execution_parser.add_argument('workflow_id')
+    get_workflow_execution_parser.add_argument('execution_id')
+    get_workflow_execution_parser.set_defaults(cmd=get_workflow_execution)
 
     update_workflow_execution_parser = subparsers.add_parser('update-execution')
     update_workflow_execution_parser.add_argument('workflow_id')
