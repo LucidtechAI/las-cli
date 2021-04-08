@@ -26,8 +26,15 @@ def get_workflow(las_client: Client, workflow_id):
     return las_client.get_workflow(workflow_id)
 
 
-def update_workflow(las_client: Client, workflow_id, **optional_args):
-    return las_client.update_workflow(workflow_id, **optional_args)
+def update_workflow(las_client: Client, workflow_id, error_config, completed_config, **optional_args):
+    error_config = json.loads(pathlib.Path(error_config)) if error_config else None
+    completed_config = json.loads(pathlib.Path(completed_config)) if completed_config else None
+    return las_client.update_workflow(
+        workflow_id,
+        error_config=error_config,
+        completed_config=completed_config,
+        **optional_args,
+    )
 
 
 def execute_workflow(las_client: Client, workflow_id, path):
@@ -86,6 +93,11 @@ def create_workflows_parser(subparsers):
     update_workflow_parser.add_argument('workflow_id')
     update_workflow_parser.add_argument('--name', type=nullable, default=NotProvided)
     update_workflow_parser.add_argument('--description', type=nullable, default=NotProvided)
+    update_workflow_parser.add_argument('--error-config', help='path to the error configuration for the workflow')
+    update_workflow_parser.add_argument(
+        '--completed-config',
+        help='path to the execution completed configuration for the workflow',
+    )
     update_workflow_parser.set_defaults(cmd=update_workflow)
 
     execute_workflow_parser = subparsers.add_parser('execute')
