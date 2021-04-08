@@ -38,6 +38,10 @@ def update_asset(las_client: Client, asset_id, asset_path=None, **optional_args)
     return las_client.update_asset(asset_id, **optional_args)
 
 
+def delete_asset(las_client: Client, asset_id):
+    return las_client.delete_asset(asset_id)
+
+
 def create_assets_parser(subparsers):
     parser = subparsers.add_parser('assets')
     subparsers = parser.add_subparsers()
@@ -65,5 +69,9 @@ def create_assets_parser(subparsers):
     update_asset_parser.add_argument('--name', type=nullable, default=NotProvided)
     update_asset_parser.add_argument('--description', type=nullable, default=NotProvided)
     update_asset_parser.set_defaults(cmd=update_asset)
+
+    delete_asset_parser = subparsers.add_parser('delete')
+    delete_asset_parser.add_argument('asset_id')
+    delete_asset_parser.set_defaults(cmd=delete_asset)
 
     return parser
