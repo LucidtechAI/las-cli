@@ -31,8 +31,8 @@ def list_documents(las_client: Client, batch_id, consent_id, max_results, next_t
     )
 
 
-def delete_documents(las_client: Client, consent_id):
-    return las_client.delete_documents(consent_id=consent_id)
+def delete_documents(las_client: Client, consent_id, next_token, max_results):
+    return las_client.delete_documents(consent_id=consent_id, next_token=next_token, max_results=max_results)
 
 
 def create_document(las_client: Client, document_path, content_type, consent_id, batch_id, fields):
@@ -101,6 +101,8 @@ def create_documents_parser(subparsers):
 
     delete_documents_parser = subparsers.add_parser('delete')
     delete_documents_parser.add_argument('--consent-id', nargs='+')
+    delete_documents_parser.add_argument('--max-results', '-m', type=int)
+    delete_documents_parser.add_argument('--next-token', '-n', type=str)
     delete_documents_parser.set_defaults(cmd=delete_documents)
 
     return parser
