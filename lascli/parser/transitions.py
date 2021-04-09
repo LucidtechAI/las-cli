@@ -130,7 +130,7 @@ def create_transitions_parser(subparsers):
     update_parser.add_argument('--out-schema-path')
     update_parser.add_argument(
         '--assets-path',
-        help='Dictionary with values that are assetIds, only possible for a manual transition'
+        help='Path to json file with str keys and values that are assetIds, only possible for a manual transition'
     )
     update_parser.add_argument(
         '--environment-path',
