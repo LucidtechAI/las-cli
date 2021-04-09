@@ -134,7 +134,7 @@ def create_transitions_parser(subparsers):
     )
     update_parser.add_argument(
         '--environment-path',
-        help='Dictionary with environment variables, only possible for a docker transition',
+        help='Path to json file with environment variables, only possible for a docker transition',
     )
     update_parser.add_argument(
         '--environment-secrets',
