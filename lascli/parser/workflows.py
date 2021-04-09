@@ -12,8 +12,8 @@ def list_workflows(las_client: Client, max_results=None, next_token=None):
 
 def create_workflow(las_client: Client, specification_path, error_config_path, completed_config_path, **optional_args):
     specification = json.loads(pathlib.Path(specification_path).read_text())
-    error_config = json.loads(pathlib.Path(error_config_path)) if error_config_path else None
-    completed_config = json.loads(pathlib.Path(completed_config_path)) if completed_config_path else None
+    error_config = json.loads(pathlib.Path(error_config_path).read_text()) if error_config_path else None
+    completed_config = json.loads(pathlib.Path(completed_config_path).read_text()) if completed_config_path else None
     return las_client.create_workflow(
         specification,
         error_config=error_config,
@@ -27,8 +27,8 @@ def get_workflow(las_client: Client, workflow_id):
 
 
 def update_workflow(las_client: Client, workflow_id, error_config_path, completed_config_path, **optional_args):
-    error_config = json.loads(pathlib.Path(error_config_path)) if error_config_path else None
-    completed_config = json.loads(pathlib.Path(completed_config_path)) if completed_config_path else None
+    error_config = json.loads(pathlib.Path(error_config_path).read_text()) if error_config_path else None
+    completed_config = json.loads(pathlib.Path(completed_config_path).read_text()) if completed_config_path else None
     return las_client.update_workflow(
         workflow_id,
         error_config=error_config,
