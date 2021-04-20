@@ -1,8 +1,13 @@
 from las import Client
 
 
-def create_app_client(las_client: Client, **optional_args):
-    return las_client.create_app_client(**optional_args)
+def create_app_client(las_client: Client, generate_secret, logout_urls, callback_urls, **optional_args):
+    return las_client.create_app_client(
+        generate_secret=generate_secret,
+        logout_urls=logout_urls,
+        callback_urls=callback_urls,
+        **optional_args,
+    )
 
 
 def list_app_clients(las_client: Client, max_results=None, next_token=None):
@@ -20,6 +25,9 @@ def create_app_clients_parser(subparsers):
     create_app_client_parser = subparsers.add_parser('create')
     create_app_client_parser.add_argument('--name')
     create_app_client_parser.add_argument('--description')
+    create_app_client_parser.add_argument('--generate-secret', action='store_true', default=False)
+    create_app_client_parser.add_argument('--logout-urls', nargs='+')
+    create_app_client_parser.add_argument('--callback-urls', nargs='+')
     create_app_client_parser.set_defaults(cmd=create_app_client)
 
     list_app_clients_parser = subparsers.add_parser('list')
