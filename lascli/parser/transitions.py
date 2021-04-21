@@ -34,10 +34,29 @@ def get_transition(las_client: Client, transition_id):
     return las_client.get_transition(transition_id)
 
 
-def update_transition(las_client: Client, transition_id, in_schema_path=None, out_schema_path=None, **optional_args):
+def update_transition(
+    las_client: Client,
+    transition_id,
+    in_schema_path=None,
+    out_schema_path=None,
+    assets_path=None,
+    environment_path=None,
+    environment_secrets=None,
+    **optional_args,
+):
     in_schema = json.loads(pathlib.Path(in_schema_path).read_text()) if in_schema_path else None
     out_schema = json.loads(pathlib.Path(out_schema_path).read_text()) if out_schema_path else None
-    return las_client.update_transition(transition_id, in_schema=in_schema, out_schema=out_schema, **optional_args)
+    assets = json.loads(pathlib.Path(assets_path).read_text()) if assets_path else None
+    environment = json.loads(pathlib.Path(environment_path).read_text()) if environment_path else None
+    return las_client.update_transition(
+        transition_id,
+        in_schema=in_schema,
+        out_schema=out_schema,
+        assets=assets,
+        environment=environment,
+        environment_secrets=environment_secrets,
+        **optional_args,
+    )
 
 
 def execute_transition(las_client: Client, transition_id):
@@ -109,6 +128,19 @@ def create_transitions_parser(subparsers):
     update_parser.add_argument('--name', type=nullable, default=NotProvided)
     update_parser.add_argument('--in-schema-path')
     update_parser.add_argument('--out-schema-path')
+    update_parser.add_argument(
+        '--assets-path',
+        help='Path to json file with str keys and values that are assetIds, only possible for a manual transition'
+    )
+    update_parser.add_argument(
+        '--environment-path',
+        help='Path to json file with environment variables, only possible for a docker transition',
+    )
+    update_parser.add_argument(
+        '--environment-secrets',
+        nargs='+',
+        help='secretIds that that will be used as environment variables, only possible for a docker transition',
+    )
     update_parser.add_argument('--description', type=nullable, default=NotProvided)
     update_parser.set_defaults(cmd=update_transition)
 
@@ -116,7 +148,10 @@ def create_transitions_parser(subparsers):
     execute_parser.add_argument('transition_id')
     execute_parser.set_defaults(cmd=execute_transition)
 
-    delete_parser = subparsers.add_parser('delete', description='Will fail if transition is in use by one or more workflows')
+    delete_parser = subparsers.add_parser(
+        'delete',
+        description='Will fail if transition is in use by one or more workflows',
+    )
     delete_parser.add_argument('transition_id')
     delete_parser.set_defaults(cmd=delete_transition)
 

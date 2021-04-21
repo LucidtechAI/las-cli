@@ -35,6 +35,10 @@ def update_secret(las_client: Client, secret_id, secret_data, secret_path, **opt
     return las_client.update_secret(secret_id, data=data, **optional_args)
 
 
+def delete_secret(las_client: Client, secret_id):
+    return las_client.delete_secret(secret_id)
+
+
 def create_secrets_parser(subparsers):
     parser = subparsers.add_parser('secrets')
     subparsers = parser.add_subparsers()
@@ -60,5 +64,9 @@ def create_secrets_parser(subparsers):
     update_secret_parser.add_argument('--name', type=nullable, default=NotProvided)
     update_secret_parser.add_argument('--description', type=nullable, default=NotProvided)
     update_secret_parser.set_defaults(cmd=update_secret)
+
+    delete_secret_parser = subparsers.add_parser('delete')
+    delete_secret_parser.add_argument('secret_id')
+    delete_secret_parser.set_defaults(cmd=delete_secret)
 
     return parser
