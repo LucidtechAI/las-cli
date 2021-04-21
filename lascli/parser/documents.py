@@ -1,10 +1,27 @@
 import base64
+import json
 import logging
 import pathlib
 
 import filetype
 
 from las import Client
+
+
+def _create_ground_truth_dict(ground_truth_fields, ground_truth_path):
+    ground_truth = None
+
+    if ground_truth_fields:
+        ground_truth = [f.split('=', 1) for f in ground_truth_fields]
+        ground_truth = [{'label': k, 'value': v} for k, v in ground_truth]
+
+    if ground_truth_path:
+        ground_truth = json.loads(pathlib.Path(ground_truth_path).read_text())
+
+        if isinstance(ground_truth, dict):
+            ground_truth = [{'label': k, 'value': v} for k, v in ground_truth.items()]
+
+    return ground_truth
 
 
 def get_document(las_client: Client, document_id, download_content, output_content):
@@ -35,7 +52,15 @@ def delete_documents(las_client: Client, consent_id, next_token, max_results):
     return las_client.delete_documents(consent_id=consent_id, next_token=next_token, max_results=max_results)
 
 
-def create_document(las_client: Client, document_path, content_type, consent_id, batch_id, fields):
+def create_document(
+    las_client: Client,
+    document_path,
+    content_type,
+    consent_id,
+    batch_id,
+    ground_truth_fields,
+    ground_truth_path,
+):
     content = pathlib.Path(document_path).read_bytes()
 
     if not content_type:
@@ -44,28 +69,18 @@ def create_document(las_client: Client, document_path, content_type, consent_id,
                              'Please provide it manually with --content-type'
         content_type = guessed_type.mime
 
-    if fields:
-        ground_truth = [f.split('=', 1) for f in fields]
-        ground_truth = [{'label': k, 'value': v} for k, v in ground_truth]
-        return las_client.create_document(
-            content,
-            content_type,
-            consent_id=consent_id,
-            batch_id=batch_id,
-            ground_truth=ground_truth,
-        )
-    else:
-        return las_client.create_document(
-            content,
-            content_type,
-            consent_id=consent_id,
-            batch_id=batch_id,
-        )
+    ground_truth = _create_ground_truth_dict(ground_truth_fields, ground_truth_path)
+    return las_client.create_document(
+        content,
+        content_type,
+        consent_id=consent_id,
+        batch_id=batch_id,
+        ground_truth=ground_truth,
+    )
 
 
-def update_document(las_client: Client, document_id, fields):
-    ground_truth = [f.split('=', 1) for f in fields]
-    ground_truth = [{'label': k, 'value': v} for k, v in ground_truth]
+def update_document(las_client: Client, document_id, ground_truth_fields, ground_truth_path):
+    ground_truth = _create_ground_truth_dict(ground_truth_fields, ground_truth_path)
     return las_client.update_document(document_id, ground_truth)
 
 
@@ -91,12 +106,16 @@ def create_documents_parser(subparsers):
     create_document_parser.add_argument('--content-type')
     create_document_parser.add_argument('--consent-id')
     create_document_parser.add_argument('--batch-id')
-    create_document_parser.add_argument('--fields', metavar='KEY=VALUE', nargs='+')
+    create_document_ground_truth_group = create_document_parser.add_mutually_exclusive_group(required=False)
+    create_document_ground_truth_group.add_argument('--ground-truth-fields', metavar='KEY=VALUE', nargs='+')
+    create_document_ground_truth_group.add_argument('--ground-truth-path', type=str, help='Path to JSON file')
     create_document_parser.set_defaults(cmd=create_document)
 
     update_document_parser = subparsers.add_parser('update')
     update_document_parser.add_argument('document_id')
-    update_document_parser.add_argument('--fields', metavar='KEY=VALUE', nargs='+')
+    update_document_ground_truth_group = update_document_parser.add_mutually_exclusive_group(required=False)
+    update_document_ground_truth_group.add_argument('--ground-truth-fields', metavar='KEY=VALUE', nargs='+')
+    update_document_ground_truth_group.add_argument('--ground-truth-path', type=str, help='Path to JSON file')
     update_document_parser.set_defaults(cmd=update_document)
 
     delete_documents_parser = subparsers.add_parser('delete')
