@@ -16,7 +16,7 @@ def _create_secret_dict(secret_data, secret_path):
             data[key] = val
 
     if secret_path:
-        data = json.loads(pathlib.Path(secret_path).read_bytes())
+        data = json.loads(pathlib.Path(secret_path).read_text())
 
     return data
 
