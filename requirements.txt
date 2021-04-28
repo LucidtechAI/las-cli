@@ -1,2 +1,2 @@
-lucidtech-las >= 3.2.10
+lucidtech-las >= 3.2.11
 argcomplete
