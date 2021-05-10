@@ -44,8 +44,8 @@ def create_users_parser(subparsers):
 
     create_user_parser = subparsers.add_parser('create')
     create_user_parser.add_argument('email')
+    create_user_parser.add_argument('app_client_id')
     create_user_parser.add_argument('--name')
-    create_user_parser.add_argument('--app-client-id')
     create_user_parser.add_argument('--avatar', help='Path to avatar JPEG image.')
     create_user_parser.set_defaults(cmd=create_user)
 
