@@ -1,5 +1,7 @@
 from las import Client
 
+from lascli.util import nullable, NotProvided
+
 
 def create_app_client(las_client: Client, generate_secret, logout_urls, callback_urls, **optional_args):
     return las_client.create_app_client(
@@ -12,6 +14,10 @@ def create_app_client(las_client: Client, generate_secret, logout_urls, callback
 
 def list_app_clients(las_client: Client, max_results=None, next_token=None):
     return las_client.list_app_clients(max_results=max_results, next_token=next_token)
+
+
+def update_app_client(las_client: Client, app_client_id, **optional_args):
+    return las_client.update_app_client(app_client_id, **optional_args)
 
 
 def delete_app_client(las_client: Client, app_client_id):
@@ -34,6 +40,12 @@ def create_app_clients_parser(subparsers):
     list_app_clients_parser.add_argument('--max-results', '-m', type=int, default=None)
     list_app_clients_parser.add_argument('--next-token', '-n', default=None)
     list_app_clients_parser.set_defaults(cmd=list_app_clients)
+
+    update_app_client_parser = subparsers.add_parser('update')
+    update_app_client_parser.add_argument('app_client_id')
+    update_app_client_parser.add_argument('--name', type=nullable, default=NotProvided)
+    update_app_client_parser.add_argument('--description', type=nullable, default=NotProvided)
+    update_app_client_parser.set_defaults(cmd=update_app_client)
 
     delete_app_client_parser = subparsers.add_parser('delete')
     delete_app_client_parser.add_argument('app_client_id')
