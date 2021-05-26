@@ -1,5 +1,9 @@
 # Changelog 
 
+## Version 2.3.4 - 2021-05-25
+
+- Added --login-urls and --default-login-url to app-clients create
+
 ## Version 2.3.3 - 2021-05-11
 
 - Added models create
