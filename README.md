@@ -6,24 +6,17 @@
 $ pip install lucidtech-las-cli
 ```
 
+## Documentation
+
+[Link to docs](https://docs.lucidtech.ai/getting-started/dev/cli)
+
 ## Usage
-
-Configure program
-
-```bash
-las configure
-```
-
-Scan Receipt
+All methods support the `--help` flag which will provide information on the purpose of the method, 
+and what arguments could be added.
 
 ```bash
-las scan receipt --filename img.jpeg
-las scan receipt --url https://example.com/img.jpeg
+$ las documents create --help
+$ las models list --help
+$ las workflows update --help
 ```
 
-Scan Invoice
-
-```bash
-las scan invoice --filename img.jpeg
-las scan invoice --url https://example.com/img.jpeg
-```
