@@ -3,7 +3,7 @@
 ## Version 2.4.0 - 2021-06-09
 
 - Added organizations get
-- Added organization update
+- Added organizations update
 
 ## Version 2.3.4 - 2021-05-25
 
