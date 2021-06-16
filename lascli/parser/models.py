@@ -31,6 +31,7 @@ def list_models(las_client: Client, max_results, next_token):
 
 def update_model(
     las_client: Client,
+    model_id,
     width=None,
     height=None,
     field_config_path=None,
@@ -43,6 +44,7 @@ def update_model(
     status = 'training' if start_training else None
 
     return las_client.update_model(
+        model_id=model_id,
         width=width,
         height=height,
         field_config=field_config,
@@ -66,6 +68,7 @@ def create_models_parser(subparsers):
     create_parser.set_defaults(cmd=create_model)
 
     update_parser = subparsers.add_parser('update')
+    update_parser.add_argument('model_id')
     update_parser.add_argument(
         '--field-config-path',
         '-f',

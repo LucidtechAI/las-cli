@@ -13,10 +13,18 @@ from las.credentials import MissingCredentials, read_from_file
 
 from .util import NotProvided
 from .parser import (
-    create_app_clients_parser, create_assets_parser, create_batches_parser,
-    create_documents_parser, create_logs_parser, create_models_parser,
-    create_predictions_parser, create_secrets_parser, create_transitions_parser,
-    create_users_parser, create_workflows_parser,
+    create_app_clients_parser,
+    create_assets_parser,
+    create_batches_parser,
+    create_documents_parser,
+    create_logs_parser,
+    create_models_parser,
+    create_organizations_parser,
+    create_predictions_parser,
+    create_secrets_parser,
+    create_transitions_parser,
+    create_users_parser,
+    create_workflows_parser,
 )
 
 
@@ -32,6 +40,7 @@ def create_parser():
     create_documents_parser(subparsers)
     create_logs_parser(subparsers)
     create_models_parser(subparsers)
+    create_organizations_parser(subparsers)
     create_predictions_parser(subparsers)
     create_secrets_parser(subparsers)
     create_transitions_parser(subparsers)
