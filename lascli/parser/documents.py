@@ -63,6 +63,7 @@ def create_document(
     content_type,
     consent_id,
     batch_id,
+    dataset_id,
     ground_truth_fields,
     ground_truth_path,
 ):
@@ -80,6 +81,7 @@ def create_document(
         content_type,
         consent_id=consent_id,
         batch_id=batch_id,
+        dataset_id=dataset_id,
         ground_truth=ground_truth,
     )
 
@@ -111,6 +113,7 @@ def create_documents_parser(subparsers):
     create_document_parser.add_argument('--content-type')
     create_document_parser.add_argument('--consent-id')
     create_document_parser.add_argument('--batch-id')
+    create_document_parser.add_argument('--dataset-id')
     create_document_ground_truth_group = create_document_parser.add_mutually_exclusive_group(required=False)
     create_document_ground_truth_group.add_argument('--ground-truth-fields', metavar='KEY=VALUE', nargs='+')
     create_document_ground_truth_group.add_argument('--ground-truth-path', type=str, help='Path to JSON file')
