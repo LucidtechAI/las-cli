@@ -1,5 +1,9 @@
 # Changelog 
 
+## Version 2.4.1 - 2021-06-18
+
+- Fixed bug causing more log messages than necessary to be printed
+
 ## Version 2.4.0 - 2021-06-09
 
 - Added organizations get
