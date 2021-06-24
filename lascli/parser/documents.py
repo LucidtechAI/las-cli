@@ -57,6 +57,10 @@ def delete_documents(las_client: Client, batch_id, consent_id, next_token, max_r
     )
 
 
+def delete_document(las_client: Client, document_id):
+    return las_client.delete_document(document_id)
+
+
 def create_document(
     las_client: Client,
     document_path,
@@ -125,6 +129,10 @@ def create_documents_parser(subparsers):
     update_document_ground_truth_group.add_argument('--ground-truth-fields', metavar='KEY=VALUE', nargs='+')
     update_document_ground_truth_group.add_argument('--ground-truth-path', type=str, help='Path to JSON file')
     update_document_parser.set_defaults(cmd=update_document)
+
+    delete_document_parser = subparsers.add_parser('delete-document')
+    delete_document_parser.add_argument('document_id')
+    delete_document_parser.set_defaults(cmd=delete_document)
 
     delete_documents_parser = subparsers.add_parser('delete')
     delete_documents_parser.add_argument('--consent-id', nargs='+')
