@@ -1,5 +1,13 @@
 # Changelog 
 
+## Version 2.5.0 - 2021-06-29
+
+- Added datasets create
+- Added datasets list
+- Added datasets update
+- Added datasets delete
+- Added optional parameter --dataset-id to documents create 
+
 ## Version 2.4.1 - 2021-06-18
 
 - Fixed bug causing more log messages than necessary to be printed
