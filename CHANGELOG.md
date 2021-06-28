@@ -1,12 +1,29 @@
 # Changelog 
 
-## Version 2.5.0 - 2021-06-29
+## Version 3.0.0 - 2021-06-29
 
-- Added datasets create
-- Added datasets list
-- Added datasets update
-- Added datasets delete
+- Added method datasets create
+- Added method datasets list
+- Added method datasets update
+- Added method datasets delete
 - Added optional parameter --dataset-id to documents create 
+- Added optional parameter --document-id to documents delete
+- Added optional parameter --dataset-id to documents create
+- Added optional parameter --dataset-id to documents list
+- Added optional parameter --dataset-id to documents delete
+- Added optional parameter --dataset-id to documents update
+- Added method models create-data-bundle
+- Added method models list-data-bundles
+- Added method models update-data-bundle
+- Added method models delete-data-bundle
+
+### Breaking changes
+ - las documents delete --> las documents delete-all:
+  'las documents delete' will now require a document id as a positional argument and delete that document only.
+  las documents delete-all will by default delete all the documents available. 
+  It is possible to Use --max-results to restrict the number of documents deleted as before, 
+  but the default will be to delete everything.
+
 
 ## Version 2.4.1 - 2021-06-18
 
