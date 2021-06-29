@@ -18,10 +18,10 @@
 - Added method models delete-data-bundle
 
 ### Breaking changes
- - las documents delete --> las documents delete-all:
-  'las documents delete' will now require a document id as a positional argument and delete that document only.
-  las documents delete-all will by default delete all the documents available. 
-  It is possible to Use --max-results to restrict the number of documents deleted as before, 
+  `las documents delete` will now require a document id as a positional argument and delete that document only.
+
+  `las documents delete-all` can be used to delete multiple documents. It will by default delete all the documents available. 
+  Use `--max-results` to restrict the number of documents deleted as before, 
   but the default will be to delete everything.
 
 
