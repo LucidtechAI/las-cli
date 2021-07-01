@@ -54,6 +54,31 @@ def update_model(
     )
 
 
+def create_data_bundle(
+    las_client: Client,
+    model_id,
+    dataset_ids,
+    **optional_args,
+):
+    return las_client.create_data_bundle(
+        model_id=model_id,
+        dataset_ids=dataset_ids,
+        **optional_args
+    )
+
+
+def list_data_bundles(las_client: Client, model_id, max_results, next_token):
+    return las_client.list_data_bundles(model_id, max_results=max_results, next_token=next_token)
+
+
+def delete_data_bundle(las_client: Client, model_id, data_bundle_id):
+    return las_client.delete_data_bundle(model_id, data_bundle_id)
+
+
+def update_data_bundle(las_client: Client, model_id, data_bundle_id, **optional_args):
+    return las_client.update_data_bundle(model_id, data_bundle_id, **optional_args)
+
+
 def create_models_parser(subparsers):
     parser = subparsers.add_parser('models')
     subparsers = parser.add_subparsers()
@@ -87,4 +112,28 @@ def create_models_parser(subparsers):
     list_parser.add_argument('--next-token', '-n', type=str, default=None)
     list_parser.set_defaults(cmd=list_models)
 
+    create_data_bundle_parser = subparsers.add_parser('create-data-bundle')
+    create_data_bundle_parser.add_argument('model_id')
+    create_data_bundle_parser.add_argument('dataset_ids', nargs='+')
+    create_data_bundle_parser.add_argument('--name')
+    create_data_bundle_parser.add_argument('--description')
+    create_data_bundle_parser.set_defaults(cmd=create_data_bundle)
+
+    list_data_bundles_parser = subparsers.add_parser('list-data-bundles')
+    list_data_bundles_parser.add_argument('model_id')
+    list_data_bundles_parser.add_argument('--max-results', '-m', type=int, default=None)
+    list_data_bundles_parser.add_argument('--next-token', '-n', type=str, default=None)
+    list_data_bundles_parser.set_defaults(cmd=list_data_bundles)
+
+    update_data_bundles_parser = subparsers.add_parser('update-data-bundle')
+    update_data_bundles_parser.add_argument('model_id')
+    update_data_bundles_parser.add_argument('data_bundle_id')
+    update_data_bundles_parser.add_argument('--name', type=nullable, default=NotProvided)
+    update_data_bundles_parser.add_argument('--description', type=nullable, default=NotProvided)
+    update_data_bundles_parser.set_defaults(cmd=update_data_bundle)
+
+    delete_data_bundles_parser = subparsers.add_parser('delete-data-bundle')
+    delete_data_bundles_parser.add_argument('model_id')
+    delete_data_bundles_parser.add_argument('data_bundle_id')
+    delete_data_bundles_parser.set_defaults(cmd=delete_data_bundle)
     return parser

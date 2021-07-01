@@ -2,7 +2,6 @@
 # PYTHON_ARGCOMPLETE_OK
 import argparse
 import configparser
-import inspect
 import json
 import logging
 
@@ -16,6 +15,7 @@ from .parser import (
     create_app_clients_parser,
     create_assets_parser,
     create_batches_parser,
+    create_datasets_parser,
     create_documents_parser,
     create_logs_parser,
     create_models_parser,
@@ -37,6 +37,7 @@ def create_parser():
     create_app_clients_parser(subparsers)
     create_assets_parser(subparsers)
     create_batches_parser(subparsers)
+    create_datasets_parser(subparsers)
     create_documents_parser(subparsers)
     create_logs_parser(subparsers)
     create_models_parser(subparsers)
