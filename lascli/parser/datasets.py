@@ -1,3 +1,6 @@
+import json
+from pathlib import Path
+
 from las import Client
 
 from lascli.util import nullable, NotProvided
@@ -17,6 +20,24 @@ def update_dataset(las_client: Client, dataset_id, **optional_args):
 
 def delete_dataset(las_client: Client, dataset_id, delete_documents):
     return las_client.delete_dataset(dataset_id, delete_documents=delete_documents)
+
+
+def upload_batch_to_dataset(
+    las_client: Client,
+    dataset_id,
+    documents,
+    chunk_size,
+    documents_uploaded,
+    documents_failed,
+):
+    documents = json.loads(Path(documents).read_text())
+    return las_client.batch_create_document(
+        documents,
+        dataset_id=dataset_id,
+        chunk_size=chunk_size,
+        log_file=documents_uploaded,
+        error_file=documents_failed,
+    )
 
 
 def create_datasets_parser(subparsers):
@@ -43,5 +64,13 @@ def create_datasets_parser(subparsers):
     delete_dataset_parser.add_argument('dataset_id')
     delete_dataset_parser.add_argument('--delete-documents', action='store_true', default=False)
     delete_dataset_parser.set_defaults(cmd=delete_dataset)
+
+    upload_batch_to_dataset_parser = subparsers.add_parser('upload-batch')
+    upload_batch_to_dataset_parser.add_argument('dataset_id')
+    upload_batch_to_dataset_parser.add_argument('documents', default=False)
+    upload_batch_to_dataset_parser.add_argument('--chunk-size', default=100)
+    upload_batch_to_dataset_parser.add_argument('--documents-uploaded', default='.documents_uploaded.log')
+    upload_batch_to_dataset_parser.add_argument('--documents-failed', default='.documents_failed.log')
+    upload_batch_to_dataset_parser.set_defaults(cmd=upload_batch_to_dataset)
 
     return parser
