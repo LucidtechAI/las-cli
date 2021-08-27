@@ -86,7 +86,7 @@ def sync(
 
                 print(message)
 
-            print(f'{(time() - start_time) / 60:.2f}m: {n * chunk_size}/{num_docs} docs processed'
+            print(f'{(time() - start_time) / 60:.2f}m: {n * chunk_size}/{num_docs} docs processed '
                   f'| {n * chunk_size / num_docs * 100:.1f}%')
 
     return dict(counter)
