@@ -1,5 +1,10 @@
 # Changelog 
 
+## Version 4.0.0 - 2021-08-30
+
+- Use latest python SDK that are no longer depend on api_key
+- Added method datasets sync for uploading larger datasets
+
 ## Version 3.0.0 - 2021-06-29
 
 - Added method datasets create
