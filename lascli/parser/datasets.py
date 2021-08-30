@@ -19,7 +19,7 @@ def group(iterable, group_size, fillvalue=None):
     return zip_longest(*args, fillvalue=fillvalue)
 
 
-def _create_documents_pool(t, client, dataset_id):
+def _create_documents_worker(t, client, dataset_id):
     doc, metadata = t
     try:
         client.create_document(content=doc, dataset_id=dataset_id, **metadata)
@@ -71,7 +71,7 @@ def sync(
         print(f'start uploading {num_docs} document in chunks of {chunk_size}...')
 
         for n, chunk in enumerate(group(documents, chunk_size)):
-            fn = partial(_create_documents_pool, client=las_client, dataset_id=dataset_id)
+            fn = partial(_create_documents_worker, client=las_client, dataset_id=dataset_id)
             inp = [(item, documents[item]) for item in chunk if item is not None and item not in uploaded_files]
 
             for name, uploaded, reason in executor.map(fn, inp):
@@ -86,8 +86,10 @@ def sync(
 
                 print(message)
 
-            print(f'{(time() - start_time) / 60:.2f}m: {n * chunk_size}/{num_docs} docs processed '
-                  f'| {n * chunk_size / num_docs * 100:.1f}%')
+            minutes_spent = (time() - start_time) / 60
+            documents_processed = n * chunk_size
+            progress = documents_processed / num_docs * 100
+            print(f'{minutes_spent:.2f}m: {documents_processed}/{num_docs} docs processed | {progress:.1f}%')
 
     return dict(counter)
 
@@ -119,7 +121,12 @@ def create_datasets_parser(subparsers):
 
     upload_batch_to_dataset_parser = subparsers.add_parser('sync')
     upload_batch_to_dataset_parser.add_argument('dataset_id')
-    upload_batch_to_dataset_parser.add_argument('documents', default=False)
+    upload_batch_to_dataset_parser.add_argument(
+        'documents_json_path',
+        default=False,
+        help='json file containing a dictionary with the keys being the path of the actual document, '
+             'and the value being keyword arguments that will be used to create that document'
+    )
     upload_batch_to_dataset_parser.add_argument('--chunk-size', default=500, type=int)
     upload_batch_to_dataset_parser.add_argument('--documents-uploaded', default='.documents_uploaded.log')
     upload_batch_to_dataset_parser.add_argument('--documents-failed', default='.documents_failed.log')
