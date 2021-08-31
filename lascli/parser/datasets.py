@@ -47,7 +47,7 @@ def delete_dataset(las_client: Client, dataset_id, delete_documents):
 def sync(
     las_client: Client,
     dataset_id,
-    documents,
+    documents_json_path,
     chunk_size,
     documents_uploaded,
     documents_failed,
@@ -55,7 +55,7 @@ def sync(
 ):
     log_file = Path(documents_uploaded)
     error_file = Path(documents_failed)
-    documents = json.loads(Path(documents).read_text())
+    documents = json.loads(Path(documents_json_path).read_text())
     uploaded_files = []
     counter = Counter()
 

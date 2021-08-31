@@ -1,5 +1,8 @@
 # Changelog 
 
+## Version 3.1.1 - 2021-08-31
+- Bugfix in sync method
+
 ## Version 3.1.0 - 2021-08-30
 
 - Added method datasets sync for uploading larger datasets
