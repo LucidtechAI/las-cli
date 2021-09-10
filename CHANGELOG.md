@@ -1,6 +1,11 @@
-# Changelog 
+# Changelog
+
+## Version 4.0.0 - 2021-09-10
+
+- Updated version of Python SDK to 4.0.0. API key is no longer needed.
 
 ## Version 3.1.1 - 2021-08-31
+
 - Bugfix in sync method
 
 ## Version 3.1.0 - 2021-08-30
@@ -13,7 +18,7 @@
 - Added method datasets list
 - Added method datasets update
 - Added method datasets delete
-- Added optional parameter --dataset-id to documents create 
+- Added optional parameter --dataset-id to documents create
 - Added optional parameter --document-id to documents delete
 - Added optional parameter --dataset-id to documents create
 - Added optional parameter --dataset-id to documents list
@@ -27,8 +32,8 @@
 ### Breaking changes
   `las documents delete` will now require a document id as a positional argument and delete that document only.
 
-  `las documents delete-all` can be used to delete multiple documents. It will by default delete all the documents available. 
-  Use `--max-results` to restrict the number of documents deleted as before, 
+  `las documents delete-all` can be used to delete multiple documents. It will by default delete all the documents available.
+  Use `--max-results` to restrict the number of documents deleted as before,
   but the default will be to delete everything.
 
 
@@ -55,4 +60,4 @@
 
 ## Version 2.3.2 - 2021-05-10
 
-- Added argument app_client_id to users create 
+- Added argument app_client_id to users create
