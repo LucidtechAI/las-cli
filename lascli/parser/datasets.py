@@ -128,8 +128,16 @@ def create_datasets_parser(subparsers):
              'and the value being keyword arguments that will be used to create that document'
     )
     upload_batch_to_dataset_parser.add_argument('--chunk-size', default=500, type=int)
-    upload_batch_to_dataset_parser.add_argument('--documents-uploaded', default='.documents_uploaded.log')
-    upload_batch_to_dataset_parser.add_argument('--documents-failed', default='.documents_failed.log')
+    upload_batch_to_dataset_parser.add_argument(
+        '--documents-uploaded',
+        default='.documents_uploaded.log',
+        help='path to file used for caching progress',
+    )
+    upload_batch_to_dataset_parser.add_argument(
+        '--documents-failed',
+        default='.documents_failed.log',
+        help='path to file used to store the documents that failed',
+    )
     upload_batch_to_dataset_parser.add_argument('--num-threads', default=32, type=int)
     upload_batch_to_dataset_parser.set_defaults(cmd=sync)
 
