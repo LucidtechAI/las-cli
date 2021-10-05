@@ -1,5 +1,9 @@
 # Changelog
 
+## Version 4.0.1 - 2021-10-05
+
+- Extended method datasets sync to support folder as input and better help functionality
+  
 ## Version 4.0.0 - 2021-09-10
 
 - Updated version of Python SDK to 4.0.0. API key is no longer needed.
