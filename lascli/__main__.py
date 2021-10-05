@@ -29,7 +29,7 @@ from .parser import (
 
 
 def create_parser():
-    parser = argparse.ArgumentParser()
+    parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument('--profile')
     parser.add_argument('--verbose', '-v', action='count', default=0)
     subparsers = parser.add_subparsers()

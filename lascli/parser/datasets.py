@@ -1,5 +1,8 @@
+import argparse
 import json
 import logging
+import yaml
+from argparse import ArgumentDefaultsHelpFormatter
 from collections import Counter
 from pathlib import Path
 from time import time
@@ -44,10 +47,10 @@ def delete_dataset(las_client: Client, dataset_id, delete_documents):
     return las_client.delete_dataset(dataset_id, delete_documents=delete_documents)
 
 
-def sync(
+def create_documents(
     las_client: Client,
     dataset_id,
-    documents_json_path,
+    input_path,
     chunk_size,
     documents_uploaded,
     documents_failed,
@@ -55,7 +58,24 @@ def sync(
 ):
     log_file = Path(documents_uploaded)
     error_file = Path(documents_failed)
-    documents = json.loads(Path(documents_json_path).read_text())
+
+    if Path(input_path).is_file():
+        documents = json.loads(Path(input_path).read_text())
+    elif Path(input_path).is_dir():
+        documents = {}
+        possible_suffixes = {'.json': json.loads, '.yaml': yaml.safe_load, '.yml': yaml.safe_load}
+        anti_pattern = '|'.join([f'!{suffix}' for suffix in possible_suffixes])
+
+        for document_path in Path(input_path).glob(f'*[{anti_pattern}]'):
+            for suffix, parser in possible_suffixes.items():
+                ground_truth_path = document_path.with_suffix(suffix)
+                if ground_truth_path.is_file():
+                    ground_truth = parser(ground_truth_path.read_text())
+                    documents[str(document_path)] = {'ground_truth': ground_truth}
+                    break
+    else:
+        raise ValueError(f'input_path must be a path to either a json-file or a folder, {input_path} is not valid')
+
     uploaded_files = []
     counter = Counter()
 
@@ -119,18 +139,32 @@ def create_datasets_parser(subparsers):
     delete_dataset_parser.add_argument('--delete-documents', action='store_true', default=False)
     delete_dataset_parser.set_defaults(cmd=delete_dataset)
 
-    upload_batch_to_dataset_parser = subparsers.add_parser('sync')
+    upload_batch_to_dataset_parser = subparsers.add_parser(
+        'create-documents',
+        formatter_class=argparse.RawTextHelpFormatter,
+    )
     upload_batch_to_dataset_parser.add_argument('dataset_id')
     upload_batch_to_dataset_parser.add_argument(
-        'documents_json_path',
+        'input_path',
         default=False,
-        help='json file containing a dictionary with the keys being the path of the actual document, '
+        help='The input path can be provided in two ways: \n'
+             '1. Path to a folder of documents (.jpg, .png, .pdf, .tiff) '
+             'and corresponding ground-truths (.json, .yaml, .yml) with the same file name \n'
+             '2. Path to a json file containing a dictionary with the keys being the path of the actual document, '
              'and the value being keyword arguments that will be used to create that document'
     )
     upload_batch_to_dataset_parser.add_argument('--chunk-size', default=500, type=int)
-    upload_batch_to_dataset_parser.add_argument('--documents-uploaded', default='.documents_uploaded.log')
-    upload_batch_to_dataset_parser.add_argument('--documents-failed', default='.documents_failed.log')
-    upload_batch_to_dataset_parser.add_argument('--num-threads', default=32, type=int)
-    upload_batch_to_dataset_parser.set_defaults(cmd=sync)
+    upload_batch_to_dataset_parser.add_argument(
+        '--documents-uploaded',
+        default='.documents_uploaded.log',
+        help='path to file used for caching progress (default: %(default)s)',
+    )
+    upload_batch_to_dataset_parser.add_argument(
+        '--documents-failed',
+        default='.documents_failed.log',
+        help='path to file used to store the documents that failed (default: %(default)s)',
+    )
+    upload_batch_to_dataset_parser.add_argument('--num-threads', default=32, type=int, help='Number of threads to use')
+    upload_batch_to_dataset_parser.set_defaults(cmd=create_documents)
 
     return parser
