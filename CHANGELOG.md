@@ -1,8 +1,8 @@
 # Changelog
 
-## Version 4.0.1 - 2021-10-05
+## Version 5.0.0 - 2021-10-05
 
-- Extended method datasets sync to support folder as input and better help functionality, and re-name to create-documents
+- Rename method datasets sync to datasets create-documents and support folder as input and better help functionality
   
 ## Version 4.0.0 - 2021-09-10
 
