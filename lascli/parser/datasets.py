@@ -1,5 +1,6 @@
 import json
 import logging
+from argparse import ArgumentDefaultsHelpFormatter
 from collections import Counter
 from pathlib import Path
 from time import time
@@ -119,7 +120,7 @@ def create_datasets_parser(subparsers):
     delete_dataset_parser.add_argument('--delete-documents', action='store_true', default=False)
     delete_dataset_parser.set_defaults(cmd=delete_dataset)
 
-    upload_batch_to_dataset_parser = subparsers.add_parser('sync')
+    upload_batch_to_dataset_parser = subparsers.add_parser('sync', formatter_class=ArgumentDefaultsHelpFormatter)
     upload_batch_to_dataset_parser.add_argument('dataset_id')
     upload_batch_to_dataset_parser.add_argument(
         'documents_json_path',
@@ -138,7 +139,7 @@ def create_datasets_parser(subparsers):
         default='.documents_failed.log',
         help='path to file used to store the documents that failed',
     )
-    upload_batch_to_dataset_parser.add_argument('--num-threads', default=32, type=int)
+    upload_batch_to_dataset_parser.add_argument('--num-threads', default=32, type=int, help='Number of threads to use')
     upload_batch_to_dataset_parser.set_defaults(cmd=sync)
 
     return parser
