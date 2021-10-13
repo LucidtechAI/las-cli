@@ -39,9 +39,8 @@ def get_document(las_client: Client, document_id, download_content, output_conte
         return {**document_resp, 'content': document_resp['content'][:10] + '... [TRUNCATED]'}
 
 
-def list_documents(las_client: Client, batch_id, consent_id, dataset_id, max_results, next_token):
+def list_documents(las_client: Client, consent_id, dataset_id, max_results, next_token):
     return las_client.list_documents(
-        batch_id=batch_id,
         consent_id=consent_id,
         dataset_id=dataset_id,
         max_results=max_results,
@@ -49,9 +48,8 @@ def list_documents(las_client: Client, batch_id, consent_id, dataset_id, max_res
     )
 
 
-def delete_documents(las_client: Client, batch_id, consent_id, dataset_id, next_token, max_results):
+def delete_documents(las_client: Client, consent_id, dataset_id, next_token, max_results):
     return las_client.delete_documents(
-        batch_id=batch_id,
         consent_id=consent_id,
         dataset_id=dataset_id,
         next_token=next_token,
@@ -69,7 +67,6 @@ def create_document(
     document_path,
     content_type,
     consent_id,
-    batch_id,
     dataset_id,
     ground_truth_fields,
     ground_truth_path,
@@ -87,7 +84,6 @@ def create_document(
         content,
         content_type,
         consent_id=consent_id,
-        batch_id=batch_id,
         dataset_id=dataset_id,
         ground_truth=ground_truth,
     )
@@ -109,7 +105,6 @@ def create_documents_parser(subparsers):
     get_document_parser.set_defaults(cmd=get_document)
 
     list_documents_parser = subparsers.add_parser('list')
-    list_documents_parser.add_argument('--batch-id', nargs='+')
     list_documents_parser.add_argument('--consent-id', nargs='+')
     list_documents_parser.add_argument('--dataset-id', nargs='+')
     list_documents_parser.add_argument('--max-results', '-m', type=int)
@@ -120,7 +115,6 @@ def create_documents_parser(subparsers):
     create_document_parser.add_argument('document_path')
     create_document_parser.add_argument('--content-type')
     create_document_parser.add_argument('--consent-id')
-    create_document_parser.add_argument('--batch-id')
     create_document_parser.add_argument('--dataset-id')
     create_document_ground_truth_group = create_document_parser.add_mutually_exclusive_group(required=False)
     create_document_ground_truth_group.add_argument('--ground-truth-fields', metavar='KEY=VALUE', nargs='+')
@@ -141,7 +135,6 @@ def create_documents_parser(subparsers):
 
     delete_documents_parser = subparsers.add_parser('delete-all')
     delete_documents_parser.add_argument('--consent-id', nargs='+')
-    delete_documents_parser.add_argument('--batch-id', nargs='+')
     delete_documents_parser.add_argument('--dataset-id', nargs='+')
     delete_documents_parser.add_argument('--max-results', '-m', type=int)
     delete_documents_parser.add_argument('--next-token', '-n', type=str)
