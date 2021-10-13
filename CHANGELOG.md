@@ -1,5 +1,9 @@
 # Changelog
 
+## Version 6.0.0 - 2021-10-13
+
+- Removed all support for batches. Use datasets instead.
+
 ## Version 5.0.0 - 2021-10-05
 
 - Rename method datasets sync to datasets create-documents and support folder as input and better help functionality
