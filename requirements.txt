@@ -1,2 +1,3 @@
 lucidtech-las>=5.0.0
 argcomplete>=1.12.3
+PyYAML>=6.0.0
