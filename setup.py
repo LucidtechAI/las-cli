@@ -10,14 +10,14 @@ with open('README.md') as fp:
 
 setup(
     name='lucidtech-las-cli',
-    version='6.0.0',
+    version='6.0.1',
     description='CLI for Lucidtech AI Services',
     long_description=readme,
     license='Apache 2.0',
     platforms='Posix; MacOS X; Windows',
     author='Lucidtech',
-    maintainer='August Kvernmo',
-    maintainer_email='august@lucidtech.ai',
+    maintainer='Magnus Aarskaug Rud',
+    maintainer_email='magnus@lucidtech.ai',
     url='https://github.com/LucidtechAI/las-cli',
     packages=[
         'lascli',
