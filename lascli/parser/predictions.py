@@ -12,7 +12,7 @@ def post_predictions(
     auto_rotate,
     max_pages,
     image_quality,
-    postprocess_config
+    postprocess_config,
 ):
     return las_client.create_prediction(
         document_id,
