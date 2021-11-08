@@ -1,5 +1,9 @@
 # Changelog
 
+## Version 6.1.0 - 2021-11-08
+
+- Added optional parameter --postprocess-config to predictions create
+
 ## Version 6.0.0 - 2021-10-13
 
 - Removed all support for batches. Use datasets instead.
@@ -7,7 +11,7 @@
 ## Version 5.0.0 - 2021-10-05
 
 - Rename method datasets sync to datasets create-documents and support folder as input and better help functionality
-  
+
 ## Version 4.0.0 - 2021-09-10
 
 - Updated version of Python SDK to 4.0.0. API key is no longer needed.
