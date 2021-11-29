@@ -2,9 +2,11 @@
 
 ## Version 6.2.0 - 2021-11-30
 
-- Added method models list-trainings 
-- Added method models create-training
-  
+- Added models list-trainings
+- Added models create-training
+- Added plans list
+- Added plans get
+
 ## Version 6.1.0 - 2021-11-08
 
 - Added optional parameter --postprocess-config to predictions create
@@ -15,7 +17,7 @@
 
 ## Version 5.0.0 - 2021-10-05
 
-- Rename method datasets sync to datasets create-documents and support folder as input and better help functionality
+- Renamed datasets sync to datasets create-documents and support folder as input and better help functionality
 
 ## Version 4.0.0 - 2021-09-10
 
@@ -23,28 +25,28 @@
 
 ## Version 3.1.1 - 2021-08-31
 
-- Bugfix in sync method
+- Bugfix in datasets sync
 
 ## Version 3.1.0 - 2021-08-30
 
-- Added method datasets sync for uploading larger datasets
+- Added datasets sync for uploading larger datasets
 
 ## Version 3.0.0 - 2021-06-29
 
-- Added method datasets create
-- Added method datasets list
-- Added method datasets update
-- Added method datasets delete
+- Added datasets create
+- Added datasets list
+- Added datasets update
+- Added datasets delete
 - Added optional parameter --dataset-id to documents create
 - Added optional parameter --document-id to documents delete
 - Added optional parameter --dataset-id to documents create
 - Added optional parameter --dataset-id to documents list
 - Added optional parameter --dataset-id to documents delete
 - Added optional parameter --dataset-id to documents update
-- Added method models create-data-bundle
-- Added method models list-data-bundles
-- Added method models update-data-bundle
-- Added method models delete-data-bundle
+- Added models create-data-bundle
+- Added models list-data-bundles
+- Added models update-data-bundle
+- Added models delete-data-bundle
 
 ### Breaking changes
   `las documents delete` will now require a document id as a positional argument and delete that document only.
