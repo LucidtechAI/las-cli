@@ -1,5 +1,10 @@
 # Changelog
 
+## Version 6.2.0 - 2021-11-30
+
+- Added method models list-trainings 
+- Added method models create-training
+  
 ## Version 6.1.0 - 2021-11-08
 
 - Added optional parameter --postprocess-config to predictions create

@@ -63,7 +63,7 @@ def create_data_bundle(
     return las_client.create_data_bundle(
         model_id=model_id,
         dataset_ids=dataset_ids,
-        **optional_args
+        **optional_args,
     )
 
 
@@ -77,6 +77,19 @@ def delete_data_bundle(las_client: Client, model_id, data_bundle_id):
 
 def update_data_bundle(las_client: Client, model_id, data_bundle_id, **optional_args):
     return las_client.update_data_bundle(model_id, data_bundle_id, **optional_args)
+
+
+def create_training(las_client: Client, model_id, data_bundle_ids, instance_type, **optional_args):
+    return las_client.create_training(
+        model_id=model_id,
+        data_bundle_ids=data_bundle_ids,
+        instance_type=instance_type,
+        **optional_args,
+    )
+
+
+def list_trainings(las_client: Client, model_id, max_results, next_token):
+    return las_client.list_trainings(model_id, max_results=max_results, next_token=next_token)
 
 
 def create_models_parser(subparsers):
@@ -136,4 +149,19 @@ def create_models_parser(subparsers):
     delete_data_bundles_parser.add_argument('model_id')
     delete_data_bundles_parser.add_argument('data_bundle_id')
     delete_data_bundles_parser.set_defaults(cmd=delete_data_bundle)
+
+    create_training_parser = subparsers.add_parser('create-training')
+    create_training_parser.add_argument('model_id')
+    create_training_parser.add_argument('data_bundle_ids', nargs='+')
+    create_training_parser.add_argument('--instance-type')
+    create_training_parser.add_argument('--name')
+    create_training_parser.add_argument('--description')
+    create_training_parser.set_defaults(cmd=create_training)
+
+    list_trainings_parser = subparsers.add_parser('list-trainings')
+    list_trainings_parser.add_argument('model_id')
+    list_trainings_parser.add_argument('--max-results', '-m', type=int, default=None)
+    list_trainings_parser.add_argument('--next-token', '-n', type=str, default=None)
+    list_trainings_parser.set_defaults(cmd=list_trainings)
+
     return parser
