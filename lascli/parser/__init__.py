@@ -5,6 +5,7 @@ from .documents import create_documents_parser
 from .logs import create_logs_parser
 from .models import create_models_parser
 from .organizations import create_organizations_parser
+from .plans import create_plans_parser
 from .predictions import create_predictions_parser
 from .secrets import create_secrets_parser
 from .transitions import create_transitions_parser
