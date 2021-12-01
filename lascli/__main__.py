@@ -19,6 +19,7 @@ from .parser import (
     create_logs_parser,
     create_models_parser,
     create_organizations_parser,
+    create_plans_parser,
     create_predictions_parser,
     create_secrets_parser,
     create_transitions_parser,
@@ -40,6 +41,7 @@ def create_parser():
     create_logs_parser(subparsers)
     create_models_parser(subparsers)
     create_organizations_parser(subparsers)
+    create_plans_parser(subparsers)
     create_predictions_parser(subparsers)
     create_secrets_parser(subparsers)
     create_transitions_parser(subparsers)
