@@ -55,35 +55,44 @@ def create_documents(
     documents_uploaded,
     documents_failed,
     num_threads,
+    ground_truth_encoding,
 ):
     log_file = Path(documents_uploaded)
     error_file = Path(documents_failed)
+    counter = Counter()
+
+    if error_file.exists():
+        logging.warning(f'{error_file} exists and will be appended to')
 
     if Path(input_path).is_file():
-        documents = json.loads(Path(input_path).read_text())
+        documents = json.loads(Path(input_path).read_text(encoding=ground_truth_encoding))
     elif Path(input_path).is_dir():
         documents = {}
         possible_suffixes = {'.json': json.loads, '.yaml': yaml.safe_load, '.yml': yaml.safe_load}
         anti_pattern = '|'.join([f'!{suffix}' for suffix in possible_suffixes])
 
-        for document_path in Path(input_path).glob(f'*[{anti_pattern}]'):
-            for suffix, parser in possible_suffixes.items():
-                ground_truth_path = document_path.with_suffix(suffix)
-                if ground_truth_path.is_file():
-                    ground_truth = parser(ground_truth_path.read_text())
-                    documents[str(document_path)] = {'ground_truth': ground_truth}
-                    break
+        with error_file.open('a') as ef:
+            for document_path in Path(input_path).glob(f'*[{anti_pattern}]'):
+                for suffix, parser in possible_suffixes.items():
+                    ground_truth_path = document_path.with_suffix(suffix)
+                    if ground_truth_path.is_file():
+                        try:
+                            ground_truth = parser(ground_truth_path.read_text(encoding=ground_truth_encoding))
+                            documents[str(document_path)] = {'ground_truth': ground_truth}
+                            break
+                        except Exception as e:
+                            ef.write(str(ground_truth_path) + '\n')
+                            message = f'failed to parse {ground_truth_path}: {e}'
+                            counter['failed'] += 1
+                            print(message)
+
     else:
         raise ValueError(f'input_path must be a path to either a json-file or a folder, {input_path} is not valid')
 
     uploaded_files = []
-    counter = Counter()
 
     if log_file.exists():
         uploaded_files = log_file.read_text().splitlines()
-
-    if error_file.exists():
-        logging.warning(f'{error_file} exists and will be appended to')
 
     with log_file.open('a') as lf, error_file.open('a') as ef, ThreadPoolExecutor(max_workers=num_threads) as executor:
         num_docs = len(documents)
@@ -165,6 +174,11 @@ def create_datasets_parser(subparsers):
         help='path to file used to store the documents that failed (default: %(default)s)',
     )
     upload_batch_to_dataset_parser.add_argument('--num-threads', default=32, type=int, help='Number of threads to use')
+    upload_batch_to_dataset_parser.add_argument(
+        '--ground-truth-encoding',
+        default=None,
+        help='Which encoding to use for the ground truth parsing',
+    )
     upload_batch_to_dataset_parser.set_defaults(cmd=create_documents)
 
     return parser
