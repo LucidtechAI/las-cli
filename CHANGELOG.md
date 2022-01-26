@@ -1,5 +1,10 @@
 # Changelog
 
+## Version 6.2.1 - 2022-01-26
+
+- Added exception handling to datasets create-documents
+- Support specifying ground-truth encoding in datasets create-documents
+
 ## Version 6.2.0 - 2021-11-30
 
 - Added models list-trainings
