@@ -82,9 +82,8 @@ def create_documents(
                             break
                         except Exception as e:
                             ef.write(str(ground_truth_path) + '\n')
-                            message = f'failed to parse {ground_truth_path}: {e}'
                             counter['failed'] += 1
-                            print(message)
+                            print(f'failed to parse {ground_truth_path}: {e}')
 
     else:
         raise ValueError(f'input_path must be a path to either a json-file or a folder, {input_path} is not valid')
