@@ -1,5 +1,9 @@
 # Changelog
 
+## Version 6.2.2 - 2022-01-28
+
+- Update argcomplete package
+
 ## Version 6.2.1 - 2022-01-26
 
 - Added exception handling to datasets create-documents
