@@ -29,7 +29,12 @@ from .parser import (
 
 
 def create_parser():
-    parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+    parser = argparse.ArgumentParser(
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+        description='Command Line Interface for Cradl API, see --help for more info or use tab completion.'
+                    'Make sure you have global completion activated, '
+                    'see argcomplete docs for more information: https://kislyuk.github.io/argcomplete/'
+    )
     parser.add_argument('--profile')
     parser.add_argument('--verbose', '-v', action='count', default=0)
     subparsers = parser.add_subparsers()
