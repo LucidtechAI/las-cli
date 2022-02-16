@@ -12,15 +12,18 @@ def create_model(
     height,
     field_config_path,
     preprocess_config_path=None,
+    metadata_path=None,
     **optional_args,
 ):
     field_config = json.loads(Path(field_config_path).read_text())
     preprocess_config = json.loads(Path(preprocess_config_path).read_text()) if preprocess_config_path else None
+    metadata = json.loads(Path(metadata_path).read_text()) if metadata_path else None
     return las_client.create_model(
         width=width,
         height=height,
         field_config=field_config,
         preprocess_config=preprocess_config,
+        metadata=metadata,
         **optional_args
     )
 
@@ -101,6 +104,7 @@ def create_models_parser(subparsers):
     create_parser.add_argument('height', type=int)
     create_parser.add_argument('field_config_path', help='configuration of the fields that the model will predict')
     create_parser.add_argument('--preprocess-config-path', '-p', help='configuration of the step before the prediction')
+    create_parser.add_argument('--metadata-path', help='metadata that can contain whatever you need up til 4kB')
     create_parser.add_argument('--name')
     create_parser.add_argument('--description')
     create_parser.set_defaults(cmd=create_model)
