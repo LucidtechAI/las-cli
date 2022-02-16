@@ -1,5 +1,11 @@
 # Changelog
 
+## Version 6.3.0 - 2022-02-16
+
+- Support csv files in datasets create-documents
+- Added models list-all-data-bundles
+- Support metadata for documents
+
 ## Version 6.2.2 - 2022-01-28
 
 - Update argcomplete package
