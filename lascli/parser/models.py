@@ -74,9 +74,11 @@ def list_data_bundles(las_client: Client, model_id, max_results, next_token):
     return las_client.list_data_bundles(model_id, max_results=max_results, next_token=next_token)
 
 
-def list_all_data_bundles(las_client: Client, max_results, next_token):
-    for model in list_models(las_client=las_client, max_results=max_results, next_token=next_token)['models']:
-        return las_client.list_data_bundles(model['modelId'], max_results=max_results, next_token=next_token)
+def list_all_data_bundles(las_client: Client):
+    print('Getting models...')
+    models = las_client.list_models()['models']
+    print(f'Found {len(models)} models')
+    return {model['modelId']: las_client.list_data_bundles(model['modelId']) for model in models}
 
 
 def delete_data_bundle(las_client: Client, model_id, data_bundle_id):
@@ -148,8 +150,6 @@ def create_models_parser(subparsers):
     list_data_bundles_parser.set_defaults(cmd=list_data_bundles)
 
     list_all_data_bundles_parser = subparsers.add_parser('list-all-data-bundles')
-    list_all_data_bundles_parser.add_argument('--max-results', '-m', type=int, default=None)
-    list_all_data_bundles_parser.add_argument('--next-token', '-n', type=str, default=None)
     list_all_data_bundles_parser.set_defaults(cmd=list_all_data_bundles)
 
     update_data_bundles_parser = subparsers.add_parser('update-data-bundle')
