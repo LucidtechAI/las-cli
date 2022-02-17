@@ -51,13 +51,13 @@ def delete_dataset(las_client: Client, dataset_id, delete_documents):
 def parse_csv(csv_path, delimiter=','):
     documents = {}
     with csv_path.open() as csv_fp:
-        reader = csv.reader(csv_fp, delimiter=delimiter)
-        headers = next(reader)
-        print(f'Assuming the document names can be read from the column named {headers.pop(0)}')
+        reader = csv.DictReader(csv_fp, delimiter=delimiter)
+        name_field = reader.fieldnames[0]
+        print(f'Assuming the document names can be read from the column named {name_field}')
 
         for row in reader:
-            doc_name = str(row[0])
-            documents[doc_name] = [{'label': label, 'value': value} for label, value in zip(headers, row[1:])]
+            doc_name = row.pop(name_field)
+            documents[doc_name] = [{'label': label, 'value': value} for label, value in row.items()]
 
     return documents
 
