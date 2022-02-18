@@ -1,10 +1,11 @@
 # Changelog
 
-## Version 6.3.0 - 2022-02-16
+## Version 7.0.0 - 2022-02-18
 
 - Support csv files in datasets create-documents
 - Added models list-all-data-bundles
-- Support metadata for documents
+- Support metadata for documents, datasets, models and trainings
+- Removed optional parameter --start-training from models update (Breaking change)
 
 ## Version 6.2.2 - 2022-01-28
 

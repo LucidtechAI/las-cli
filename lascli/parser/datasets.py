@@ -12,8 +12,7 @@ from functools import partial
 from las import Client
 from concurrent.futures import ThreadPoolExecutor
 
-from lascli.util import nullable, NotProvided
-
+from lascli.util import NotProvided, nullable, path_to_json
 
 # See https://docs.python.org/3/library/itertools.html
 def group(iterable, group_size, fillvalue=None):
@@ -148,6 +147,11 @@ def create_datasets_parser(subparsers):
     create_dataset_parser = subparsers.add_parser('create')
     create_dataset_parser.add_argument('--description')
     create_dataset_parser.add_argument('--name')
+    create_dataset_parser.add_argument(
+        '--metadata-path',
+        type=path_to_json,
+        help='metadata that can contain whatever you need, maximum limit 4kB',
+    )
     create_dataset_parser.set_defaults(cmd=post_datasets)
 
     list_datasets_parser = subparsers.add_parser('list')
@@ -159,6 +163,11 @@ def create_datasets_parser(subparsers):
     update_dataset_parser.add_argument('dataset_id')
     update_dataset_parser.add_argument('--name', type=nullable, default=NotProvided)
     update_dataset_parser.add_argument('--description', type=nullable, default=NotProvided)
+    update_dataset_parser.add_argument(
+        '--metadata-path',
+        type=path_to_json,
+        help='metadata that can contain whatever you need, maximum limit 4kB',
+    )
     update_dataset_parser.set_defaults(cmd=update_dataset)
 
     delete_dataset_parser = subparsers.add_parser('delete')

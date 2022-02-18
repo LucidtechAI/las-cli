@@ -3,7 +3,7 @@ from pathlib import Path
 
 from las import Client
 
-from lascli.util import NotProvided, nullable
+from lascli.util import NotProvided, nullable, path_to_json
 
 
 def create_model(
@@ -15,15 +15,13 @@ def create_model(
     metadata_path=None,
     **optional_args,
 ):
-    field_config = json.loads(Path(field_config_path).read_text())
     preprocess_config = json.loads(Path(preprocess_config_path).read_text()) if preprocess_config_path else None
-    metadata = json.loads(Path(metadata_path).read_text()) if metadata_path else None
     return las_client.create_model(
         width=width,
         height=height,
-        field_config=field_config,
+        field_config=field_config_path,
         preprocess_config=preprocess_config,
-        metadata=metadata,
+        metadata=metadata_path,
         **optional_args
     )
 
@@ -41,14 +39,13 @@ def update_model(
     preprocess_config_path=None,
     **optional_args,
 ):
-    field_config = json.loads(Path(field_config_path).read_text()) if field_config_path else None
     preprocess_config = json.loads(Path(preprocess_config_path).read_text()) if preprocess_config_path else None
 
     return las_client.update_model(
         model_id=model_id,
         width=width,
         height=height,
-        field_config=field_config,
+        field_config=field_config_path,
         preprocess_config=preprocess_config,
         **optional_args,
     )
@@ -106,9 +103,17 @@ def create_models_parser(subparsers):
     create_parser = subparsers.add_parser('create')
     create_parser.add_argument('width', type=int)
     create_parser.add_argument('height', type=int)
-    create_parser.add_argument('field_config_path', help='configuration of the fields that the model will predict')
+    create_parser.add_argument(
+        'field_config_path',
+        type=path_to_json,
+        help='configuration of the fields that the model will predict',
+    )
     create_parser.add_argument('--preprocess-config-path', '-p', help='configuration of the step before the prediction')
-    create_parser.add_argument('--metadata-path', help='metadata that can contain whatever you need up til 4kB')
+    create_parser.add_argument(
+        '--metadata-path',
+        type=path_to_json,
+        help='metadata that can contain whatever you need, maximum limit 4kB',
+    )
     create_parser.add_argument('--name')
     create_parser.add_argument('--description')
     create_parser.set_defaults(cmd=create_model)
@@ -118,6 +123,7 @@ def create_models_parser(subparsers):
     update_parser.add_argument(
         '--field-config-path',
         '-f',
+        type=path_to_json,
         help='configuration of the fields that the model will predict',
     )
     update_parser.add_argument('--width', type=int)
@@ -125,6 +131,11 @@ def create_models_parser(subparsers):
     update_parser.add_argument('--preprocess-config-path', '-p', help='configuration of the step before the prediction')
     update_parser.add_argument('--name', type=nullable, default=NotProvided)
     update_parser.add_argument('--description', type=nullable, default=NotProvided)
+    create_parser.add_argument(
+        '--metadata-path',
+        type=path_to_json,
+        help='metadata that can contain whatever you need, maximum limit 4kB',
+    )
     update_parser.set_defaults(cmd=update_model)
 
     list_parser = subparsers.add_parser('list')
@@ -166,6 +177,11 @@ def create_models_parser(subparsers):
     create_training_parser.add_argument('--instance-type')
     create_training_parser.add_argument('--name')
     create_training_parser.add_argument('--description')
+    create_parser.add_argument(
+        '--metadata-path',
+        type=path_to_json,
+        help='metadata that can contain whatever you need, maximum limit 4kB',
+    )
     create_training_parser.set_defaults(cmd=create_training)
 
     list_trainings_parser = subparsers.add_parser('list-trainings')

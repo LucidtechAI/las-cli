@@ -4,8 +4,9 @@ import logging
 import pathlib
 
 import filetype
-
 from las import Client
+
+from lascli.util import path_to_json
 
 
 def _create_ground_truth_dict(ground_truth_fields, ground_truth_path):
@@ -70,6 +71,7 @@ def create_document(
     dataset_id,
     ground_truth_fields,
     ground_truth_path,
+    **optional_args,
 ):
     content = pathlib.Path(document_path).read_bytes()
 
@@ -86,12 +88,13 @@ def create_document(
         consent_id=consent_id,
         dataset_id=dataset_id,
         ground_truth=ground_truth,
+        **optional_args,
     )
 
 
-def update_document(las_client: Client, document_id, dataset_id, ground_truth_fields, ground_truth_path):
+def update_document(las_client, document_id, dataset_id, ground_truth_fields, ground_truth_path, **optional_args):
     ground_truth = _create_ground_truth_dict(ground_truth_fields, ground_truth_path)
-    return las_client.update_document(document_id, dataset_id=dataset_id, ground_truth=ground_truth)
+    return las_client.update_document(document_id, dataset_id=dataset_id, ground_truth=ground_truth, **optional_args)
 
 
 def create_documents_parser(subparsers):
@@ -119,6 +122,11 @@ def create_documents_parser(subparsers):
     create_document_ground_truth_group = create_document_parser.add_mutually_exclusive_group(required=False)
     create_document_ground_truth_group.add_argument('--ground-truth-fields', metavar='KEY=VALUE', nargs='+')
     create_document_ground_truth_group.add_argument('--ground-truth-path', type=str, help='Path to JSON file')
+    create_document_parser.add_argument(
+        '--metadata-path',
+        type=path_to_json,
+        help='metadata that can contain whatever you need, maximum limit 4kB',
+    )
     create_document_parser.set_defaults(cmd=create_document)
 
     update_document_parser = subparsers.add_parser('update')
@@ -127,6 +135,11 @@ def create_documents_parser(subparsers):
     update_document_ground_truth_group = update_document_parser.add_mutually_exclusive_group(required=False)
     update_document_ground_truth_group.add_argument('--ground-truth-fields', metavar='KEY=VALUE', nargs='+')
     update_document_ground_truth_group.add_argument('--ground-truth-path', type=str, help='Path to JSON file')
+    update_document_parser.add_argument(
+        '--metadata-path',
+        type=path_to_json,
+        help='metadata that can contain whatever you need, maximum limit 4kB',
+    )
     update_document_parser.set_defaults(cmd=update_document)
 
     delete_document_parser = subparsers.add_parser('delete')
