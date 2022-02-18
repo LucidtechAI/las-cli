@@ -134,7 +134,7 @@ def create_documents(
                 print(message)
 
             minutes_spent = (time() - start_time) / 60
-            documents_processed = n * chunk_size
+            documents_processed = (n + 1) * chunk_size
             progress = documents_processed / num_docs * 100
             print(f'{minutes_spent:.2f}m: {documents_processed}/{num_docs} docs processed | {progress:.1f}%')
 
