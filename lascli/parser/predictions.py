@@ -5,27 +5,12 @@ from argparse import RawTextHelpFormatter
 from las import Client
 
 
-def post_predictions(
-    las_client: Client,
-    document_id,
-    model_id,
-    auto_rotate,
-    max_pages,
-    image_quality,
-    postprocess_config,
-):
-    return las_client.create_prediction(
-        document_id,
-        model_id,
-        auto_rotate=auto_rotate,
-        max_pages=max_pages,
-        image_quality=image_quality,
-        postprocess_config=postprocess_config,
-    )
+def post_predictions(las_client: Client, document_id, model_id, **optional_args):
+    return las_client.create_prediction(document_id, model_id, **optional_args)
 
 
-def list_predictions(las_client: Client, max_results=None, next_token=None):
-    return las_client.list_predictions(max_results=max_results, next_token=next_token)
+def list_predictions(las_client: Client, **optional_args):
+    return las_client.list_predictions(**optional_args)
 
 
 def create_predictions_parser(subparsers):

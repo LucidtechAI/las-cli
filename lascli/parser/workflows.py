@@ -3,38 +3,23 @@ import pathlib
 
 from las import Client
 
-from lascli.util import nullable, NotProvided
+from lascli.util import nullable, NotProvided, path_to_json
 
 
-def list_workflows(las_client: Client, max_results=None, next_token=None):
-    return las_client.list_workflows(max_results=max_results, next_token=next_token)
+def list_workflows(las_client: Client, **optional_args):
+    return las_client.list_workflows(**optional_args)
 
 
-def create_workflow(las_client: Client, specification_path, error_config_path, completed_config_path, **optional_args):
-    specification = json.loads(pathlib.Path(specification_path).read_text())
-    error_config = json.loads(pathlib.Path(error_config_path).read_text()) if error_config_path else None
-    completed_config = json.loads(pathlib.Path(completed_config_path).read_text()) if completed_config_path else None
-    return las_client.create_workflow(
-        specification,
-        error_config=error_config,
-        completed_config=completed_config,
-        **optional_args,
-    )
+def create_workflow(las_client: Client, specification, **optional_args):
+    return las_client.create_workflow(specification, **optional_args)
 
 
 def get_workflow(las_client: Client, workflow_id):
     return las_client.get_workflow(workflow_id)
 
 
-def update_workflow(las_client: Client, workflow_id, error_config_path, completed_config_path, **optional_args):
-    error_config = json.loads(pathlib.Path(error_config_path).read_text()) if error_config_path else None
-    completed_config = json.loads(pathlib.Path(completed_config_path).read_text()) if completed_config_path else None
-    return las_client.update_workflow(
-        workflow_id,
-        error_config=error_config,
-        completed_config=completed_config,
-        **optional_args,
-    )
+def update_workflow(las_client: Client, workflow_id, **optional_args):
+    return las_client.update_workflow(workflow_id, **optional_args)
 
 
 def execute_workflow(las_client: Client, workflow_id, path):
@@ -42,15 +27,8 @@ def execute_workflow(las_client: Client, workflow_id, path):
     return las_client.execute_workflow(workflow_id, content)
 
 
-def list_workflow_executions(las_client: Client, workflow_id, status, order, sort_by, max_results, next_token):
-    return las_client.list_workflow_executions(
-        workflow_id,
-        status=status,
-        order=order,
-        sort_by=sort_by,
-        max_results=max_results,
-        next_token=next_token,
-    )
+def list_workflow_executions(las_client: Client, workflow_id, **optional_args):
+    return las_client.list_workflow_executions(workflow_id, **optional_args)
 
 
 def delete_workflow(las_client: Client, workflow_id):
@@ -79,12 +57,17 @@ def create_workflows_parser(subparsers):
     list_workflows_parser.set_defaults(cmd=list_workflows)
 
     create_workflow_parser = subparsers.add_parser('create')
-    create_workflow_parser.add_argument('specification_path')
+    create_workflow_parser.add_argument('specification', type=path_to_json, help='path to specification')
     create_workflow_parser.add_argument('--name')
     create_workflow_parser.add_argument('--description')
-    create_workflow_parser.add_argument('--error-config-path', help='path to the error configuration for the workflow')
     create_workflow_parser.add_argument(
-        '--completed-config-path',
+        '--error-config',
+        type=path_to_json,
+        help='path to the error configuration for the workflow',
+    )
+    create_workflow_parser.add_argument(
+        '--completed-config',
+        type=path_to_json,
         help='path to the execution completed configuration for the workflow',
     )
     create_workflow_parser.set_defaults(cmd=create_workflow)
@@ -93,9 +76,14 @@ def create_workflows_parser(subparsers):
     update_workflow_parser.add_argument('workflow_id')
     update_workflow_parser.add_argument('--name', type=nullable, default=NotProvided)
     update_workflow_parser.add_argument('--description', type=nullable, default=NotProvided)
-    update_workflow_parser.add_argument('--error-config-path', help='path to the error configuration for the workflow')
     update_workflow_parser.add_argument(
-        '--completed-config-path',
+        '--error-config',
+        type=path_to_json,
+        help='path to the error configuration for the workflow',
+    )
+    update_workflow_parser.add_argument(
+        '--completed-config',
+        type=path_to_json,
         help='path to the execution completed configuration for the workflow',
     )
     update_workflow_parser.set_defaults(cmd=update_workflow)

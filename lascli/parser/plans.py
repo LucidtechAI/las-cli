@@ -1,8 +1,8 @@
 from las import Client
 
 
-def list_plans(las_client: Client, owner, max_results, next_token):
-    return las_client.list_plans(owner=owner, max_results=max_results, next_token=next_token)
+def list_plans(las_client: Client, owner, **optional_args):
+    return las_client.list_plans(owner=owner, **optional_args)
 
 
 def get_plan(las_client: Client, plan_id):

@@ -40,12 +40,11 @@ def get_document(las_client: Client, document_id, download_content, output_conte
         return {**document_resp, 'content': document_resp['content'][:10] + '... [TRUNCATED]'}
 
 
-def list_documents(las_client: Client, consent_id, dataset_id, max_results, next_token):
+def list_documents(las_client: Client, consent_id, dataset_id, **optional_args):
     return las_client.list_documents(
         consent_id=consent_id,
         dataset_id=dataset_id,
-        max_results=max_results,
-        next_token=next_token,
+        **optional_args
     )
 
 

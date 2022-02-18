@@ -10,18 +10,13 @@ def create_model(
     las_client: Client,
     width,
     height,
-    field_config_path,
-    preprocess_config_path=None,
-    metadata=None,
+    field_config,
     **optional_args,
 ):
-    preprocess_config = json.loads(Path(preprocess_config_path).read_text()) if preprocess_config_path else None
     return las_client.create_model(
         width=width,
         height=height,
-        field_config=field_config_path,
-        preprocess_config=preprocess_config,
-        metadata=metadata,
+        field_config=field_config,
         **optional_args
     )
 
@@ -30,38 +25,12 @@ def list_models(las_client: Client, max_results, next_token):
     return las_client.list_models(max_results=max_results, next_token=next_token)
 
 
-def update_model(
-    las_client: Client,
-    model_id,
-    width=None,
-    height=None,
-    field_config_path=None,
-    preprocess_config_path=None,
-    **optional_args,
-):
-    preprocess_config = json.loads(Path(preprocess_config_path).read_text()) if preprocess_config_path else None
-
-    return las_client.update_model(
-        model_id=model_id,
-        width=width,
-        height=height,
-        field_config=field_config_path,
-        preprocess_config=preprocess_config,
-        **optional_args,
-    )
+def update_model(las_client: Client, model_id, **optional_args):
+    return las_client.update_model(model_id=model_id, **optional_args)
 
 
-def create_data_bundle(
-    las_client: Client,
-    model_id,
-    dataset_ids,
-    **optional_args,
-):
-    return las_client.create_data_bundle(
-        model_id=model_id,
-        dataset_ids=dataset_ids,
-        **optional_args,
-    )
+def create_data_bundle(las_client: Client, model_id, dataset_ids, **optional_args):
+    return las_client.create_data_bundle(model_id=model_id, dataset_ids=dataset_ids, **optional_args)
 
 
 def list_data_bundles(las_client: Client, model_id, max_results, next_token):
@@ -104,11 +73,15 @@ def create_models_parser(subparsers):
     create_parser.add_argument('width', type=int)
     create_parser.add_argument('height', type=int)
     create_parser.add_argument(
-        'field_config_path',
+        'field_config',
         type=path_to_json,
-        help='configuration of the fields that the model will predict',
+        help='path to configuration of the fields that the model will predict',
     )
-    create_parser.add_argument('--preprocess-config-path', '-p', help='configuration of the step before the prediction')
+    create_parser.add_argument(
+        '--preprocess-config',
+        '-p',
+        help='path to configuration of the step before the prediction',
+    )
     create_parser.add_argument(
         '--metadata',
         type=path_to_json,
@@ -121,14 +94,18 @@ def create_models_parser(subparsers):
     update_parser = subparsers.add_parser('update')
     update_parser.add_argument('model_id')
     update_parser.add_argument(
-        '--field-config-path',
+        '--field-config',
         '-f',
         type=path_to_json,
-        help='configuration of the fields that the model will predict',
+        help='path to configuration of the fields that the model will predict',
     )
     update_parser.add_argument('--width', type=int)
     update_parser.add_argument('--height', type=int)
-    update_parser.add_argument('--preprocess-config-path', '-p', help='configuration of the step before the prediction')
+    update_parser.add_argument(
+        '--preprocess-config',
+        '-p',
+        help='path to configuration of the step before the prediction',
+    )
     update_parser.add_argument('--name', type=nullable, default=NotProvided)
     update_parser.add_argument('--description', type=nullable, default=NotProvided)
     update_parser.add_argument(
