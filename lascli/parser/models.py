@@ -12,7 +12,7 @@ def create_model(
     height,
     field_config_path,
     preprocess_config_path=None,
-    metadata_path=None,
+    metadata=None,
     **optional_args,
 ):
     preprocess_config = json.loads(Path(preprocess_config_path).read_text()) if preprocess_config_path else None
@@ -21,7 +21,7 @@ def create_model(
         height=height,
         field_config=field_config_path,
         preprocess_config=preprocess_config,
-        metadata=metadata_path,
+        metadata=metadata,
         **optional_args
     )
 
@@ -110,9 +110,9 @@ def create_models_parser(subparsers):
     )
     create_parser.add_argument('--preprocess-config-path', '-p', help='configuration of the step before the prediction')
     create_parser.add_argument(
-        '--metadata-path',
+        '--metadata',
         type=path_to_json,
-        help='metadata that can contain whatever you need, maximum limit 4kB',
+        help='path to json file with whatever you need, maximum limit 4kB',
     )
     create_parser.add_argument('--name')
     create_parser.add_argument('--description')
@@ -131,10 +131,10 @@ def create_models_parser(subparsers):
     update_parser.add_argument('--preprocess-config-path', '-p', help='configuration of the step before the prediction')
     update_parser.add_argument('--name', type=nullable, default=NotProvided)
     update_parser.add_argument('--description', type=nullable, default=NotProvided)
-    create_parser.add_argument(
-        '--metadata-path',
+    update_parser.add_argument(
+        '--metadata',
         type=path_to_json,
-        help='metadata that can contain whatever you need, maximum limit 4kB',
+        help='path to json file with whatever you need, maximum limit 4kB',
     )
     update_parser.set_defaults(cmd=update_model)
 
@@ -177,10 +177,10 @@ def create_models_parser(subparsers):
     create_training_parser.add_argument('--instance-type')
     create_training_parser.add_argument('--name')
     create_training_parser.add_argument('--description')
-    create_parser.add_argument(
-        '--metadata-path',
+    create_training_parser.add_argument(
+        '--metadata',
         type=path_to_json,
-        help='metadata that can contain whatever you need, maximum limit 4kB',
+        help='path to json file with whatever you need, maximum limit 4kB',
     )
     create_training_parser.set_defaults(cmd=create_training)
 

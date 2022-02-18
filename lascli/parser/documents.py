@@ -119,14 +119,14 @@ def create_documents_parser(subparsers):
     create_document_parser.add_argument('--content-type')
     create_document_parser.add_argument('--consent-id')
     create_document_parser.add_argument('--dataset-id')
+    create_document_parser.add_argument(
+        '--metadata',
+        type=path_to_json,
+        help='path to json file with whatever you need, maximum limit 4kB',
+    )
     create_document_ground_truth_group = create_document_parser.add_mutually_exclusive_group(required=False)
     create_document_ground_truth_group.add_argument('--ground-truth-fields', metavar='KEY=VALUE', nargs='+')
     create_document_ground_truth_group.add_argument('--ground-truth-path', type=str, help='Path to JSON file')
-    create_document_parser.add_argument(
-        '--metadata-path',
-        type=path_to_json,
-        help='metadata that can contain whatever you need, maximum limit 4kB',
-    )
     create_document_parser.set_defaults(cmd=create_document)
 
     update_document_parser = subparsers.add_parser('update')
@@ -136,9 +136,9 @@ def create_documents_parser(subparsers):
     update_document_ground_truth_group.add_argument('--ground-truth-fields', metavar='KEY=VALUE', nargs='+')
     update_document_ground_truth_group.add_argument('--ground-truth-path', type=str, help='Path to JSON file')
     update_document_parser.add_argument(
-        '--metadata-path',
+        '--metadata',
         type=path_to_json,
-        help='metadata that can contain whatever you need, maximum limit 4kB',
+        help='path to json file with whatever you need, maximum limit 4kB',
     )
     update_document_parser.set_defaults(cmd=update_document)
 
