@@ -80,6 +80,7 @@ def create_models_parser(subparsers):
     create_parser.add_argument(
         '--preprocess-config',
         '-p',
+        type=path_to_json,
         help='path to configuration of the step before the prediction',
     )
     create_parser.add_argument(
@@ -104,6 +105,7 @@ def create_models_parser(subparsers):
     update_parser.add_argument(
         '--preprocess-config',
         '-p',
+        type=path_to_json,
         help='path to configuration of the step before the prediction',
     )
     update_parser.add_argument('--name', type=nullable, default=NotProvided)
