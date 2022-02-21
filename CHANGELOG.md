@@ -4,7 +4,7 @@
 
 - Support csv files in datasets create-documents
 - Added models list-all-data-bundles
-- Support metadata for documents, datasets, models and trainings
+- Added optional parameter --metadata to documents create, documents update, datasets create, datasets update, models create, models update and trainings create
 - Removed optional parameter --start-training from models update (Breaking change)
 
 ## Version 6.2.2 - 2022-01-28
