@@ -52,7 +52,7 @@ def parse_csv(csv_path, delimiter=','):
     with csv_path.open() as csv_fp:
         reader = csv.DictReader(csv_fp, delimiter=delimiter)
         name_field = reader.fieldnames[0]
-        print(f'Assuming the document names can be read from the column named {name_field}')
+        print(f'Assuming the document file names can be read from the column named {name_field}')
 
         for row in reader:
             doc_name = row.pop(name_field)
