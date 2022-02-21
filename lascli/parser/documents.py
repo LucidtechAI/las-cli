@@ -6,7 +6,7 @@ import pathlib
 import filetype
 from las import Client
 
-from lascli.util import path_to_json
+from lascli.util import json_path
 
 
 def _create_ground_truth_dict(ground_truth_fields, ground_truth_path):
@@ -120,7 +120,7 @@ def create_documents_parser(subparsers):
     create_document_parser.add_argument('--dataset-id')
     create_document_parser.add_argument(
         '--metadata',
-        type=path_to_json,
+        type=json_path,
         help='path to json file with whatever you need, maximum limit 4kB',
     )
     create_document_ground_truth_group = create_document_parser.add_mutually_exclusive_group(required=False)
@@ -136,7 +136,7 @@ def create_documents_parser(subparsers):
     update_document_ground_truth_group.add_argument('--ground-truth-path', type=str, help='Path to JSON file')
     update_document_parser.add_argument(
         '--metadata',
-        type=path_to_json,
+        type=json_path,
         help='path to json file with whatever you need, maximum limit 4kB',
     )
     update_document_parser.set_defaults(cmd=update_document)

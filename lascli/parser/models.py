@@ -3,7 +3,7 @@ from pathlib import Path
 
 from las import Client
 
-from lascli.util import NotProvided, nullable, path_to_json
+from lascli.util import NotProvided, nullable, json_path
 
 
 def create_model(
@@ -74,18 +74,18 @@ def create_models_parser(subparsers):
     create_parser.add_argument('height', type=int)
     create_parser.add_argument(
         'field_config',
-        type=path_to_json,
+        type=json_path,
         help='path to configuration of the fields that the model will predict',
     )
     create_parser.add_argument(
         '--preprocess-config',
         '-p',
-        type=path_to_json,
+        type=json_path,
         help='path to configuration of the step before the prediction',
     )
     create_parser.add_argument(
         '--metadata',
-        type=path_to_json,
+        type=json_path,
         help='path to json file with whatever you need, maximum limit 4kB',
     )
     create_parser.add_argument('--name')
@@ -97,7 +97,7 @@ def create_models_parser(subparsers):
     update_parser.add_argument(
         '--field-config',
         '-f',
-        type=path_to_json,
+        type=json_path,
         help='path to configuration of the fields that the model will predict',
     )
     update_parser.add_argument('--width', type=int)
@@ -105,14 +105,14 @@ def create_models_parser(subparsers):
     update_parser.add_argument(
         '--preprocess-config',
         '-p',
-        type=path_to_json,
+        type=json_path,
         help='path to configuration of the step before the prediction',
     )
     update_parser.add_argument('--name', type=nullable, default=NotProvided)
     update_parser.add_argument('--description', type=nullable, default=NotProvided)
     update_parser.add_argument(
         '--metadata',
-        type=path_to_json,
+        type=json_path,
         help='path to json file with whatever you need, maximum limit 4kB',
     )
     update_parser.set_defaults(cmd=update_model)
@@ -158,7 +158,7 @@ def create_models_parser(subparsers):
     create_training_parser.add_argument('--description')
     create_training_parser.add_argument(
         '--metadata',
-        type=path_to_json,
+        type=json_path,
         help='path to json file with whatever you need, maximum limit 4kB',
     )
     create_training_parser.set_defaults(cmd=create_training)

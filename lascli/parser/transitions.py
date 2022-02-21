@@ -1,6 +1,6 @@
 from las import Client
 
-from lascli.util import nullable, NotProvided, path_to_json
+from lascli.util import nullable, NotProvided, json_path
 
 
 def create_transition(las_client: Client, transition_type, **optional_args):
@@ -60,9 +60,9 @@ def create_transitions_parser(subparsers):
 
     create_parser = subparsers.add_parser('create')
     create_parser.add_argument('transition_type', choices=["docker", "manual"])
-    create_parser.add_argument('--parameters', '-p', type=path_to_json, help='path to parameters to the docker image')
-    create_parser.add_argument('--in-schema', type=path_to_json, help='path to input jsonschema')
-    create_parser.add_argument('--out-schema', type=path_to_json, help='path to output jsonschema')
+    create_parser.add_argument('--parameters', '-p', type=json_path, help='path to parameters to the docker image')
+    create_parser.add_argument('--in-schema', type=json_path, help='path to input jsonschema')
+    create_parser.add_argument('--out-schema', type=json_path, help='path to output jsonschema')
     create_parser.add_argument('--name')
     create_parser.add_argument('--description')
     create_parser.set_defaults(cmd=create_transition)
@@ -80,16 +80,16 @@ def create_transitions_parser(subparsers):
     update_parser = subparsers.add_parser('update')
     update_parser.add_argument('transition_id')
     update_parser.add_argument('--name', type=nullable, default=NotProvided)
-    update_parser.add_argument('--in-schema', type=path_to_json, help='path to input jsonschema')
-    update_parser.add_argument('--out-schema', type=path_to_json, help='path to output jsonschema')
+    update_parser.add_argument('--in-schema', type=json_path, help='path to input jsonschema')
+    update_parser.add_argument('--out-schema', type=json_path, help='path to output jsonschema')
     update_parser.add_argument(
         '--assets',
-        type=path_to_json,
+        type=json_path,
         help='Path to json file with str keys and values that are assetIds, only possible for a manual transition'
     )
     update_parser.add_argument(
         '--environment',
-        type=path_to_json,
+        type=json_path,
         help='Path to json file with environment variables, only possible for a docker transition',
     )
     update_parser.add_argument(
@@ -131,8 +131,8 @@ def create_transitions_parser(subparsers):
     update_execution_parser.add_argument('execution_id')
     update_execution_parser.add_argument('status', choices=['succeeded', 'failed', 'rejected', 'retry'])
 
-    update_execution_parser.add_argument('--output', '-o', type=path_to_json, help='path to output of execution')
-    update_execution_parser.add_argument('--error', '-e', type=path_to_json, help='path to error of execution')
+    update_execution_parser.add_argument('--output', '-o', type=json_path, help='path to output of execution')
+    update_execution_parser.add_argument('--error', '-e', type=json_path, help='path to error of execution')
     update_execution_parser.add_argument('--start-time')
     update_execution_parser.set_defaults(cmd=update_transition_execution)
 

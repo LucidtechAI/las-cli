@@ -12,5 +12,5 @@ def nullable(value):
     return value
 
 
-def path_to_json(path):
+def json_path(path):
     return json.loads(Path(path).read_text()) if path else None

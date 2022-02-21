@@ -3,7 +3,7 @@ import pathlib
 
 from las import Client
 
-from lascli.util import nullable, NotProvided, path_to_json
+from lascli.util import nullable, NotProvided, json_path
 
 
 def list_workflows(las_client: Client, **optional_args):
@@ -57,17 +57,17 @@ def create_workflows_parser(subparsers):
     list_workflows_parser.set_defaults(cmd=list_workflows)
 
     create_workflow_parser = subparsers.add_parser('create')
-    create_workflow_parser.add_argument('specification', type=path_to_json, help='path to specification')
+    create_workflow_parser.add_argument('specification', type=json_path, help='path to specification')
     create_workflow_parser.add_argument('--name')
     create_workflow_parser.add_argument('--description')
     create_workflow_parser.add_argument(
         '--error-config',
-        type=path_to_json,
+        type=json_path,
         help='path to the error configuration for the workflow',
     )
     create_workflow_parser.add_argument(
         '--completed-config',
-        type=path_to_json,
+        type=json_path,
         help='path to the execution completed configuration for the workflow',
     )
     create_workflow_parser.set_defaults(cmd=create_workflow)
@@ -78,12 +78,12 @@ def create_workflows_parser(subparsers):
     update_workflow_parser.add_argument('--description', type=nullable, default=NotProvided)
     update_workflow_parser.add_argument(
         '--error-config',
-        type=path_to_json,
+        type=json_path,
         help='path to the error configuration for the workflow',
     )
     update_workflow_parser.add_argument(
         '--completed-config',
-        type=path_to_json,
+        type=json_path,
         help='path to the execution completed configuration for the workflow',
     )
     update_workflow_parser.set_defaults(cmd=update_workflow)
