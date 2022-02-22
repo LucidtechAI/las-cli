@@ -16,8 +16,10 @@ def main_parser(parser, client, argument_list):
 def assets_folder():
     return Path(__file__).parent / 'assets'
 
+
 def metadata_path():
     return assets_folder() / 'metadata.json'
+
 
 def max_results_and_next_token():
     max_results = [
@@ -30,6 +32,7 @@ def max_results_and_next_token():
     ]
     return [ m + n for m in max_results for n in  next_token]
 
+
 def ground_truth_options():
     return [
         ('--ground-truth-fields', 'foo=bar', 'baz=5'),
@@ -37,3 +40,16 @@ def ground_truth_options():
         ()
     ]
 
+
+def name_and_description():
+    name = [
+        ('--name', 'foo'),
+        ('--name', 'null'),
+        (),
+    ]
+    description = [
+        ('--description', 'bar baz'),
+        ('--description', 'null'),
+        (),
+    ]
+    return [ n + d for n in name for d in  description]
