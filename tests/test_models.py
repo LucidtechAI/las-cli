@@ -4,7 +4,6 @@ from tests import service, util
 
 @pytest.mark.parametrize('metadata', [('--metadata', str(util.metadata_path())), ()])
 @pytest.mark.parametrize('preprocess_config', [('-p', str(util.preprocess_config_path())), ()])
-@pytest.mark.parametrize('name_and_description', util.name_and_description())
 def test_models_create(parser, client, metadata, preprocess_config, name_and_description):
     args = [
         'models',
@@ -22,7 +21,6 @@ def test_models_create(parser, client, metadata, preprocess_config, name_and_des
 @pytest.mark.parametrize('metadata', [('--metadata', str(util.metadata_path())), ()])
 @pytest.mark.parametrize('preprocess_config', [('--preprocess-config', str(util.preprocess_config_path())), ()])
 @pytest.mark.parametrize('field_config', [('--field-config', str(util.field_config_path())), ()])
-@pytest.mark.parametrize('name_and_description', util.name_and_description())
 def test_models_update(parser, client, metadata, preprocess_config, name_and_description, field_config):
     args = [
         'models',
@@ -41,7 +39,6 @@ def test_models_update(parser, client, metadata, preprocess_config, name_and_des
         util.main_parser(parser, client, args)
 
 
-@pytest.mark.parametrize('list_defaults', util.max_results_and_next_token())
 def test_models_list(parser, client, list_defaults):
     args = [
         'models',

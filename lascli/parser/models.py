@@ -59,7 +59,6 @@ def delete_data_bundle(las_client: Client, model_id, data_bundle_id):
 def update_data_bundle(las_client: Client, model_id, data_bundle_id, **optional_args):
     return las_client.update_data_bundle(model_id, data_bundle_id, **optional_args)
 
-
 def create_training(las_client: Client, model_id, data_bundle_ids, instance_type, **optional_args):
     return las_client.create_training(
         model_id=model_id,
@@ -71,6 +70,12 @@ def create_training(las_client: Client, model_id, data_bundle_ids, instance_type
 
 def list_trainings(las_client: Client, model_id, max_results, next_token):
     return las_client.list_trainings(model_id, max_results=max_results, next_token=next_token)
+
+
+def update_training(las_client: Client, model_id, training_id, **optional_args):
+    if optional_args.pop('cancel'):
+        optional_args['status'] = 'cancelled'
+    return las_client.update_training(model_id, training_id, **optional_args)
 
 
 def create_models_parser(subparsers):
@@ -184,5 +189,18 @@ def create_models_parser(subparsers):
     list_trainings_parser.add_argument('--max-results', '-m', type=int, default=None)
     list_trainings_parser.add_argument('--next-token', '-n', type=str, default=None)
     list_trainings_parser.set_defaults(cmd=list_trainings)
+
+    update_training_parser = subparsers.add_parser('update-training')
+    update_training_parser.add_argument('model_id')
+    update_training_parser.add_argument('training_id')
+    update_training_parser.add_argument('--cancel', action='store_true', default=False)
+    update_training_parser.add_argument('--name')
+    update_training_parser.add_argument('--description', type=nullable, default=NotProvided)
+    update_training_parser.add_argument(
+        '--metadata',
+        type=json_path,
+        help='path to json file with whatever you need, maximum limit 4kB',
+    )
+    update_training_parser.set_defaults(cmd=update_training)
 
     return parser

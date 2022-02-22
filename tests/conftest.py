@@ -59,3 +59,6 @@ def name_and_description(request):
 def list_defaults(request):
     return request.param
 
+@pytest.fixture(params=[(), ('--metadata', str(util.metadata_path()))])
+def metadata(request):
+    return request.param

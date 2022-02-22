@@ -5,7 +5,6 @@ from tests import service, util
 @pytest.mark.parametrize('dataset_id', service.optional_resource_id('dataset'))
 @pytest.mark.parametrize('consent_id', service.optional_resource_id('consent'))
 @pytest.mark.parametrize('content_type', [('--content-type', 'image/jpeg'), ()])
-@pytest.mark.parametrize('metadata', [('--metadata', str(util.metadata_path())), ()])
 @pytest.mark.parametrize('ground_truth', util.ground_truth_options())
 def test_documents_create(parser, client, dataset_id, consent_id, content_type, metadata, ground_truth):
     args = [
