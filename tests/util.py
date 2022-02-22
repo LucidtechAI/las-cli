@@ -16,6 +16,8 @@ def main_parser(parser, client, argument_list):
 def assets_folder():
     return Path(__file__).parent / 'assets'
 
+def metadata_path():
+    return assets_folder() / 'metadata.json'
 
 def max_results_and_next_token():
     max_results = [
@@ -27,3 +29,11 @@ def max_results_and_next_token():
         (),
     ]
     return [ m + n for m in max_results for n in  next_token]
+
+def ground_truth_options():
+    return [
+        ('--ground-truth-fields', 'foo=bar', 'baz=5'),
+        ('--ground-truth-path', str(assets_folder() / 'gt.json')),
+        ()
+    ]
+

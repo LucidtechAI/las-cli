@@ -76,8 +76,8 @@ def create_completed_config():
     }
 
 
-def optional_argument(resource_name):
-    return f'--{resource_name}-id', f'las:{resource_name}:{uuid4().hex}'
+def optional_resource_id(resource_name):
+    return [(f'--{resource_name}-id', f'las:{resource_name}:{uuid4().hex}'), ()]
 
 
 def field_config():
