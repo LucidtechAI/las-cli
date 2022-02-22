@@ -62,3 +62,4 @@ def list_defaults(request):
 @pytest.fixture(params=[(), ('--metadata', str(util.metadata_path()))])
 def metadata(request):
     return request.param
+
