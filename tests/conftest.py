@@ -1,11 +1,14 @@
 import string
 from os import urandom
+
 from random import choice, randint
 from las import Client
-
-import pytest
-from lascli.__main__ import create_parser
 from requests_mock import Mocker
+import pytest
+
+from lascli.__main__ import create_parser
+from . import util
+
 
 
 @pytest.fixture(scope='session')
@@ -46,4 +49,13 @@ def content():
     """
     yield b'\xFF\xD8\xFF\xEE' + urandom(int(2E4))
 
+
+@pytest.fixture(params=util.name_and_description())
+def name_and_description(request):
+    return request.param
+
+
+@pytest.fixture(params=util.max_results_and_next_token())
+def list_defaults(request):
+    return request.param
 

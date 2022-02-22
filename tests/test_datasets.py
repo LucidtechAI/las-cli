@@ -3,7 +3,6 @@ from tests import service, util
 
 
 @pytest.mark.parametrize('metadata', [('--metadata', str(util.metadata_path())), ()])
-@pytest.mark.parametrize('name_and_description', util.name_and_description())
 def test_datasets_create(parser, client, metadata, name_and_description):
     args = [
         'datasets',
@@ -15,7 +14,6 @@ def test_datasets_create(parser, client, metadata, name_and_description):
 
 
 @pytest.mark.parametrize('metadata', [('--metadata', str(util.metadata_path())), ()])
-@pytest.mark.parametrize('name_and_description', util.name_and_description())
 def test_datasets_update(parser, client, metadata, name_and_description):
     args = [
         'datasets',
@@ -32,7 +30,6 @@ def test_datasets_update(parser, client, metadata, name_and_description):
         util.main_parser(parser, client, args)
 
 
-@pytest.mark.parametrize('list_defaults', util.max_results_and_next_token())
 def test_datasets_list(parser, client, list_defaults):
     args = [
         'datasets',

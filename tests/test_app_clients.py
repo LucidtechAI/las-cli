@@ -2,7 +2,6 @@ import pytest
 from tests import service, util
 
 
-@pytest.mark.parametrize('name_and_description', util.name_and_description())
 def test_app_clients_create(parser, client, name_and_description):
     args = [
         'app-clients',
@@ -12,7 +11,6 @@ def test_app_clients_create(parser, client, name_and_description):
     util.main_parser(parser, client, args)
 
 
-@pytest.mark.parametrize('name_and_description', util.name_and_description())
 def test_app_clients_create_secret(parser, client, name_and_description):
     args = [
         'app-clients',
@@ -31,7 +29,6 @@ def test_app_clients_create_secret(parser, client, name_and_description):
     util.main_parser(parser, client, args)
 
 
-@pytest.mark.parametrize('name_and_description', util.name_and_description())
 def test_app_clients_update(parser, client, name_and_description):
     args = [
         'app-clients',
@@ -48,7 +45,6 @@ def test_app_clients_update(parser, client, name_and_description):
 
 
 
-@pytest.mark.parametrize('list_defaults', util.max_results_and_next_token())
 def test_app_clients_list(parser, client, list_defaults):
     args = [
         'app-clients',

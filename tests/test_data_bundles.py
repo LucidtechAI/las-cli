@@ -2,7 +2,6 @@ import pytest
 from tests import service, util
 
 
-@pytest.mark.parametrize('name_and_description', util.name_and_description())
 @pytest.mark.parametrize('dataset_ids', [
     (service.create_dataset_id(), service.create_dataset_id()),
     [service.create_dataset_id()]
@@ -18,7 +17,6 @@ def test_data_bundles_create(parser, client, dataset_ids, name_and_description):
     util.main_parser(parser, client, args)
 
 
-@pytest.mark.parametrize('list_defaults', util.max_results_and_next_token())
 def test_data_bundles_list(parser, client, list_defaults):
     args = [
         'models',
@@ -29,7 +27,6 @@ def test_data_bundles_list(parser, client, list_defaults):
     util.main_parser(parser, client, args)
 
 
-@pytest.mark.parametrize('name_and_description', util.name_and_description())
 def test_data_bundles_update(parser, client, name_and_description):
     args = [
         'models',

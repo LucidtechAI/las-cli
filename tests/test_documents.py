@@ -43,7 +43,6 @@ def test_documents_update(parser, client, dataset_id, metadata, ground_truth):
 
 @pytest.mark.parametrize('dataset_id', service.optional_resource_id('dataset'))
 @pytest.mark.parametrize('consent_id', service.optional_resource_id('consent'))
-@pytest.mark.parametrize('list_defaults', util.max_results_and_next_token())
 def test_documents_list(parser, client, dataset_id, consent_id, list_defaults):
     args = [
         'documents',
@@ -83,7 +82,6 @@ def test_documents_delete(parser, client):
 @pytest.mark.skip
 @pytest.mark.parametrize('dataset_id', service.optional_resource_id('dataset'))
 @pytest.mark.parametrize('consent_id', service.optional_resource_id('consent'))
-@pytest.mark.parametrize('list_defaults', util.max_results_and_next_token())
 def test_documents_delete_all(parser, client, consent_id, dataset_id, list_defaults):
     args = [
         'documents',

@@ -2,7 +2,6 @@ import pytest
 from tests import service, util
 
 
-@pytest.mark.parametrize('name_and_description', util.name_and_description())
 def test_assets_create(parser, client, name_and_description):
     args = [
         'assets',
@@ -14,7 +13,6 @@ def test_assets_create(parser, client, name_and_description):
 
 
 @pytest.mark.parametrize('asset_path', [('--asset-path', str(util.metadata_path())), ()])
-@pytest.mark.parametrize('name_and_description', util.name_and_description())
 def test_assets_update(parser, client, name_and_description, asset_path):
     args = [
         'assets',
@@ -32,7 +30,6 @@ def test_assets_update(parser, client, name_and_description, asset_path):
 
 
 
-@pytest.mark.parametrize('list_defaults', util.max_results_and_next_token())
 def test_assets_list(parser, client, list_defaults):
     args = [
         'assets',
