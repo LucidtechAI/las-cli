@@ -43,6 +43,10 @@ def update_dataset(las_client: Client, dataset_id, **optional_args):
     return las_client.update_dataset(dataset_id, **optional_args)
 
 
+def get_dataset(las_client: Client, dataset_id):
+    return las_client.get_dataset(dataset_id)
+
+
 def delete_dataset(las_client: Client, dataset_id, delete_documents):
     return las_client.delete_dataset(dataset_id, delete_documents=delete_documents)
 
@@ -158,6 +162,10 @@ def create_datasets_parser(subparsers):
     list_datasets_parser.add_argument('--max-results', '-m', type=int, default=None)
     list_datasets_parser.add_argument('--next-token', '-n', default=None)
     list_datasets_parser.set_defaults(cmd=list_datasets)
+
+    get_dataset_parser = subparsers.add_parser('get')
+    get_dataset_parser.add_argument('dataset_id')
+    get_dataset_parser.set_defaults(cmd=get_dataset)
 
     update_dataset_parser = subparsers.add_parser('update')
     update_dataset_parser.add_argument('dataset_id')
