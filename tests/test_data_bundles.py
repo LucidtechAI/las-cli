@@ -27,6 +27,14 @@ def test_data_bundles_list(parser, client, list_defaults):
     util.main_parser(parser, client, args)
 
 
+def test_data_bundles_list(parser, client):
+    args = [
+        'models',
+        'list-all-data-bundles',
+    ]
+    util.main_parser(parser, client, args)
+
+
 def test_data_bundles_update(parser, client, name_and_description):
     args = [
         'models',
