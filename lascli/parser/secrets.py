@@ -1,6 +1,5 @@
 import json
 import pathlib
-
 from las import Client
 
 from lascli.util import nullable, NotProvided
