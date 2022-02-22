@@ -33,6 +33,10 @@ def schema_path():
     return assets_folder() / 'schema.json'
 
 
+def error_config_path():
+    return assets_folder() / 'workflow_error_config.json'
+
+
 def transition_parameters_path():
     return assets_folder() / 'transition_parameters.json'
 
