@@ -1,0 +1,57 @@
+import pytest
+from tests import service, util
+
+
+@pytest.mark.parametrize('name_and_description', util.name_and_description())
+@pytest.mark.parametrize('dataset_ids', [
+    (service.create_dataset_id(), service.create_dataset_id()),
+    [service.create_dataset_id()]
+])
+def test_data_bundles_create(parser, client, dataset_ids, name_and_description):
+    args = [
+        'models',
+        'create-data-bundle',
+        service.create_model_id(),
+        *dataset_ids,
+        *name_and_description,
+    ]
+    util.main_parser(parser, client, args)
+
+
+@pytest.mark.parametrize('list_defaults', util.max_results_and_next_token())
+def test_data_bundles_list(parser, client, list_defaults):
+    args = [
+        'models',
+        'list-data-bundles',
+        service.create_model_id(),
+        *list_defaults,
+    ]
+    util.main_parser(parser, client, args)
+
+
+@pytest.mark.parametrize('name_and_description', util.name_and_description())
+def test_data_bundles_update(parser, client, name_and_description):
+    args = [
+        'models',
+        'update-data-bundle',
+        service.create_model_id(),
+        service.create_data_bundle_id(),
+        *name_and_description,
+    ]
+
+    if len(args) == 3: # patch call requires at least one change
+        with pytest.raises(Exception):
+            util.main_parser(parser, client, args)
+    else:
+        util.main_parser(parser, client, args)
+
+
+@pytest.mark.skip
+def test_data_bundles_delete(parser, client):
+    args = [
+        'data_bundles',
+        'delete-data-bundle',
+        service.create_model_id(),
+        service.create_data_bundle_id(),
+    ]
+    util.main_parser(parser, client, args)
