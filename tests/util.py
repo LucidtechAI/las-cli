@@ -29,6 +29,14 @@ def field_config_path():
     return assets_folder() / 'field_config.json'
 
 
+def schema_path():
+    return assets_folder() / 'schema.json'
+
+
+def transition_parameters_path():
+    return assets_folder() / 'transition_parameters.json'
+
+
 def max_results_and_next_token():
     max_results = [
         ('--max-results', '5'),

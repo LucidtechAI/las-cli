@@ -1,0 +1,11 @@
+{
+  "imageUrl": "image:url",
+  "secretId": "las:secret:6285cd4e42ba4c749aebd3227ad95a32",
+  "environmentSecrets": [
+    "las:secret:6285cd4e42ba4c749aebd3227ad95a32",
+    "las:secret:6285cd4e42ba4c749aebd3227ad95a32"
+  ],
+  "memory": 1024,
+  "cpu": 256
+}
+
