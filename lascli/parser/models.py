@@ -25,6 +25,14 @@ def list_models(las_client: Client, max_results, next_token):
     return las_client.list_models(max_results=max_results, next_token=next_token)
 
 
+def delete_model(las_client: Client, model_id):
+    return las_client.delete_model(model_id=model_id)
+
+
+def get_model(las_client: Client, model_id):
+    return las_client.get_model(model_id=model_id)
+
+
 def update_model(las_client: Client, model_id, **optional_args):
     return las_client.update_model(model_id=model_id, **optional_args)
 
@@ -68,7 +76,6 @@ def list_trainings(las_client: Client, model_id, max_results, next_token):
 def create_models_parser(subparsers):
     parser = subparsers.add_parser('models')
     subparsers = parser.add_subparsers()
-
     create_parser = subparsers.add_parser('create')
     create_parser.add_argument('width', type=int)
     create_parser.add_argument('height', type=int)
@@ -91,6 +98,10 @@ def create_models_parser(subparsers):
     create_parser.add_argument('--name')
     create_parser.add_argument('--description')
     create_parser.set_defaults(cmd=create_model)
+
+    get_parser = subparsers.add_parser('get')
+    get_parser.add_argument('model_id')
+    get_parser.set_defaults(cmd=get_model)
 
     update_parser = subparsers.add_parser('update')
     update_parser.add_argument('model_id')
@@ -116,6 +127,11 @@ def create_models_parser(subparsers):
         help='path to json file with whatever you need, maximum limit 4kB',
     )
     update_parser.set_defaults(cmd=update_model)
+
+
+    delete_parser = subparsers.add_parser('delete')
+    delete_parser.add_argument('model_id')
+    delete_parser.set_defaults(cmd=delete_model)
 
     list_parser = subparsers.add_parser('list')
     list_parser.add_argument('--max-results', '-m', type=int, default=None)

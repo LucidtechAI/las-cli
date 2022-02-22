@@ -21,6 +21,14 @@ def metadata_path():
     return assets_folder() / 'metadata.json'
 
 
+def preprocess_config_path():
+    return assets_folder() / 'preprocess_config.json'
+
+
+def field_config_path():
+    return assets_folder() / 'field_config.json'
+
+
 def max_results_and_next_token():
     max_results = [
         ('--max-results', '5'),

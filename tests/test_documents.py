@@ -41,7 +41,6 @@ def test_documents_update(parser, client, dataset_id, metadata, ground_truth):
         util.main_parser(parser, client, args)
 
 
-
 @pytest.mark.parametrize('dataset_id', service.optional_resource_id('dataset'))
 @pytest.mark.parametrize('consent_id', service.optional_resource_id('consent'))
 @pytest.mark.parametrize('list_defaults', util.max_results_and_next_token())
