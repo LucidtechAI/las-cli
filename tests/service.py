@@ -114,7 +114,7 @@ def preprocess_config():
 def document_path():
     return Path(__file__)
 
+
 def temporary_named_file():
     with NamedTemporaryFile() as fp:
         return fp.name
-

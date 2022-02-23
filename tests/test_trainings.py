@@ -39,7 +39,8 @@ def test_trainings_update(parser, client, name_and_description, cancel, metadata
         *metadata,
     ]
 
-    if len(args) == 4: # patch call requires at least one change
+    if len(args) == 4:  # patch call requires at least one change
+        # TODO: Remove this return when the API is updated
         return  # Early return due to error in the API
         with pytest.raises(Exception):
             util.main_parser(parser, client, args)

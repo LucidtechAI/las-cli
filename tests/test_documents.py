@@ -33,7 +33,7 @@ def test_documents_update(parser, client, dataset_id, metadata, ground_truth):
         *ground_truth,
     ]
 
-    if len(args) == 3: # patch call requires at least one change
+    if len(args) == 3:  # patch call requires at least one change
         with pytest.raises(Exception):
             util.main_parser(parser, client, args)
     else:

@@ -1,4 +1,3 @@
-from itertools import product
 from pathlib import Path
 from lascli.util import NotProvided
 
@@ -50,7 +49,7 @@ def max_results_and_next_token():
         ('--next-token', 'foo'),
         (),
     ]
-    return [ m + n for m in max_results for n in  next_token]
+    return [m + n for m in max_results for n in next_token]
 
 
 def ground_truth_options():
@@ -72,4 +71,4 @@ def name_and_description():
         ('--description', 'null'),
         (),
     ]
-    return [ n + d for n in name for d in  description]
+    return [n + d for n in name for d in description]

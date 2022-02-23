@@ -32,7 +32,7 @@ def test_models_update(parser, client, metadata, preprocess_config, name_and_des
         *field_config,
     ]
 
-    if len(args) == 3: # patch call requires at least one change
+    if len(args) == 3:  # patch call requires at least one change
         with pytest.raises(Exception):
             util.main_parser(parser, client, args)
     else:

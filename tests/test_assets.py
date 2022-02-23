@@ -22,12 +22,11 @@ def test_assets_update(parser, client, name_and_description, asset_path):
         *asset_path,
     ]
 
-    if len(args) == 3: # patch call requires at least one change
+    if len(args) == 3:  # patch call requires at least one change
         with pytest.raises(Exception):
             util.main_parser(parser, client, args)
     else:
         util.main_parser(parser, client, args)
-
 
 
 def test_assets_list(parser, client, list_defaults):

@@ -28,7 +28,7 @@ def test_workflows_update(parser, client, name_and_description, error_config, co
         *completed_config,
     ]
 
-    if len(args) == 3: # patch call requires at least one change
+    if len(args) == 3:  # patch call requires at least one change
         with pytest.raises(Exception):
             util.main_parser(parser, client, args)
     else:

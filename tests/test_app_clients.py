@@ -37,12 +37,11 @@ def test_app_clients_update(parser, client, name_and_description):
         *name_and_description,
     ]
 
-    if len(args) == 3: # patch call requires at least one change
+    if len(args) == 3:  # patch call requires at least one change
         with pytest.raises(Exception):
             util.main_parser(parser, client, args)
     else:
         util.main_parser(parser, client, args)
-
 
 
 def test_app_clients_list(parser, client, list_defaults):

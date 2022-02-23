@@ -69,13 +69,14 @@ def test_executions_update(parser, client, response, start_time, status):
         *start_time,
     ]
 
-    if len(args) == 4: # patch call requires at least one change
+    if len(args) == 4:  # patch call requires at least one change
         with pytest.raises(Exception):
             util.main_parser(parser, client, args)
     else:
         if '--metadata' not in args:
             return  # Due to some bug somewhere
         util.main_parser(parser, client, args)
+
 
 def test_heartbeat(parser, client):
     args = [

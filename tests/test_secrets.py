@@ -9,7 +9,6 @@ def secrets_options():
     ]
 
 
-
 @pytest.mark.parametrize('secret', secrets_options())
 def test_secrets_create(parser, client, secret, name_and_description):
     args = [
@@ -31,7 +30,7 @@ def test_secrets_update(parser, client, name_and_description, secret):
         *secret,
     ]
 
-    if len(args) == 3: # patch call requires at least one change
+    if len(args) == 3:  # patch call requires at least one change
         with pytest.raises(Exception):
             util.main_parser(parser, client, args)
     else:
