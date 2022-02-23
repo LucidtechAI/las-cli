@@ -20,3 +20,17 @@ $ las models list --help
 $ las workflows update --help
 ```
 
+## Contributing
+
+### Prerequisites
+
+```bash
+$ pip install -r requirements.txt
+$ pip install -r requirements.ci.txt 
+```
+
+### Run tests
+
+```bash
+$ make prism-start
+$ python -m pytest
