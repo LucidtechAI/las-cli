@@ -1,3 +1,4 @@
+CID := $(shell cat /tmp/prism.cid)
 .PHONY: publish
 publish:
 	tox -e publish

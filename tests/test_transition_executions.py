@@ -1,4 +1,5 @@
 import pytest
+from datetime import datetime
 from tests import service, util
 
 
@@ -51,15 +52,21 @@ def test_executions_get(parser, client):
     util.main_parser(parser, client, args)
 
 
-# TODO: Add output, error and start-time
+@pytest.mark.parametrize('response', [
+    ('--output', str(util.assets_folder() / 'transition_execution_output.json')),
+    ('--error', str(util.assets_folder() / 'transition_execution_output.json')),
+])
 @pytest.mark.parametrize('status', ['succeeded', 'failed', 'rejected', 'retry'])
-def test_executions_update(parser, client, status):
+@pytest.mark.parametrize('start_time', ['--start-time', str(datetime.utcnow()), 'rejected', 'retry'])
+def test_executions_update(parser, client, response, start_time, status):
     args = [
         'transitions',
         'update-execution',
         service.create_transition_id(),
         service.create_transition_execution_id(),
         status,
+        *response,
+        *start_time,
     ]
 
     if len(args) == 4: # patch call requires at least one change
