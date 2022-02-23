@@ -1,6 +1,5 @@
 import json
 import pathlib
-
 from las import Client
 
 from lascli.util import nullable, NotProvided
@@ -21,8 +20,8 @@ def _create_secret_dict(secret_data, secret_path):
     return data
 
 
-def list_secrets(las_client: Client, max_results, next_token):
-    return las_client.list_secrets(max_results=max_results, next_token=next_token)
+def list_secrets(las_client: Client, **optional_args):
+    return las_client.list_secrets(**optional_args)
 
 
 def create_secret(las_client: Client, secret_data, secret_path, **optional_args):

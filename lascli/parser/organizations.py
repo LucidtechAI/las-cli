@@ -7,11 +7,7 @@ def get_organization(las_client: Client, organization_id):
     return las_client.get_organization(organization_id)
 
 
-def update_organization(
-    las_client: Client,
-    organization_id,
-    **optional_args,
-):
+def update_organization(las_client: Client, organization_id, **optional_args):
     return las_client.update_organization(organization_id=organization_id, **optional_args)
 
 

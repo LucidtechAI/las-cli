@@ -1,0 +1,23 @@
+{
+  "definition": {
+    "Comment": "ordinary invoices",
+    "StartAt": "make-predictions",
+    "States": {
+      "make-predictions": {
+        "Type": "Task",
+        "Resource": "src/transitions/make-predictions",
+        "Next": "ordinary"
+      },
+      "NyOrdinær": {
+        "Type": "Task",
+        "Resource": "las:transition:6285cd4e42ba4c749aebd3227ad95a32",
+        "Next": "export"
+      },
+      "export": {
+        "Type": "Task",
+        "Resource": "las:transition:6285cd4e42ba4c749aebd3227ad95a31",
+        "End": true
+      }
+    }
+  }
+}

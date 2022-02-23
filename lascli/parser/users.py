@@ -10,8 +10,8 @@ def encode_avatar(avatar):
     return base64.b64encode(pathlib.Path(avatar).read_bytes()).decode()
 
 
-def list_users(las_client: Client, max_results, next_token):
-    return las_client.list_users(max_results=max_results, next_token=next_token)
+def list_users(las_client: Client, **optional_args):
+    return las_client.list_users(**optional_args)
 
 
 def get_user(las_client: Client, user_id):

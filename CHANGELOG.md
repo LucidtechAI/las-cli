@@ -1,5 +1,14 @@
 # Changelog
 
+## Version 7.0.0 - 2022-02-23
+
+- Support csv files in datasets create-documents
+- Added models list-all-data-bundles
+- Added optional parameter --metadata to documents create, documents update, datasets create, datasets update, models create, models update and trainings create
+- Removed optional parameter --start-training from models update (Breaking change)
+- Changed several optional argument names from --X-path to --X (Breaking change)
+- Added models update-training
+
 ## Version 6.2.2 - 2022-01-28
 
 - Update argcomplete package

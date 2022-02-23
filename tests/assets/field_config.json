@@ -1,0 +1,58 @@
+{
+  "bank_account": {
+    "description": "Bank account number.",
+    "maxLength": 30,
+    "type": "digits"
+  },
+  "due_date": {
+    "description": "Due date of invoice.",
+    "maxLength": 10,
+    "type": "date"
+  },
+  "invoice_date": {
+    "description": "Date of invoice.",
+    "maxLength": 10,
+    "type": "date"
+  },
+  "invoice_number": {
+    "description": "Invoice number.",
+    "maxLength": 12,
+    "type": "string"
+  },
+  "total_amount": {
+    "description": "Total amount.",
+    "maxLength": 16,
+    "type": "amount"
+  },
+  "supplier_id": {
+    "description": "org nummer for leverand\u00f8r",
+    "maxLength": 10,
+    "type": "digits"
+  },
+  "kid_number": {
+    "description": "kid nummer",
+    "maxLength": 26,
+    "type": "string"
+  },
+  "obos_company_number": {
+    "description": "selskapsnummer",
+    "maxLength": 4,
+    "type": "digits"
+  },
+  "document_type": {
+    "description": "fakturatype",
+    "maxLength": 10,
+    "type": "string"
+  },
+  "recipient_name": {
+    "description": "company name",
+    "maxLength": 10,
+    "type": "string"
+  },
+  "currency": {
+    "description": "valuta iso-format",
+    "maxLength": 3,
+    "type": "string"
+  }
+}
+

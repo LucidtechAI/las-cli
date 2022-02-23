@@ -13,20 +13,18 @@ def parse_log(response):
 
 def list_logs(
     las_client: Client,
-    max_results,
-    next_token,
     transition_id,
     transition_execution_id,
     workflow_id,
     workflow_execution_id,
+    **optional_args,
 ):
     return las_client.list_logs(
-        max_results=max_results,
-        next_token=next_token,
         transition_id=transition_id,
         transition_execution_id=transition_execution_id,
         workflow_id=workflow_id,
         workflow_execution_id=workflow_execution_id,
+        **optional_args,
     )
 
 

@@ -1,4 +1,5 @@
 import argparse
+import csv
 import json
 import logging
 import yaml
@@ -11,8 +12,7 @@ from functools import partial
 from las import Client
 from concurrent.futures import ThreadPoolExecutor
 
-from lascli.util import nullable, NotProvided
-
+from lascli.util import NotProvided, nullable, json_path
 
 # See https://docs.python.org/3/library/itertools.html
 def group(iterable, group_size, fillvalue=None):
@@ -43,8 +43,26 @@ def update_dataset(las_client: Client, dataset_id, **optional_args):
     return las_client.update_dataset(dataset_id, **optional_args)
 
 
+def get_dataset(las_client: Client, dataset_id):
+    return las_client.get_dataset(dataset_id)
+
+
 def delete_dataset(las_client: Client, dataset_id, delete_documents):
     return las_client.delete_dataset(dataset_id, delete_documents=delete_documents)
+
+
+def parse_csv(csv_path, delimiter=','):
+    documents = {}
+    with csv_path.open() as csv_fp:
+        reader = csv.DictReader(csv_fp, delimiter=delimiter)
+        name_field = reader.fieldnames[0]
+        print(f'Assuming the document file names can be read from the column named {name_field}')
+
+        for row in reader:
+            doc_name = row.pop(name_field)
+            documents[doc_name] = [{'label': label, 'value': value} for label, value in row.items()]
+
+    return documents
 
 
 def create_documents(
@@ -56,6 +74,7 @@ def create_documents(
     documents_failed,
     num_threads,
     ground_truth_encoding,
+    delimiter,
 ):
     log_file = Path(documents_uploaded)
     error_file = Path(documents_failed)
@@ -64,15 +83,18 @@ def create_documents(
     if error_file.exists():
         logging.warning(f'{error_file} exists and will be appended to')
 
-    if Path(input_path).is_file():
-        documents = json.loads(Path(input_path).read_text(encoding=ground_truth_encoding))
-    elif Path(input_path).is_dir():
+    if input_path.is_file():
+        if input_path.suffix == '.json':
+            documents = json.loads(Path(input_path).read_text(encoding=ground_truth_encoding))
+        elif input_path.suffix == '.csv':
+            documents = parse_csv(input_path, delimiter=delimiter)
+    elif input_path.is_dir():
         documents = {}
         possible_suffixes = {'.json': json.loads, '.yaml': yaml.safe_load, '.yml': yaml.safe_load}
         anti_pattern = '|'.join([f'!{suffix}' for suffix in possible_suffixes])
 
         with error_file.open('a') as ef:
-            for document_path in Path(input_path).glob(f'*[{anti_pattern}]'):
+            for document_path in input_path.glob(f'*[{anti_pattern}]'):
                 for suffix, parser in possible_suffixes.items():
                     ground_truth_path = document_path.with_suffix(suffix)
                     if ground_truth_path.is_file():
@@ -115,7 +137,7 @@ def create_documents(
                 print(message)
 
             minutes_spent = (time() - start_time) / 60
-            documents_processed = n * chunk_size
+            documents_processed = (n + 1) * chunk_size
             progress = documents_processed / num_docs * 100
             print(f'{minutes_spent:.2f}m: {documents_processed}/{num_docs} docs processed | {progress:.1f}%')
 
@@ -129,6 +151,11 @@ def create_datasets_parser(subparsers):
     create_dataset_parser = subparsers.add_parser('create')
     create_dataset_parser.add_argument('--description')
     create_dataset_parser.add_argument('--name')
+    create_dataset_parser.add_argument(
+        '--metadata',
+        type=json_path,
+        help='path to json file with whatever you need, maximum limit 4kB',
+    )
     create_dataset_parser.set_defaults(cmd=post_datasets)
 
     list_datasets_parser = subparsers.add_parser('list')
@@ -136,10 +163,19 @@ def create_datasets_parser(subparsers):
     list_datasets_parser.add_argument('--next-token', '-n', default=None)
     list_datasets_parser.set_defaults(cmd=list_datasets)
 
+    get_dataset_parser = subparsers.add_parser('get')
+    get_dataset_parser.add_argument('dataset_id')
+    get_dataset_parser.set_defaults(cmd=get_dataset)
+
     update_dataset_parser = subparsers.add_parser('update')
     update_dataset_parser.add_argument('dataset_id')
     update_dataset_parser.add_argument('--name', type=nullable, default=NotProvided)
     update_dataset_parser.add_argument('--description', type=nullable, default=NotProvided)
+    update_dataset_parser.add_argument(
+        '--metadata',
+        type=json_path,
+        help='path to json file with whatever you need, maximum limit 4kB',
+    )
     update_dataset_parser.set_defaults(cmd=update_dataset)
 
     delete_dataset_parser = subparsers.add_parser('delete')
@@ -155,11 +191,14 @@ def create_datasets_parser(subparsers):
     upload_batch_to_dataset_parser.add_argument(
         'input_path',
         default=False,
+        type=Path,
         help='The input path can be provided in two ways: \n'
              '1. Path to a folder of documents (.jpg, .png, .pdf, .tiff) '
-             'and corresponding ground-truths (.json, .yaml, .yml) with the same file name \n'
+             'and corresponding ground truths (.json, .yaml, .yml) with the same file name \n'
              '2. Path to a json file containing a dictionary with the keys being the path of the actual document, '
-             'and the value being keyword arguments that will be used to create that document'
+             'and the value being keyword arguments that will be used to create that document \n'
+             '3. Path to a csv file where each row contains information about one document, '
+             'and the paths to the documents in the first column.'
     )
     upload_batch_to_dataset_parser.add_argument('--chunk-size', default=500, type=int)
     upload_batch_to_dataset_parser.add_argument(
@@ -177,6 +216,11 @@ def create_datasets_parser(subparsers):
         '--ground-truth-encoding',
         default=None,
         help='Which encoding to use for the ground truth parsing',
+    )
+    upload_batch_to_dataset_parser.add_argument(
+        '--delimiter',
+        default=',',
+        help='delimiter to use if parsing a csv file',
     )
     upload_batch_to_dataset_parser.set_defaults(cmd=create_documents)
 
