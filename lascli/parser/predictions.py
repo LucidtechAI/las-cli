@@ -19,7 +19,8 @@ def create_predictions_parser(subparsers):
 
     create_predicton_parser = subparsers.add_parser('create', formatter_class=RawTextHelpFormatter)
     create_predicton_parser.add_argument('document_id')
-    create_predicton_parser.add_argument('model_id')
+    create_predicton_parser.add_argument('model_id', help='Id of model to use for predictions')
+    create_predicton_parser.add_argument('--training-id', help='Id of training to use for predictions')
     create_predicton_parser.add_argument('--auto-rotate', action='store_true', default=False)
     create_predicton_parser.add_argument('--max-pages', type=int, default=1)
     create_predicton_parser.add_argument('--image-quality', type=str, default='LOW', choices={'LOW', 'HIGH'})
