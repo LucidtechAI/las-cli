@@ -1,5 +1,10 @@
 # Changelog
 
+## Version 7.1.0 - 2022-03-04
+
+- Added --training-id to predictions create
+- Added --training-id to models update
+
 ## Version 7.0.0 - 2022-02-23
 
 - Support csv files in datasets create-documents

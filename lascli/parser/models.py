@@ -1,6 +1,3 @@
-import json
-from pathlib import Path
-
 from las import Client
 
 from lascli.util import NotProvided, nullable, json_path
@@ -131,8 +128,8 @@ def create_models_parser(subparsers):
         type=json_path,
         help='path to json file with whatever you need, maximum limit 4kB',
     )
+    update_parser.add_argument('--training-id', help='Use training_id for model inference in POST /predictions')
     update_parser.set_defaults(cmd=update_model)
-
 
     delete_parser = subparsers.add_parser('delete')
     delete_parser.add_argument('model_id')
