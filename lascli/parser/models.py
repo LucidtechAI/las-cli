@@ -81,7 +81,7 @@ def create_models_parser(subparsers):
     create_parser.add_argument(
         '--height',
         type=int,
-        help='The number of pixels to be used for the input image heightof your model',
+        help='The number of pixels to be used for the input image height of your model',
     )
     create_parser.add_argument(
         '--preprocess-config',
