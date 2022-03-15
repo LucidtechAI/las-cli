@@ -2,6 +2,7 @@
 
 ## Version 8.0.0 - 2022-03-15
 
+- Fix bug in dataset create-documents
 - width and height is now optional in models create
 
 ## Version 7.1.0 - 2022-03-04
