@@ -1,5 +1,9 @@
 # Changelog
 
+## Version 8.0.0 - 2022-03-15
+
+- width and height is now optional in models create
+
 ## Version 7.1.0 - 2022-03-04
 
 - Added --training-id to predictions create
