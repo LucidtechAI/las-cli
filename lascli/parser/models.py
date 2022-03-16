@@ -3,19 +3,8 @@ from las import Client
 from lascli.util import NotProvided, nullable, json_path
 
 
-def create_model(
-    las_client: Client,
-    width,
-    height,
-    field_config,
-    **optional_args,
-):
-    return las_client.create_model(
-        width=width,
-        height=height,
-        field_config=field_config,
-        **optional_args
-    )
+def create_model(las_client: Client, field_config, **optional_args):
+    return las_client.create_model(field_config=field_config, **optional_args)
 
 
 def list_models(las_client: Client, max_results, next_token):
@@ -79,12 +68,20 @@ def create_models_parser(subparsers):
     parser = subparsers.add_parser('models')
     subparsers = parser.add_subparsers()
     create_parser = subparsers.add_parser('create')
-    create_parser.add_argument('width', type=int)
-    create_parser.add_argument('height', type=int)
     create_parser.add_argument(
         'field_config',
         type=json_path,
         help='path to configuration of the fields that the model will predict',
+    )
+    create_parser.add_argument(
+        '--width',
+        type=int,
+        help='The number of pixels to be used for the input image width of your model',
+    )
+    create_parser.add_argument(
+        '--height',
+        type=int,
+        help='The number of pixels to be used for the input image height of your model',
     )
     create_parser.add_argument(
         '--preprocess-config',

@@ -24,6 +24,9 @@ def group(iterable, group_size, fillvalue=None):
 
 def _create_documents_worker(t, client, dataset_id):
     doc, metadata = t
+    if isinstance(metadata, list):
+        # Assuming that the metadata is the explicit ground truth
+        metadata = {'ground_truth': metadata}
     try:
         client.create_document(content=doc, dataset_id=dataset_id, **metadata)
         return doc, True, None
@@ -137,7 +140,7 @@ def create_documents(
                 print(message)
 
             minutes_spent = (time() - start_time) / 60
-            documents_processed = (n + 1) * chunk_size
+            documents_processed = counter['uploaded'] + counter['failed']
             progress = documents_processed / num_docs * 100
             print(f'{minutes_spent:.2f}m: {documents_processed}/{num_docs} docs processed | {progress:.1f}%')
 
