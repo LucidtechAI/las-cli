@@ -2,15 +2,17 @@ import pytest
 from tests import service, util
 
 
+@pytest.mark.parametrize('width', [('--width', '800'), ()])
+@pytest.mark.parametrize('height', [('--height', '1200'), ()])
 @pytest.mark.parametrize('metadata', [('--metadata', str(util.metadata_path())), ()])
 @pytest.mark.parametrize('preprocess_config', [('-p', str(util.preprocess_config_path())), ()])
-def test_models_create(parser, client, metadata, preprocess_config, name_and_description):
+def test_models_create(parser, client, width, height, metadata, preprocess_config, name_and_description):
     args = [
         'models',
         'create',
-        '801',
-        '1281',
         f'{util.field_config_path()}',
+        *width,
+        *height,
         *metadata,
         *name_and_description,
         *preprocess_config,
