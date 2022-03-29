@@ -3,6 +3,8 @@
 ## Version 8.1.0 - 2022-03-29
 
 - Added `datasets get-documents`. This command will download all documents (PDF, JPEG etc. and JSON ground truth) to directory specified by `output_dir`
+- Show help when invoking `las` with no arguments
+- Support newer Python versions in setup.py
 
 ## Version 8.0.0 - 2022-03-15
 
