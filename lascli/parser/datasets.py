@@ -151,7 +151,7 @@ def create_documents(
 
         for n, chunk in enumerate(group(documents, chunk_size)):
             fn = partial(_create_documents_worker, client=las_client, dataset_id=dataset_id)
-            inp = [(item, documents[item]) for item in chunk if item is not None and item not in uploaded_files]
+            inp = [(item, documents[item]) for item in chunk if item not in uploaded_files]
 
             for name, uploaded, reason in executor.map(fn, inp):
                 if uploaded:
