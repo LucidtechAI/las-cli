@@ -74,7 +74,7 @@ def main():
         cmd = args.pop('cmd')
     except:
         parser.print_help()
-        exit(0)
+        exit(1)
 
     try:
         if profile:
