@@ -94,6 +94,7 @@ def main():
         print(result)
     else:
         parser.print_help()
+        exit(1)
 
 
 if __name__ == '__main__':
