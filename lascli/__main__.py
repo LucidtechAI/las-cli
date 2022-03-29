@@ -31,8 +31,8 @@ from .parser import (
 def create_parser():
     parser = argparse.ArgumentParser(
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
-        description='Command Line Interface for Cradl API, see --help for more info or use tab completion.'
-                    'Make sure you have global completion activated, '
+        description='Command Line Interface for Cradl API, see --help for more info or use tab completion. '
+                    'Make sure you have global completion activated if you want auto completion enabled, '
                     'see argcomplete docs for more information: https://kislyuk.github.io/argcomplete/'
     )
     parser.add_argument('--profile')
@@ -69,7 +69,12 @@ def main():
     args = vars(parser.parse_args())
     set_verbosity(args.pop('verbose'))
     profile = args.pop('profile', None)
-    cmd = args.pop('cmd')
+    
+    try:
+        cmd = args.pop('cmd')
+    except:
+        parser.print_help()
+        exit(0)
 
     try:
         if profile:
