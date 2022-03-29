@@ -191,10 +191,10 @@ def get_documents(las_client: Client, dataset_id, output_dir, num_threads, chunk
 
     with ThreadPoolExecutor(max_workers=num_threads) as executor:
         start_time = time()
-        futures = []
-
         documents = filter(not_downloaded, _list_all_documents_in_dataset(las_client, dataset_id))
         for chunk in group(documents, chunk_size):
+            futures = []
+            
             for document in chunk:
                 futures.append(executor.submit(_get_document_worker, las_client, document['documentId'], output_dir))
 
