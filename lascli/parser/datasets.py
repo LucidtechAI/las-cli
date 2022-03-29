@@ -182,7 +182,7 @@ def get_documents(las_client: Client, dataset_id, output_dir, num_threads, chunk
     if output_dir.exists():
         for path in output_dir.iterdir():
             already_downloaded.add(path.stem)
-        print(f'Found {len(already_downloaded)} already downloaded')
+        print(f'Found {len(already_downloaded)} documents already downloaded')
     else:
         output_dir.mkdir()
 
