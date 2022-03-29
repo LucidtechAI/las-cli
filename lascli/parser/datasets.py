@@ -165,10 +165,12 @@ def create_documents(
 
                 print(message)
 
-            minutes_spent = (time() - start_time) / 60
+            step_time = time() - start_time
+            minutes = int(step_time // 60)
+            seconds = int(step_time % 60)
             documents_processed = counter['uploaded'] + counter['failed']
             progress = documents_processed / num_docs * 100
-            print(f'{minutes_spent:.2f}m: {documents_processed}/{num_docs} docs processed | {progress:.1f}%')
+            print(f'{minutes}m{seconds}s: {documents_processed}/{num_docs} docs processed | {progress:.1f}%')
 
     return dict(counter)
 
@@ -195,7 +197,8 @@ def get_documents(las_client: Client, dataset_id, output_dir, num_threads, chunk
                 futures.append(executor.submit(_get_document_worker, las_client, document['documentId'], output_dir))
 
             for future in as_completed(futures):
-                if document := future.result():
+                document = future.result()
+                if document:
                     already_downloaded.add(document['documentId'])
 
             step_time = time() - start_time

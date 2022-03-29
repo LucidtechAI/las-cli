@@ -69,3 +69,14 @@ def test_datasets_create_documents(parser, client):
         service.create_dataset_id(),
     ]
     util.main_parser(parser, client, args)
+
+
+# TODO: Implement this properly
+@pytest.mark.skip(reason='non-standard implementation')
+def test_datasets_get_documents(parser, client):
+    args = [
+        'datasets',
+        'get-documents',
+        service.create_dataset_id(),
+    ]
+    util.main_parser(parser, client, args)
