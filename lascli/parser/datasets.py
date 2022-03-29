@@ -39,7 +39,7 @@ def _create_documents_worker(t, client, dataset_id):
 
 def _get_document_worker(las_client: Client, document_id, output_dir):
     try:
-        document = client.get_document(document_id)
+        document = las_client.get_document(document_id)
         document_content = base64.b64decode(document['content'])
         document_content_file_name = f'{document["documentId"]}.{filetype.guess_extension(document_content)}'
         (output_dir / document_content_file_name).write_bytes(document_content)
@@ -52,12 +52,12 @@ def _get_document_worker(las_client: Client, document_id, output_dir):
 
 
 def _list_all_documents_in_dataset(las_client: Client, dataset_id):
-    list_response = client.list_documents(dataset_id=dataset_id)
+    list_response = las_client.list_documents(dataset_id=dataset_id)
     yield from list_response['documents']
     next_token = list_response.get('nextToken')
 
     while next_token:
-        list_response = client.list_documents(dataset_id=dataset_id, next_token=next_token)
+        list_response = las_client.list_documents(dataset_id=dataset_id, next_token=next_token)
         yield from list_response['documents']
         next_token = list_response.get('nextToken')
 
