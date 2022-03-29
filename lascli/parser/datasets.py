@@ -207,6 +207,8 @@ def get_documents(las_client: Client, dataset_id, output_dir, num_threads, chunk
             minutes = int(step_time // 60)
             seconds = int(step_time % 60)
             print(f'{minutes}m{seconds}s: {len(already_downloaded)} downloaded')
+            
+    return {'Total downloaded documents': len(already_downloaded)}
 
 
 def create_datasets_parser(subparsers):
