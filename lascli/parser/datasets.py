@@ -54,10 +54,12 @@ def _get_document_worker(las_client: Client, document_id, output_dir):
 def _list_all_documents_in_dataset(las_client: Client, dataset_id):
     list_response = client.list_documents(dataset_id=dataset_id)
     yield from list_response['documents']
+    next_token = list_response.get('nextToken')
 
-    while next_token := list_response.get('nextToken'):
+    while next_token:
         list_response = client.list_documents(dataset_id=dataset_id, next_token=next_token)
         yield from list_response['documents']
+        next_token = list_response.get('nextToken')
 
 
 def post_datasets(las_client: Client, **optional_args):
