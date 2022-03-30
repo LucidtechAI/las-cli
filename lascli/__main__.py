@@ -4,12 +4,14 @@ import argparse
 import configparser
 import json
 import logging
+import textwrap
 
 import argcomplete
 
 from las import Client, Credentials
 from las.credentials import MissingCredentials, read_from_file
 
+from .__version__ import __version__
 from .util import NotProvided
 from .parser import (
     create_app_clients_parser,
@@ -31,12 +33,15 @@ from .parser import (
 def create_parser():
     parser = argparse.ArgumentParser(
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
-        description='Command Line Interface for Cradl API, see --help for more info or use tab completion. '
-                    'Make sure you have global completion activated if you want auto completion enabled, '
-                    'see argcomplete docs for more information: https://kislyuk.github.io/argcomplete/'
+        description=textwrap.dedent('''
+            Command Line Interface for Cradl API, see --help for more info or visit https//docs.cradl.ai. To use tab 
+            completion make sure you have global completion activated. See argcomplete docs for more information: 
+            https://kislyuk.github.io/argcomplete/
+        '''),
     )
     parser.add_argument('--profile')
     parser.add_argument('--verbose', '-v', action='count', default=0)
+    parser.add_argument('--version', action='version', version=f'%(prog)s {__version__}')
     subparsers = parser.add_subparsers()
 
     create_app_clients_parser(subparsers)
@@ -69,7 +74,7 @@ def main():
     args = vars(parser.parse_args())
     set_verbosity(args.pop('verbose'))
     profile = args.pop('profile', None)
-    
+
     try:
         cmd = args.pop('cmd')
     except:

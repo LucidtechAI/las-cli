@@ -1,3 +1,4 @@
+import pathlib
 from setuptools import setup
 
 with open('requirements.txt') as fp:
@@ -8,18 +9,23 @@ with open('README.md') as fp:
     readme = fp.read()
 
 
+about = {}
+version_file_path = pathlib.Path(__file__).parent / 'lascli' / '__version__.py'
+exec(version_file_path.read_text('utf-8'), about)
+
+
 setup(
-    name='lucidtech-las-cli',
-    version='8.1.0',
-    description='CLI for Lucidtech AI Services',
+    name=about['__title__'],
+    version=about['__version__'],
+    description=about['__description__'],
     long_description=readme,
     long_description_content_type='text/markdown',
-    license='Apache 2.0',
-    platforms='Posix; MacOS X; Windows',
-    author='Lucidtech',
-    maintainer='Magnus Aarskaug Rud',
-    maintainer_email='magnus@lucidtech.ai',
-    url='https://github.com/LucidtechAI/las-cli',
+    license=about['__license__'],
+    author=about['__author__'],
+    author_email=about['__author_email__'],
+    maintainer=about['__maintainer__'],
+    maintainer_email=about['__maintainer_email__'],
+    url=about['__url__'],
     packages=[
         'lascli',
         'lascli.parser'
@@ -30,6 +36,7 @@ setup(
         ]
     },
     install_requires=install_requires,
+    platforms='Posix; MacOS X; Windows',
     classifiers=[
         'Development Status :: 5 - Production/Stable',
         'Intended Audience :: Developers',
