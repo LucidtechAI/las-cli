@@ -1,5 +1,12 @@
 # Changelog
 
+## Version 8.2.0 - 2022-04-12
+
+- Added optional parameter `--sort-by` to `documents list`
+- Added optional parameter `--sort-by` to `predictions list`
+- Added optional parameter `--order` to `documents list`
+- Added optional parameter `--order` to `predictions list`
+
 ## Version 8.1.0 - 2022-03-29
 
 - Added `datasets get-documents`. This command will download all documents (PDF, JPEG etc. and JSON ground truth) to directory specified by `output_dir`

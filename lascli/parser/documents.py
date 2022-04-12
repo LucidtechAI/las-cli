@@ -111,6 +111,8 @@ def create_documents_parser(subparsers):
     list_documents_parser.add_argument('--dataset-id', nargs='+')
     list_documents_parser.add_argument('--max-results', '-m', type=int)
     list_documents_parser.add_argument('--next-token', '-n', type=str)
+    list_documents_parser.add_argument('--sort-by', choices={'createdTime'})
+    list_documents_parser.add_argument('--order', choices={'ascending', 'descending'})
     list_documents_parser.set_defaults(cmd=list_documents)
 
     create_document_parser = subparsers.add_parser('create')

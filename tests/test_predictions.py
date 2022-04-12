@@ -3,11 +3,15 @@ import pytest
 from tests import service, util
 
 
-def test_predictions_list(parser, client, list_defaults):
+@pytest.mark.parametrize('sort_by', [('--sort-by', 'createdTime')])
+@pytest.mark.parametrize('order', [('--order', 'ascending'), ('--order', 'descending')])
+def test_predictions_list(parser, client, list_defaults, sort_by, order):
     args = [
         'predictions',
         'list',
         *list_defaults,
+        *sort_by,
+        *order,
     ]
     util.main_parser(parser, client, args)
 

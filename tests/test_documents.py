@@ -42,13 +42,17 @@ def test_documents_update(parser, client, dataset_id, metadata, ground_truth):
 
 @pytest.mark.parametrize('dataset_id', service.optional_resource_id('dataset'))
 @pytest.mark.parametrize('consent_id', service.optional_resource_id('consent'))
-def test_documents_list(parser, client, dataset_id, consent_id, list_defaults):
+@pytest.mark.parametrize('sort_by', [('--sort-by', 'createdTime')])
+@pytest.mark.parametrize('order', [('--order', 'ascending'), ('--order', 'descending')])
+def test_documents_list(parser, client, dataset_id, consent_id, list_defaults, sort_by, order):
     args = [
         'documents',
         'list',
         *consent_id,
         *dataset_id,
         *list_defaults,
+        *sort_by,
+        *order,
     ]
     util.main_parser(parser, client, args)
 
