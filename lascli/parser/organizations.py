@@ -21,6 +21,7 @@ def create_organizations_parser(subparsers):
 
     update_parser = subparsers.add_parser('update')
     update_parser.add_argument('organization_id')
+    update_parser.add_argument('--payment-method-id')
     update_parser.add_argument('--name', type=nullable, default=NotProvided)
     update_parser.add_argument('--description', type=nullable, default=NotProvided)
     update_parser.set_defaults(cmd=update_organization)
