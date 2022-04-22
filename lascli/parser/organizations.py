@@ -7,8 +7,12 @@ def get_organization(las_client: Client, organization_id):
     return las_client.get_organization(organization_id)
 
 
-def update_organization(las_client: Client, organization_id, **optional_args):
-    return las_client.update_organization(organization_id=organization_id, **optional_args)
+def update_organization(las_client: Client, organization_id, payment_method_id, **optional_args):
+    return las_client.update_organization(
+        organization_id=organization_id, 
+        payment_method_id=payment_method_id,
+        **optional_args,
+    )
 
 
 def create_organizations_parser(subparsers):
@@ -21,6 +25,7 @@ def create_organizations_parser(subparsers):
 
     update_parser = subparsers.add_parser('update')
     update_parser.add_argument('organization_id')
+    update_parser.add_argument('--payment-method-id')
     update_parser.add_argument('--name', type=nullable, default=NotProvided)
     update_parser.add_argument('--description', type=nullable, default=NotProvided)
     update_parser.set_defaults(cmd=update_organization)

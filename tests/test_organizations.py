@@ -2,11 +2,13 @@ import pytest
 from tests import service, util
 
 
-def test_organizations_update(parser, client, name_and_description):
+@pytest.mark.parametrize('payment_method_id', [('--payment-method-id', service.create_payment_method_id()), ()])
+def test_organizations_update(parser, client, payment_method_id, name_and_description):
     args = [
         'organizations',
         'update',
         service.create_organization_id(),
+        *payment_method_id,
         *name_and_description,
     ]
 
