@@ -1,5 +1,9 @@
 # Changelog
 
+## Version 8.4.0 - 2022-05-09
+
+- Optional parameter `--training-id` in `models update` is now nullable
+
 ## Version 8.3.0 - 2022-04-22
 
 - Added `payment-methods create`

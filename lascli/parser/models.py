@@ -125,7 +125,12 @@ def create_models_parser(subparsers):
         type=json_path,
         help='path to json file with whatever you need, maximum limit 4kB',
     )
-    update_parser.add_argument('--training-id', help='Use training_id for model inference in POST /predictions')
+    update_parser.add_argument(
+        '--training-id', 
+        type=nullable,
+        default=NotProvided,
+        help='Use training_id for model inference in POST /predictions. Specify "null" to make model inactive.',
+    )
     update_parser.set_defaults(cmd=update_model)
 
     delete_parser = subparsers.add_parser('delete')
