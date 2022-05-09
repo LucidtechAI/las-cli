@@ -20,6 +20,9 @@ def get_model(las_client: Client, model_id):
 
 
 def update_model(las_client: Client, model_id, **optional_args):
+    if 'training_id' in optional_args:
+        training_id = optional_args.pop('training_id')
+        optional_args['trainingId'] = training_id
     return las_client.update_model(model_id=model_id, **optional_args)
 
 
@@ -126,7 +129,7 @@ def create_models_parser(subparsers):
         help='path to json file with whatever you need, maximum limit 4kB',
     )
     update_parser.add_argument(
-        '--training-id', 
+        '--training-id',
         type=nullable,
         default=NotProvided,
         help='Use training_id for model inference in POST /predictions. Specify "null" to make model inactive.',
