@@ -85,9 +85,9 @@ def delete_dataset(las_client: Client, dataset_id, delete_documents):
     return las_client.delete_dataset(dataset_id, delete_documents=delete_documents)
 
 
-def parse_csv(csv_path, delimiter=','):
+def parse_csv(csv_path, ground_truth_encoding, delimiter=','):
     documents = {}
-    with csv_path.open() as csv_fp:
+    with csv_path.open(encoding=ground_truth_encoding) as csv_fp:
         reader = csv.DictReader(csv_fp, delimiter=delimiter)
         name_field = reader.fieldnames[0]
         print(f'Assuming the document file names can be read from the column named {name_field}')
@@ -152,9 +152,9 @@ def _documents_from_file(input_path, delimiter, ground_truth_encoding):
     documents = {}
 
     if input_path.suffix == '.json':
-        documents = json.loads(Path(input_path).read_text(encoding=ground_truth_encoding))
+        documents = read_json(input_path, ground_truth_encoding)
     elif input_path.suffix == '.csv':
-        documents = parse_csv(input_path, delimiter=delimiter)
+        documents = parse_csv(input_path, ground_truth_encoding, delimiter=delimiter)
 
     for name in documents:
         yield (name, documents[name])
