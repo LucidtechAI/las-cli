@@ -207,10 +207,10 @@ def create_documents(
 
                 print(message)
 
-            documents_processed = counter['uploaded'] + counter['failed']
             step_time = time() - start_time
             minutes = int(step_time // 60)
             seconds = int(step_time % 60)
+            documents_processed = counter['uploaded'] + counter['failed']
             print(f'{minutes}m{seconds}s: {documents_processed} docs processed')
 
     return dict(counter)
