@@ -1,5 +1,9 @@
 # Changelog
 
+## Version 8.5.0 - 2022-05-23
+
+- Reduced memory overhead in `datasets create-documents`
+
 ## Version 8.4.0 - 2022-05-09
 
 - Optional parameter `--training-id` in `models update` is now nullable

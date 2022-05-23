@@ -12,9 +12,11 @@ from pathlib import Path
 from time import time
 
 import filetype
+import yaml
 from filetype.types.archive import Pdf
 from filetype.types.image import Png, Jpeg, Tiff
 from las import Client
+from yaml.parser import ParserError
 
 from lascli.util import NotProvided, nullable, json_path
 
@@ -97,12 +99,22 @@ def parse_csv(csv_path, delimiter=','):
     return documents
 
 
-def is_json(path, encoding):
+def read_json(path, encoding):
     try:
-        json.loads(path.read_text(encoding))
-        return True
+        return json.loads(path.read_text(encoding))
     except (UnicodeDecodeError, json.JSONDecodeError):
-        return False
+        pass
+
+
+def read_yaml(path, encoding):
+    try:
+        return yaml.safe_load(path.read_text(encoding))
+    except (UnicodeDecodeError, ParserError):
+        pass
+
+
+def read_ground_truth(path, encoding):
+    return read_json(path, encoding) or read_yaml(path, encoding)
 
 
 def _documents_from_dir(src_dir, accepted_document_types, ground_truth_encoding):
@@ -117,7 +129,7 @@ def _documents_from_dir(src_dir, accepted_document_types, ground_truth_encoding)
 
         for path in paths:
             kind = filetype.guess(path)
-            if not kind and is_json(path, ground_truth_encoding):
+            if not kind and path.suffix.lower() in ['.json', '.yaml', '.yml']:
                 if ground_truth_path:
                     print(f'Ground truth file for {name} already found (Old: {ground_truth_path} New: {path})')
                 ground_truth_path = path
@@ -133,7 +145,7 @@ def _documents_from_dir(src_dir, accepted_document_types, ground_truth_encoding)
         if not ground_truth_path:
             print(f'Missing ground truth file for {name}')
         if document_path and ground_truth_path:
-            yield (str(document_path), json.loads(ground_truth_path.read_text(ground_truth_encoding)))
+            yield (str(document_path), read_ground_truth(ground_truth_path, ground_truth_encoding))
 
 
 def _documents_from_file(input_path, delimiter, ground_truth_encoding):
@@ -194,7 +206,7 @@ def create_documents(
                     counter['failed'] += 1
 
                 print(message)
-                
+
             documents_processed = counter['uploaded'] + counter['failed']
             step_time = time() - start_time
             minutes = int(step_time // 60)
@@ -288,7 +300,7 @@ def create_datasets_parser(subparsers):
         type=Path,
         help='The input path can be provided in two ways: \n'
              '1. Path to a folder of documents (.jpg, .png, .pdf, .tiff) '
-             'and corresponding ground truths (.json) with the same file name \n'
+             'and corresponding ground truths (.json, .yaml, .yml) with the same file name \n'
              '2. Path to a json file containing a dictionary with the keys being the path of the actual document, '
              'and the value being keyword arguments that will be used to create that document \n'
              '3. Path to a csv file where each row contains information about one document, '
