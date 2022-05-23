@@ -3,9 +3,8 @@ import base64
 import csv
 import json
 import logging
-import yaml
 from argparse import ArgumentDefaultsHelpFormatter
-from collections import Counter
+from collections import Counter, defaultdict
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from functools import partial
 from itertools import zip_longest
@@ -13,6 +12,8 @@ from pathlib import Path
 from time import time
 
 import filetype
+from filetype.types.archive import Pdf
+from filetype.types.image import Png, Jpeg, Tiff
 from las import Client
 
 from lascli.util import NotProvided, nullable, json_path
@@ -25,16 +26,16 @@ def group(iterable, group_size):
     return map(lambda g: list(filter(bool, g)), zip_longest(*args, fillvalue=None))
 
 
-def _create_documents_worker(t, client, dataset_id):
-    doc, metadata = t
+def _create_documents_worker(document, client, dataset_id):
+    document_path, metadata = document
     if isinstance(metadata, list):
         # Assuming that the metadata is the explicit ground truth
         metadata = {'ground_truth': metadata}
     try:
-        client.create_document(content=doc, dataset_id=dataset_id, **metadata)
-        return doc, True, None
+        client.create_document(content=document_path, dataset_id=dataset_id, **metadata)
+        return document_path, True, None
     except Exception as e:
-        return doc, False, str(e)
+        return document_path, False, str(e)
 
 
 def _get_document_worker(las_client: Client, document_id, output_dir):
@@ -96,6 +97,57 @@ def parse_csv(csv_path, delimiter=','):
     return documents
 
 
+def is_json(path, encoding):
+    try:
+        json.loads(path.read_text(encoding))
+        return True
+    except (UnicodeDecodeError, json.JSONDecodeError):
+        return False
+
+
+def _documents_from_dir(src_dir, accepted_document_types, ground_truth_encoding):
+    grouped_paths = defaultdict(list)
+
+    for path in src_dir.iterdir():
+        grouped_paths[path.stem].append(path)
+
+    for name, paths in grouped_paths.items():
+        document_path = None
+        ground_truth_path = None
+
+        for path in paths:
+            kind = filetype.guess(path)
+            if not kind and is_json(path, ground_truth_encoding):
+                if ground_truth_path:
+                    print(f'Ground truth file for {name} already found (Old: {ground_truth_path} New: {path})')
+                ground_truth_path = path
+            elif not kind:
+                continue
+            elif any(isinstance(kind, document_type) for document_type in accepted_document_types):
+                if document_path:
+                    print(f'Document file for {name} already found (Old: {document_path} New: {path})')
+                document_path = path
+
+        if not document_path:
+            print(f'Missing document file for {name}')
+        if not ground_truth_path:
+            print(f'Missing ground truth file for {name}')
+        if document_path and ground_truth_path:
+            yield (str(document_path), json.loads(ground_truth_path.read_text(ground_truth_encoding)))
+
+
+def _documents_from_file(input_path, delimiter, ground_truth_encoding):
+    documents = {}
+
+    if input_path.suffix == '.json':
+        documents = json.loads(Path(input_path).read_text(encoding=ground_truth_encoding))
+    elif input_path.suffix == '.csv':
+        documents = parse_csv(input_path, delimiter=delimiter)
+
+    for name in documents:
+        yield (name, documents[name])
+
+
 def create_documents(
     las_client: Client,
     dataset_id,
@@ -115,29 +167,9 @@ def create_documents(
         logging.warning(f'{error_file} exists and will be appended to')
 
     if input_path.is_file():
-        if input_path.suffix == '.json':
-            documents = json.loads(Path(input_path).read_text(encoding=ground_truth_encoding))
-        elif input_path.suffix == '.csv':
-            documents = parse_csv(input_path, delimiter=delimiter)
+        documents = _documents_from_file(input_path, delimiter, ground_truth_encoding)
     elif input_path.is_dir():
-        documents = {}
-        possible_suffixes = {'.json': json.loads, '.yaml': yaml.safe_load, '.yml': yaml.safe_load}
-        anti_pattern = '|'.join([f'!{suffix}' for suffix in possible_suffixes])
-
-        with error_file.open('a') as ef:
-            for document_path in input_path.glob(f'*[{anti_pattern}]'):
-                for suffix, parser in possible_suffixes.items():
-                    ground_truth_path = document_path.with_suffix(suffix)
-                    if ground_truth_path.is_file():
-                        try:
-                            ground_truth = parser(ground_truth_path.read_text(encoding=ground_truth_encoding))
-                            documents[str(document_path)] = {'ground_truth': ground_truth}
-                            break
-                        except Exception as e:
-                            ef.write(str(ground_truth_path) + '\n')
-                            counter['failed'] += 1
-                            print(f'failed to parse {ground_truth_path}: {e}')
-
+        documents = _documents_from_dir(input_path, [Pdf, Jpeg, Png, Tiff], ground_truth_encoding)
     else:
         raise ValueError(f'input_path must be a path to either a json-file or a folder, {input_path} is not valid')
 
@@ -147,15 +179,11 @@ def create_documents(
         uploaded_files = log_file.read_text().splitlines()
 
     with log_file.open('a') as lf, error_file.open('a') as ef, ThreadPoolExecutor(max_workers=num_threads) as executor:
-        num_docs = len(documents)
+        fn = partial(_create_documents_worker, client=las_client, dataset_id=dataset_id)
         start_time = time()
-        print(f'start uploading {num_docs} document in chunks of {chunk_size}...')
 
         for n, chunk in enumerate(group(documents, chunk_size)):
-            fn = partial(_create_documents_worker, client=las_client, dataset_id=dataset_id)
-            inp = [(item, documents[item]) for item in chunk if item not in uploaded_files]
-
-            for name, uploaded, reason in executor.map(fn, inp):
+            for name, uploaded, reason in executor.map(fn, filter(lambda d: d[0] not in uploaded_files, chunk)):
                 if uploaded:
                     lf.write(name + '\n')
                     counter['uploaded'] += 1
@@ -166,13 +194,12 @@ def create_documents(
                     counter['failed'] += 1
 
                 print(message)
-
+                
+            documents_processed = counter['uploaded'] + counter['failed']
             step_time = time() - start_time
             minutes = int(step_time // 60)
             seconds = int(step_time % 60)
-            documents_processed = counter['uploaded'] + counter['failed']
-            progress = documents_processed / num_docs * 100
-            print(f'{minutes}m{seconds}s: {documents_processed}/{num_docs} docs processed | {progress:.1f}%')
+            print(f'{minutes}m{seconds}s: {documents_processed} docs processed')
 
     return dict(counter)
 
@@ -194,7 +221,7 @@ def get_documents(las_client: Client, dataset_id, output_dir, num_threads, chunk
         documents = filter(not_downloaded, _list_all_documents_in_dataset(las_client, dataset_id))
         for chunk in group(documents, chunk_size):
             futures = []
-            
+
             for document in chunk:
                 futures.append(executor.submit(_get_document_worker, las_client, document['documentId'], output_dir))
 
@@ -207,7 +234,7 @@ def get_documents(las_client: Client, dataset_id, output_dir, num_threads, chunk
             minutes = int(step_time // 60)
             seconds = int(step_time % 60)
             print(f'{minutes}m{seconds}s: {len(already_downloaded)} downloaded')
-            
+
     return {'Total downloaded documents': len(already_downloaded)}
 
 
@@ -261,7 +288,7 @@ def create_datasets_parser(subparsers):
         type=Path,
         help='The input path can be provided in two ways: \n'
              '1. Path to a folder of documents (.jpg, .png, .pdf, .tiff) '
-             'and corresponding ground truths (.json, .yaml, .yml) with the same file name \n'
+             'and corresponding ground truths (.json) with the same file name \n'
              '2. Path to a json file containing a dictionary with the keys being the path of the actual document, '
              'and the value being keyword arguments that will be used to create that document \n'
              '3. Path to a csv file where each row contains information about one document, '
