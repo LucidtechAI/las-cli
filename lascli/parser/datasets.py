@@ -194,7 +194,7 @@ def create_documents(
         fn = partial(_create_documents_worker, client=las_client, dataset_id=dataset_id)
         start_time = time()
 
-        for n, chunk in enumerate(group(documents, chunk_size)):
+        for chunk in group(documents, chunk_size):
             for name, uploaded, reason in executor.map(fn, filter(lambda d: d[0] not in uploaded_files, chunk)):
                 if uploaded:
                     lf.write(name + '\n')
