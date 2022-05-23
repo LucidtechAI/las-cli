@@ -151,9 +151,9 @@ def _documents_from_dir(src_dir, accepted_document_types, ground_truth_encoding)
 def _documents_from_file(input_path, delimiter, ground_truth_encoding):
     documents = {}
 
-    if input_path.suffix == '.json':
+    if input_path.suffix.lower() == '.json':
         documents = read_json(input_path, ground_truth_encoding)
-    elif input_path.suffix == '.csv':
+    elif input_path.suffix.lower() == '.csv':
         documents = parse_csv(input_path, ground_truth_encoding, delimiter=delimiter)
 
     for name in documents:
