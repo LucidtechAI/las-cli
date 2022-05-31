@@ -72,3 +72,18 @@ def name_and_description():
         (),
     ]
     return [n + d for n in name for d in description]
+
+
+def create_pdf():
+    return b'\x25\x50\x44\x46\2D'
+
+
+def create_jpeg():
+    return b'\xFF\xD8\xFF\xE0'
+
+
+def create_ground_truth():
+    return [
+        {'label': 'total', 'value': '100.00'},
+        {'label': 'date', 'value': '2022-05-31'},
+    ]
