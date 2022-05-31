@@ -68,19 +68,23 @@ def metadata(request):
     return request.param
 
 
+def _documents_iter(tmp_dir_path):
+    for i in range(0, 5):
+        pdf_path = tmp_dir_path / f'{i}.pdf'
+        pdf_path.write_bytes(util.create_pdf())
+        yield i, pdf_path
+
+    for i in range(5, 10):
+        jpeg_path = tmp_dir_path / f'{i}.jpeg'
+        jpeg_path.write_bytes(util.create_jpeg())
+        yield i, jpeg_path
+
+
 def documents_dir():
     with tempfile.TemporaryDirectory() as tmp_dir:
         tmp_dir_path = pathlib.Path(tmp_dir)
 
-        for i in range(0, 5):
-            pdf_path = tmp_dir_path / f'{i}.pdf'
-            pdf_path.write_bytes(util.create_pdf())
-            json_path = tmp_dir_path / f'{i}.json'
-            json_path.write_text(json.dumps(util.create_ground_truth()))
-
-        for i in range(5, 10):
-            jpeg_path = tmp_dir_path / f'{i}.jpeg'
-            jpeg_path.write_bytes(util.create_jpeg())
+        for i, document in _documents_iter(tmp_dir_path):
             json_path = tmp_dir_path / f'{i}.json'
             json_path.write_text(json.dumps(util.create_ground_truth()))
 
@@ -92,15 +96,8 @@ def json_and_documents_dir():
         tmp_dir_path = pathlib.Path(tmp_dir)
         json_data = {}
 
-        for i in range(0, 5):
-            pdf_path = tmp_dir_path / f'{i}.pdf'
-            pdf_path.write_bytes(util.create_pdf())
-            json_data[str(pdf_path)] = util.create_ground_truth()
-
-        for i in range(5, 10):
-            jpeg_path = tmp_dir_path / f'{i}.jpeg'
-            jpeg_path.write_bytes(util.create_jpeg())
-            json_data[str(jpeg_path)] = util.create_ground_truth()
+        for _, document in _documents_iter(tmp_dir_path):
+            json_data[str(document)] = util.create_ground_truth()
 
         json_file_path = tmp_dir_path / 'data.json'
         json_file_path.write_text(json.dumps(json_data))
@@ -118,17 +115,9 @@ def csv_and_documents_dir():
             writer = csv.DictWriter(csvfile, fieldnames=field_names)
             writer.writeheader()
 
-            for i in range(0, 5):
-                pdf_path = tmp_dir_path / f'{i}.pdf'
-                pdf_path.write_bytes(util.create_pdf())
+            for _, document in _documents_iter(tmp_dir_path):
                 fields = {gt['label']: gt['value'] for gt in util.create_ground_truth()}
-                writer.writerow({'Document_name': str(pdf_path), **fields})
-
-            for i in range(5, 10):
-                jpeg_path = tmp_dir_path / f'{i}.jpeg'
-                jpeg_path.write_bytes(util.create_jpeg())
-                fields = {gt['label']: gt['value'] for gt in util.create_ground_truth()}
-                writer.writerow({'Document_name': str(jpeg_path), **fields})
+                writer.writerow({'Document_name': str(document), **fields})
                 
         yield str(csv_file_path)
 
