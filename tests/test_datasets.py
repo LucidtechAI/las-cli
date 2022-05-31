@@ -60,13 +60,12 @@ def test_datasets_delete(parser, client, delete_documents):
     util.main_parser(parser, client, args)
 
 
-# TODO: Implement this properly
-@pytest.mark.skip(reason='non-standard implementation')
-def test_datasets_create_documents(parser, client):
+def test_datasets_create_documents(parser, client, create_documents_input):
     args = [
         'datasets',
         'create-documents',
         service.create_dataset_id(),
+        create_documents_input,
     ]
     util.main_parser(parser, client, args)
 
