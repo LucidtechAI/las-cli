@@ -1,5 +1,10 @@
 # Changelog
 
+## Version 9.0.0 - 2022-06-02
+
+- Added optional parameter `--use-cache` to `datasets create-documents`
+- Don't use cached data by default in `datasets create-documents`
+
 ## Version 8.5.0 - 2022-05-23
 
 - Reduced memory overhead in `datasets create-documents`
