@@ -171,13 +171,11 @@ def create_documents(
     num_threads,
     ground_truth_encoding,
     delimiter,
+    use_cache,
 ):
     log_file = Path(documents_uploaded)
     error_file = Path(documents_failed)
     counter = Counter()
-
-    if error_file.exists():
-        logging.warning(f'{error_file} exists and will be appended to')
 
     if input_path.is_file():
         documents = _documents_from_file(input_path, delimiter, ground_truth_encoding)
@@ -186,12 +184,17 @@ def create_documents(
     else:
         raise ValueError(f'input_path must be a path to either a json-file or a folder, {input_path} is not valid')
 
-    if log_file.exists():
-        uploaded_files = set(log_file.read_text().splitlines())
-    else:
-        uploaded_files = set()
+    uploaded_files = set()
+    mode = 'w'
 
-    with log_file.open('a') as lf, error_file.open('a') as ef, ThreadPoolExecutor(max_workers=num_threads) as executor:
+    if use_cache:
+        mode = 'a'
+        if error_file.exists():
+            logging.warning(f'{error_file} exists and will be appended to')
+        if log_file.exists():
+            uploaded_files = set(log_file.read_text().splitlines())
+
+    with log_file.open(mode) as lf, error_file.open(mode) as ef, ThreadPoolExecutor(max_workers=num_threads) as executor:
         fn = partial(_create_documents_worker, client=las_client, dataset_id=dataset_id)
         start_time = time()
 
@@ -328,6 +331,11 @@ def create_datasets_parser(subparsers):
         '--delimiter',
         default=',',
         help='delimiter to use if parsing a csv file',
+    )
+    create_documents_parser.add_argument(
+        '--use-cache',
+        action='store_true',
+        help='Use cached data from last time this command was executed in this folder.',
     )
     create_documents_parser.set_defaults(cmd=create_documents)
 
