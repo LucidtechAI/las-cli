@@ -185,16 +185,15 @@ def create_documents(
         raise ValueError(f'input_path must be a path to either a json-file or a folder, {input_path} is not valid')
 
     uploaded_files = set()
-    mode = 'w'
 
     if use_cache:
         mode = 'a'
-        if error_file.exists():
-            logging.warning(f'{error_file} exists and will be appended to')
         if log_file.exists():
             uploaded_files = set(log_file.read_text().splitlines())
+    else:
+        mode = 'w'
 
-    with log_file.open(mode) as lf, error_file.open(mode) as ef, ThreadPoolExecutor(max_workers=num_threads) as executor:
+    with log_file.open(mode) as lf, error_file.open('w') as ef, ThreadPoolExecutor(max_workers=num_threads) as executor:
         fn = partial(_create_documents_worker, client=las_client, dataset_id=dataset_id)
         start_time = time()
 
