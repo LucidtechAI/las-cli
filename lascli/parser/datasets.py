@@ -129,7 +129,7 @@ def _documents_from_dir(src_dir, accepted_document_types, ground_truth_encoding)
         ground_truth_path = None
 
         for path in paths:
-            kind = filetype.guess(str(path))
+            kind = filetype.guess(path)
             if not kind and path.suffix.lower() in ['.json', '.yaml', '.yml']:
                 if ground_truth_path:
                     print(f'Ground truth file for {name} already found (Old: {ground_truth_path} New: {path})')
