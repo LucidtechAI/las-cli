@@ -1,5 +1,9 @@
 # Changelog
 
+## Version 9.0.1 - 2022-06-30
+
+- Fix bug in datasets create-documents
+
 ## Version 9.0.0 - 2022-06-02
 
 - Added optional parameter `--use-cache` to `datasets create-documents`
