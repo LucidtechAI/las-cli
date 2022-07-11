@@ -100,7 +100,7 @@ def create_secrets(las_client: Client, create_tag: str, username: str = None, pa
             'LAS_CLIENT_ID': las_client.credentials.client_id,
             'LAS_CLIENT_SECRET': las_client.credentials.client_secret,
             'LAS_AUTH_ENDPOINT': las_client.credentials.auth_endpoint,
-            'LAS_API_ENDPOINT': las_client.credentials.api_endpoint
+            'LAS_API_ENDPOINT': las_client.credentials.api_endpoint,
         },
         name='Cradl credentials',
         description=create_tag,

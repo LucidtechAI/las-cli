@@ -68,8 +68,11 @@ def test_workflows_delete(parser, client):
 @patch('las.Client.create_asset')
 @patch('las.Client.create_dataset')
 def test_workflows_create_default(
-    create_dataset, create_asset, create_secret,
-    parser, client
+    create_dataset, 
+    create_asset, 
+    create_secret,
+    parser, 
+    client,
 ):
     args = [
         'workflows',
@@ -96,9 +99,16 @@ def test_workflows_create_default(
 @patch('las.Client.create_asset')
 @patch('las.Client.create_dataset')
 def test_workflows_create_default_cleanup(
-    create_dataset, create_asset, create_secret, create_workflow,
-    delete_asset, delete_secret, delete_transition, delete_dataset,
-    parser, client
+    create_dataset, 
+    create_asset, 
+    create_secret, 
+    create_workflow,
+    delete_asset, 
+    delete_secret, 
+    delete_transition, 
+    delete_dataset,
+    parser, 
+    client,
 ):
     args = [
         'workflows',
