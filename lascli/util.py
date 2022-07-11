@@ -39,7 +39,7 @@ def capture_return(dest: list):
             nonlocal dest 
 
             val = f(*args, **kwargs)
-            dest += val if isinstance(val, collections.abc.Iterable) else [val]
+            dest += val if isinstance(val, (list, tuple)) else [val]
             return val
     
         return wrapper

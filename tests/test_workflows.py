@@ -64,15 +64,26 @@ def test_workflows_delete(parser, client):
     util.main_parser(parser, client, args)
 
 
-def test_workflows_create_default(parser, client):
+@patch('las.Client.create_secret')
+@patch('las.Client.create_asset')
+@patch('las.Client.create_dataset')
+def test_workflows_create_default(
+    create_dataset, create_asset, create_secret,
+    parser, client
+):
     args = [
         'workflows',
         'create-default',
         'My workflow',
         '--from-model-id',
         service.create_model_id()
-    ]
+ ]
     
+    create_asset.return_value = {'assetId': service.create_asset_id()}
+    create_secret.return_value = {'secretId': service.create_secret_id()}
+    create_dataset.return_value = {'datasetId': service.create_dataset_id()}
+
+   
     util.main_parser(parser, client, args)
     
 
@@ -81,8 +92,12 @@ def test_workflows_create_default(parser, client):
 @patch('las.Client.delete_secret')
 @patch('las.Client.delete_asset')
 @patch('las.Client.create_workflow', side_effect=RuntimeError('Foobar'))
+@patch('las.Client.create_secret')
+@patch('las.Client.create_asset')
+@patch('las.Client.create_dataset')
 def test_workflows_create_default_cleanup(
-    create_workflow, delete_asset, delete_secret, delete_transition, delete_dataset,
+    create_dataset, create_asset, create_secret, create_workflow,
+    delete_asset, delete_secret, delete_transition, delete_dataset,
     parser, client
 ):
     args = [
@@ -92,7 +107,11 @@ def test_workflows_create_default_cleanup(
         '--from-model-id',
         service.create_model_id()
     ]
- 
+
+    create_asset.return_value = {'assetId': service.create_asset_id()}
+    create_secret.return_value = {'secretId': service.create_secret_id()}
+    create_dataset.return_value = {'datasetId': service.create_dataset_id()}
+
     util.main_parser(parser, client, args)
     
     delete_asset.assert_called()

@@ -131,7 +131,7 @@ def create_assets(las_client: Client, model_id: str, create_tag: str):
 @capture_return(dest=created_ids['datasets'])
 def create_dataset(las_client: Client, name: str, create_tag: str):
     dataset = las_client.create_dataset(name=name, description=f'Dataset for {name} model. {create_tag}')
-    return [dataset['datasetId']]
+    return dataset['datasetId']
     
 
 @wrap_output(start_msg='Creating transitions ...', end_msg='Done')
@@ -155,6 +155,8 @@ def create_transitions(
         },
         **docker_auth_details
     }
+    
+    print(common_params)
     
     preprocess = las_client.create_transition(
         transition_type='docker',
@@ -208,7 +210,7 @@ def create_default_workflow(las_client: Client, name: str, **optional_args):
                 las_client=las_client,
                 name=f'Dataset for {name}',
                 create_tag=create_tag,
-            )[0]
+            )
 
             preprocess_id, postprocess_id, manual_id = create_transitions(
                 las_client=las_client,
