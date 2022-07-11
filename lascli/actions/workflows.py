@@ -93,7 +93,7 @@ def create_secrets(las_client: Client, create_tag: str, username: str = None, pa
             },
             name='Docker credentials',
             description=create_tag,
-        )['secretId']
+        )
         
     cradl_secret = las_client.create_secret(
         data={
@@ -139,36 +139,40 @@ def create_dataset(las_client: Client, name: str, create_tag: str):
 def create_transitions(
     las_client: Client, 
     cradl_secret_id: str, 
-    parameters: dict,
+    name: str,
+    model_id: str,
+    dataset_id: str,
+    preprocess_image: str,
+    postprocess_image: str,
+    field_config_asset_id: str,
+    remote_component_asset_id: str,
     create_tag: str, 
     created_ids: dict, 
     docker_secret_id: str = None,
 ):
-    docker_auth_details = {'secretId': parameters['secret_id']} if parameters.get('secret_id') else {}
+    docker_auth_details = {'secretId': docker_secret_id} if docker_secret_id else {}
 
     common_params = {
         'environmentSecrets': [cradl_secret_id],
         'environment': {
-            'MODEL_ID': parameters['model_id'],
-            'FIELD_CONFIG_ASSET_ID': parameters['field_config_asset_id'],
-            'DATASET_ID': parameters['dataset_id'],
+            'MODEL_ID': model_id,
+            'FIELD_CONFIG_ASSET_ID': field_config_asset_id,
+            'DATASET_ID': dataset_id,
         },
         **docker_auth_details
     }
     
-    print(common_params)
-    
     preprocess = las_client.create_transition(
         transition_type='docker',
-        parameters={'imageUrl': parameters['preprocess_image'], **common_params},
-        name=f'Preprocess transition for workflow {parameters["name"]}',
+        parameters={'imageUrl': preprocess_image, **common_params},
+        name=f'Preprocess transition for workflow {name}',
         description=create_tag,
     )
     
     postprocess = las_client.create_transition(
         transition_type='docker',
-        parameters={'imageUrl': parameters['postprocess_image'], **common_params},
-        name=f'Postprocess transition for workflow {parameters["name"]}',
+        parameters={'imageUrl': postprocess_image, **common_params},
+        name=f'Postprocess transition for workflow {name}',
         description=create_tag,
     )
 
@@ -176,11 +180,11 @@ def create_transitions(
         transition_type='manual',
         parameters={
             'assets': {
-                'jsRemoteComponent': parameters['remote_component_asset_id'],
-                'fieldConfig': parameters['field_config_asset_id']
+                'jsRemoteComponent': remote_component_asset_id,
+                'fieldConfig': field_config_asset_id
             }
         },
-        name=parameters['name'],
+        name=name,
         description=create_tag,
     )
 
@@ -215,16 +219,14 @@ def create_default_workflow(las_client: Client, name: str, **optional_args):
             preprocess_id, postprocess_id, manual_id = create_transitions(
                 las_client=las_client,
                 cradl_secret_id=cradl_secret_id,
-                parameters={
-                    'remote_component_asset_id': component_asset_id,
-                    'field_config_asset_id': field_config_id,
-                    'secret_id': docker_secret_id,
-                    'preprocess_image': optional_args['preprocess_image'],
-                    'postprocess_image': optional_args['postprocess_image'],
-                    'name': name,
-                    'model_id': model_id,
-                    'dataset_id': dataset_id,
-                },
+                remote_component_asset_id=component_asset_id,
+                field_config_asset_id=field_config_id,
+                docker_secret_id=docker_secret_id,
+                preprocess_image=optional_args['preprocess_image'],
+                postprocess_image=optional_args['postprocess_image'],
+                name=name,
+                model_id=model_id,
+                dataset_id=dataset_id,
                 create_tag=create_tag,
                 created_ids=created_ids,
             )
@@ -253,8 +255,11 @@ def create_default_workflow(las_client: Client, name: str, **optional_args):
             
             def for_each(fn, resources, msg=None):
                 for resource in filter(lambda r: r, resources or []):
-                    print(f'{msg} ({resource}) ...')
-                    fn(resource)
+                    try:
+                        print(f'{msg} ({resource}) ...')
+                        fn(resource)
+                    except Exception as e:
+                        traceback.print_exc(e)
 
             for_each(las_client.delete_transition, created_ids.get('transitions', []), msg='Deleting transition')
             for_each(las_client.delete_secret, created_ids.get('secrets'), msg='Deleting secret')
