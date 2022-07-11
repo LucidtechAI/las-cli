@@ -19,8 +19,11 @@ created_ids = collections.defaultdict(list)
  
 
 def create_workflow_spec(
-    model_id: str, preprocess_transition_id: str, manual_transition_id: str,
-    postprocess_transition_id: str, tag: str 
+    model_id: str, 
+    preprocess_transition_id: str, 
+    manual_transition_id: str,
+    postprocess_transition_id: str, 
+    tag: str,
 ):
     return {
         'definition': {
@@ -71,7 +74,7 @@ def create_field_config(las_client: Client, model_id: str):
                 'automated': 0.95,
                 'high': 0.80,
                 'medium': 0.5,
-                'low': 0.3
+                'low': 0.3,
             }
         }
 
@@ -80,7 +83,7 @@ def create_field_config(las_client: Client, model_id: str):
 
 @wrap_output(start_msg='Creating secrets ...', end_msg='Done')
 @capture_return(dest=created_ids['secrets'])
-def create_secrets(las_client: Client, create_tag: str, username: str=None, password: str=None):
+def create_secrets(las_client: Client, create_tag: str, username: str = None, password: str = None):
     docker_secret = {}
     if username and password:
         docker_secret = las_client.create_secret({
@@ -104,13 +107,13 @@ def create_assets(las_client: Client, model_id: str, create_tag: str):
     component = las_client.create_asset(
         content=requests.get(COMPONENT_ASSEST_URI).content,
         name='Manual validation component',
-        description=create_tag
+        description=create_tag,
     )
     
     field_config = las_client.create_asset(
         content=json.dumps(create_field_config(las_client, model_id)).encode('utf-8'),
         name='Field configuration',
-        description=create_tag
+        description=create_tag,
     )
 
     return component['assetId'], field_config['assetId']
@@ -126,8 +129,12 @@ def create_dataset(las_client: Client, name: str, create_tag: str):
 @wrap_output(start_msg='Creating transitions ...', end_msg='Done')
 @capture_return(dest=created_ids['transitions'])
 def create_transitions(
-    las_client: Client, cradl_secret_id: str, parameters: dict,
-    create_tag: str, created_ids: dict, docker_secret_id: str=None
+    las_client: Client, 
+    cradl_secret_id: str, 
+    parameters: dict,
+    create_tag: str, 
+    created_ids: dict, 
+    docker_secret_id: str = None,
 ):
     docker_auth_details = {'secretId': parameters['secret_id']} if parameters.get('secret_id') else {}
 
@@ -136,7 +143,7 @@ def create_transitions(
         'environment': {
             'MODEL_ID': parameters['model_id'],
             'FIELD_CONFIG_ASSET_ID': parameters['field_config_asset_id'],
-            'DATASET_ID': parameters['dataset_id']
+            'DATASET_ID': parameters['dataset_id'],
         },
         **docker_auth_details
     }
@@ -145,20 +152,20 @@ def create_transitions(
         transition_type='docker',
         parameters={'imageUrl': parameters['preprocess_image'], **common_params},
         name=f'Preprocess transition for workflow {parameters["name"]}',
-        description=create_tag
+        description=create_tag,
     )
     
     postprocess = las_client.create_transition(
         transition_type='docker',
         parameters={'imageUrl': parameters['postprocess_image'], **common_params},
         name=f'Postprocess transition for workflow {parameters["name"]}',
-        description=create_tag
+        description=create_tag,
     )
 
     manual = las_client.create_transition('manual', parameters={
         'assets': {
             'jsRemoteComponent': parameters['remote_component_asset_id'],
-            'fieldConfig': parameters['field_config_asset_id']
+            'fieldConfig': parameters['field_config_asset_id'],
         }
     }, name=parameters['name'], description=create_tag)
 
@@ -168,7 +175,7 @@ def create_transitions(
 
 def create_default_workflow(las_client: Client, name: str, **optional_args):
     timestamp = datetime.now()
-    create_tag = f'Created by CLI at {timestamp.isoformat()} (tag:{str(uuid.uuid4())})'
+    create_tag = f'Created by CLI at {timestamp.isoformat()} (tag:{uuid.uuid4().hex})'
     
     if model_id := optional_args.get('from_model_id'):
         try:
@@ -188,7 +195,7 @@ def create_default_workflow(las_client: Client, name: str, **optional_args):
             dataset_id = create_dataset(
                 las_client=las_client,
                 name=f'Dataset for {name}',
-                create_tag=create_tag
+                create_tag=create_tag,
             )[0]
 
             preprocess_id, postprocess_id, manual_id = create_transitions(
@@ -202,7 +209,7 @@ def create_default_workflow(las_client: Client, name: str, **optional_args):
                     'postprocess_image': optional_args['postprocess_image'],
                     'name': name,
                     'model_id': model_id,
-                    'dataset_id': dataset_id
+                    'dataset_id': dataset_id,
                 },
                 create_tag=create_tag,
                 created_ids=created_ids,
@@ -213,13 +220,13 @@ def create_default_workflow(las_client: Client, name: str, **optional_args):
                 preprocess_transition_id=preprocess_id,
                 postprocess_transition_id=postprocess_id,
                 manual_transition_id=manual_id,
-                tag=create_tag
+                tag=create_tag,
             )
             
             workflow = las_client.create_workflow(
                 specification=spec,
                 name=name,
-                description=create_tag
+                description=create_tag,
             )
 
             print(f'Created workflow {workflow["workflowId"]}')
