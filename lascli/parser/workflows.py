@@ -1,9 +1,11 @@
 import json
 import pathlib
+import datetime
 
 from las import Client
 
 from lascli.util import nullable, NotProvided, json_path
+from lascli.actions import workflows
 
 
 def list_workflows(las_client: Client, **optional_args):
@@ -128,5 +130,13 @@ def create_workflows_parser(subparsers):
     delete_workflow_execution_parser.add_argument('workflow_id')
     delete_workflow_execution_parser.add_argument('execution_id')
     delete_workflow_execution_parser.set_defaults(cmd=delete_workflow_execution)
+    
+    create_default_workflow_parser = subparsers.add_parser('create-default')
+    create_default_action = create_default_workflow_parser.add_mutually_exclusive_group(required=False)
+    create_default_action.add_argument('--from-model-id', help='The model to generate the workflow for')
+    create_default_workflow_parser.add_argument('name', help='Name of the workflow')
+    create_default_workflow_parser.add_argument('--preprocess-image', default='lucidtechai/preprocess', help='Docker image for the preprocessor')
+    create_default_workflow_parser.add_argument('--postprocess-image', default='lucidtechai/postprocess', help='Docker image for the postprocessor')
+    create_default_workflow_parser.set_defaults(cmd=workflows.create_default_workflow)
 
     return parser
