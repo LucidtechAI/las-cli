@@ -1,5 +1,5 @@
-import contextlib
 import collections
+import contextlib
 import json
 from pathlib import Path
 
@@ -24,9 +24,10 @@ def wrap_output(start_msg: str, end_msg: str, error_msg: str=None):
         print(start_msg, end=' ')
         yield
     except:
-        raise
         if error_msg:
             print(error_msg)
+
+        raise
     finally:
         print(end_msg)
     

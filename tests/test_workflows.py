@@ -1,6 +1,6 @@
 import pytest
-from unittest.mock import patch
 from tests import service, util
+from unittest.mock import patch
 
 
 @pytest.mark.parametrize('completed_config', [('--completed-config', str(util.transition_parameters_path())), ()])

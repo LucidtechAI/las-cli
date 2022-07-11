@@ -1,6 +1,6 @@
+import datetime
 import json
 import pathlib
-import datetime
 
 from las import Client
 

@@ -1,9 +1,9 @@
+import collections
 import json
 import os
 import requests
-import uuid
-import collections
 import traceback
+import uuid
 
 from datetime import datetime
 from las import Client
@@ -86,17 +86,25 @@ def create_field_config(las_client: Client, model_id: str):
 def create_secrets(las_client: Client, create_tag: str, username: str = None, password: str = None):
     docker_secret = {}
     if username and password:
-        docker_secret = las_client.create_secret({
-            'username': username,
-            'password': password 
-        }, name='Docker credentials', description=create_tag)['secretId']
+        docker_secret = las_client.create_secret(
+            data={
+                'username': username,
+                'password': password 
+            },
+            name='Docker credentials',
+            description=create_tag,
+        )['secretId']
         
-    cradl_secret = las_client.create_secret({
-        'LAS_CLIENT_ID': las_client.credentials.client_id,
-        'LAS_CLIENT_SECRET': las_client.credentials.client_secret,
-        'LAS_AUTH_ENDPOINT': las_client.credentials.auth_endpoint,
-        'LAS_API_ENDPOINT': las_client.credentials.api_endpoint
-    }, name='Cradl credentials', description=create_tag)
+    cradl_secret = las_client.create_secret(
+        data={
+            'LAS_CLIENT_ID': las_client.credentials.client_id,
+            'LAS_CLIENT_SECRET': las_client.credentials.client_secret,
+            'LAS_AUTH_ENDPOINT': las_client.credentials.auth_endpoint,
+            'LAS_API_ENDPOINT': las_client.credentials.api_endpoint
+        },
+        name='Cradl credentials',
+        description=create_tag,
+    )
         
     return docker_secret.get('secretId'), cradl_secret['secretId']
 
@@ -162,13 +170,17 @@ def create_transitions(
         description=create_tag,
     )
 
-    manual = las_client.create_transition('manual', parameters={
-        'assets': {
-            'jsRemoteComponent': parameters['remote_component_asset_id'],
-            'fieldConfig': parameters['field_config_asset_id'],
-        }
-    }, name=parameters['name'], description=create_tag)
-
+    manual = las_client.create_transition(
+        transition_type='manual',
+        parameters={
+            'assets': {
+                'jsRemoteComponent': parameters['remote_component_asset_id'],
+                'fieldConfig': parameters['field_config_asset_id']
+            }
+        },
+        name=parameters['name'],
+        description=create_tag,
+    )
 
     return preprocess['transitionId'], postprocess['transitionId'], manual['transitionId']
 
