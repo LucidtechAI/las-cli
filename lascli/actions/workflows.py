@@ -194,8 +194,9 @@ def create_transitions(
 def create_default_workflow(las_client: Client, name: str, **optional_args):
     timestamp = datetime.now()
     create_tag = f'Created by CLI at {timestamp.isoformat()} (tag:{uuid.uuid4().hex})'
+    model_id = optional_args.get('from_model_id')
     
-    if model_id := optional_args.get('from_model_id'):
+    if model_id:
         try:
             docker_secret_id, cradl_secret_id = create_secrets(
                 las_client=las_client,
