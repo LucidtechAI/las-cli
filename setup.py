@@ -28,7 +28,8 @@ setup(
     url=about['__url__'],
     packages=[
         'lascli',
-        'lascli.parser'
+        'lascli.actions',
+        'lascli.parser',
     ],
     entry_points={
         'console_scripts': [
