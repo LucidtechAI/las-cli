@@ -1,5 +1,9 @@
 # Changelog
 
+## Version 9.1.2 - 2022-09-07
+
+- Added `originalFilePath` to `metadata` in `datasets create-documents`
+
 ## Version 9.0.1 - 2022-06-30
 
 - Fix bug in datasets create-documents
