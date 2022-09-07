@@ -29,12 +29,13 @@ def group(iterable, group_size):
 
 
 def _create_documents_worker(document, client, dataset_id):
-    document_path, metadata = document
-    if isinstance(metadata, list):
+    document_path, attributes = document
+    if isinstance(attributes, list):
         # Assuming that the metadata is the explicit ground truth
-        metadata = {'ground_truth': metadata}
+        attributes = {'ground_truth': attributes}
+    attributes['metadata'] = {'originalFilePath': document_path}
     try:
-        client.create_document(content=document_path, dataset_id=dataset_id, **metadata)
+        client.create_document(content=document_path, dataset_id=dataset_id, **attributes)
         return document_path, True, None
     except Exception as e:
         return document_path, False, str(e)
