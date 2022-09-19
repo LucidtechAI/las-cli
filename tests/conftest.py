@@ -91,37 +91,6 @@ def documents_dir():
         yield tmp_dir
 
 
-def json_and_documents_dir():
-    with tempfile.TemporaryDirectory() as tmp_dir:
-        tmp_dir_path = pathlib.Path(tmp_dir)
-        json_data = {}
-
-        for _, document in _documents_iter(tmp_dir_path):
-            json_data[str(document)] = util.create_ground_truth()
-
-        json_file_path = tmp_dir_path / 'data.json'
-        json_file_path.write_text(json.dumps(json_data))
-        
-        yield str(json_file_path)
-        
-
-def csv_and_documents_dir():
-    with tempfile.TemporaryDirectory() as tmp_dir:
-        tmp_dir_path = pathlib.Path(tmp_dir)
-        csv_file_path = tmp_dir_path / 'data.csv'
-
-        with csv_file_path.open('w') as csvfile:
-            field_names = ['Document_name', 'total', 'date']
-            writer = csv.DictWriter(csvfile, fieldnames=field_names)
-            writer.writeheader()
-
-            for _, document in _documents_iter(tmp_dir_path):
-                fields = {gt['label']: gt['value'] for gt in util.create_ground_truth()}
-                writer.writerow({'Document_name': str(document), **fields})
-                
-        yield str(csv_file_path)
-
-
-@pytest.fixture(params=[documents_dir, json_and_documents_dir, csv_and_documents_dir])
+@pytest.fixture(params=[documents_dir])
 def create_documents_input(request):
     yield from request.param()

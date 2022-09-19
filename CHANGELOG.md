@@ -1,5 +1,10 @@
 # Changelog
 
+## Version 9.1.3 - 2022-09-19
+
+- You may now upload documents without ground truth using `datasets create-documents`
+- Improved the caching mechanism of `datasets create-documents`
+
 ## Version 9.1.2 - 2022-09-07
 
 - Added `originalFilePath` to `metadata` in `datasets create-documents`

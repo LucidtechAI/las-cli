@@ -60,12 +60,14 @@ def test_datasets_delete(parser, client, delete_documents):
     util.main_parser(parser, client, args)
 
 
-def test_datasets_create_documents(parser, client, create_documents_input):
+@pytest.mark.parametrize('no_cache', [('--no-cache',), ()])
+def test_datasets_create_documents(parser, client, create_documents_input, no_cache):
     args = [
         'datasets',
         'create-documents',
         service.create_dataset_id(),
         create_documents_input,
+        *no_cache,
     ]
     util.main_parser(parser, client, args)
 
