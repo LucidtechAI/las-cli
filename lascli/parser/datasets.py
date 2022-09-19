@@ -35,7 +35,7 @@ def _create_documents_worker(
     client,
     dataset_id,
     ground_truth_encoding,
-    already_uploaded
+    already_uploaded,
 ):
     document_path, ground_truth_path = document_and_ground_truth_path
     attributes = {'metadata': {'originalFilePath': document_path}}
