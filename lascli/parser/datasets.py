@@ -52,7 +52,8 @@ def _create_documents_worker(
     document_digest = hashlib.md5(document_content).hexdigest()
 
     try:
-        if document_id := already_uploaded.get(document_digest, {}).get('document_id'):
+        if document_digest in already_uploaded:
+            document_id = already_uploaded[document_digest]['document_id']
             cached_ground_truth_digest = already_uploaded[document_digest]['ground_truth_digest']
             new_ground_truth = ground_truth_digest and ground_truth_digest != cached_ground_truth_digest
             if new_ground_truth:
