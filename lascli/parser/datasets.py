@@ -1,11 +1,13 @@
 import argparse
 import base64
 import csv
+import hashlib
 import json
 import logging
 from argparse import ArgumentDefaultsHelpFormatter
 from collections import Counter, defaultdict
 from concurrent.futures import ThreadPoolExecutor, as_completed
+from contextlib import contextmanager
 from functools import partial
 from itertools import zip_longest
 from pathlib import Path
@@ -28,17 +30,54 @@ def group(iterable, group_size):
     return map(lambda g: list(filter(bool, g)), zip_longest(*args, fillvalue=None))
 
 
-def _create_documents_worker(document, client, dataset_id):
-    document_path, attributes = document
-    if isinstance(attributes, list):
-        # Assuming that the metadata is the explicit ground truth
-        attributes = {'ground_truth': attributes}
-    attributes['metadata'] = {'originalFilePath': document_path}
+def _create_documents_worker(
+    document_and_ground_truth_path,
+    client,
+    dataset_id,
+    ground_truth_encoding,
+    already_uploaded
+):
+    document_path, ground_truth_path = document_and_ground_truth_path
+    attributes = {'metadata': {'originalFilePath': document_path}}
+
+    if ground_truth_path:
+        ground_truth = read_ground_truth(ground_truth_path, ground_truth_encoding)
+        attributes['ground_truth'] = ground_truth
+        serialized_ground_truth = json.dumps(ground_truth, separators=(',', ':'), sort_keys=True).encode()
+        ground_truth_digest = hashlib.md5(serialized_ground_truth).hexdigest()
+    else:
+        ground_truth_digest = None
+
+    document_content = Path(document_path).read_bytes()
+    document_digest = hashlib.md5(document_content).hexdigest()
+
     try:
-        client.create_document(content=document_path, dataset_id=dataset_id, **attributes)
-        return document_path, True, None
+        if document_id := already_uploaded.get(document_digest, {}).get('document_id'):
+            cached_ground_truth_digest = already_uploaded[document_digest]['ground_truth_digest']
+            new_ground_truth = ground_truth_digest and ground_truth_digest != cached_ground_truth_digest
+            if new_ground_truth:
+                client.update_document(document_id, dataset_id=dataset_id, **attributes)
+                print(f'successfully updated {document_path} with {ground_truth_path}')
+            else:
+                print(f'Already uploaded')
+        else:
+            document_id = client.create_document(
+                content=document_content,
+                dataset_id=dataset_id,
+                **attributes,
+            )['documentId']
+            if ground_truth_path:
+                print(f'successfully uploaded {document_path} and {ground_truth_path}')
+            else:
+                print(f'successfully uploaded {document_path} without ground truth')
+        already_uploaded[document_digest] = {
+            'document_id': document_id,
+            'ground_truth_digest': ground_truth_digest,
+        }
+        return document_id, document_digest, ground_truth_digest
     except Exception as e:
-        return document_path, False, str(e)
+        print(f'failed to upload {document_path}: {e}')
+        return None, document_digest, ground_truth_digest
 
 
 def _get_document_worker(las_client: Client, document_id, output_dir):
@@ -118,7 +157,7 @@ def read_ground_truth(path, encoding):
     return read_json(path, encoding) or read_yaml(path, encoding)
 
 
-def _documents_from_dir(src_dir, accepted_document_types, ground_truth_encoding):
+def _documents_from_dir(src_dir, accepted_document_types):
     grouped_paths = defaultdict(list)
 
     for path in src_dir.iterdir():
@@ -142,24 +181,34 @@ def _documents_from_dir(src_dir, accepted_document_types, ground_truth_encoding)
                     print(f'Document file for {name} already found (Old: {document_path} New: {path})')
                 document_path = path
 
-        if not document_path:
+        if document_path:
+            yield str(document_path), ground_truth_path
+        else:
             print(f'Missing document file for {name}')
-        if not ground_truth_path:
-            print(f'Missing ground truth file for {name}')
-        if document_path and ground_truth_path:
-            yield (str(document_path), read_ground_truth(ground_truth_path, ground_truth_encoding))
 
 
-def _documents_from_file(input_path, delimiter, ground_truth_encoding):
-    documents = {}
+@contextmanager
+def cache(input_path, no_cache):
+    cache_file = Path.home() / '.lucidtech' / 'cache' / hashlib.md5(str(input_path).encode()).hexdigest()
+    cache_file.parent.mkdir(exist_ok=True)
+    already_uploaded = defaultdict(dict)
 
-    if input_path.suffix.lower() == '.json':
-        documents = read_json(input_path, ground_truth_encoding)
-    elif input_path.suffix.lower() == '.csv':
-        documents = parse_csv(input_path, ground_truth_encoding, delimiter=delimiter)
+    if cache_file.exists():
+        if no_cache:
+            cache_file.unlink()
+        else:
+            for line in cache_file.read_text().splitlines():
+                try:
+                    document_id, document_digest, ground_truth_digest = line.split(' ')
+                    already_uploaded[document_digest] = {
+                        'document_id': document_id,
+                        'ground_truth_digest': ground_truth_digest if ground_truth_digest != '-' else None,
+                    }
+                except ValueError:
+                    pass
 
-    for name in documents:
-        yield (name, documents[name])
+    with cache_file.open('a') as cache_fp:
+        yield already_uploaded, cache_fp
 
 
 def create_documents(
@@ -172,45 +221,32 @@ def create_documents(
     num_threads,
     ground_truth_encoding,
     delimiter,
-    use_cache,
+    no_cache,
 ):
-    log_file = Path(documents_uploaded)
-    error_file = Path(documents_failed)
     counter = Counter()
 
-    if input_path.is_file():
-        documents = _documents_from_file(input_path, delimiter, ground_truth_encoding)
-    elif input_path.is_dir():
-        documents = _documents_from_dir(input_path, [Pdf, Jpeg, Png, Tiff], ground_truth_encoding)
+    if input_path.is_dir():
+        documents = _documents_from_dir(input_path, [Pdf, Jpeg, Png, Tiff])
     else:
-        raise ValueError(f'input_path must be a path to either a json-file or a folder, {input_path} is not valid')
+        raise ValueError(f'input_path must be a path to a directory. {input_path} is not valid')
 
-    uploaded_files = set()
-
-    if use_cache:
-        mode = 'a'
-        if log_file.exists():
-            uploaded_files = set(log_file.read_text().splitlines())
-    else:
-        mode = 'w'
-
-    with log_file.open(mode) as lf, error_file.open('w') as ef, ThreadPoolExecutor(max_workers=num_threads) as executor:
-        fn = partial(_create_documents_worker, client=las_client, dataset_id=dataset_id)
+    with cache(input_path, no_cache) as (already_uploaded, cache_fp), ThreadPoolExecutor(max_workers=num_threads) as executor:
+        fn = partial(
+            _create_documents_worker,
+            client=las_client,
+            dataset_id=dataset_id,
+            ground_truth_encoding=ground_truth_encoding,
+            already_uploaded=already_uploaded,
+        )
         start_time = time()
 
         for chunk in group(documents, chunk_size):
-            for name, uploaded, reason in executor.map(fn, filter(lambda d: d[0] not in uploaded_files, chunk)):
-                if uploaded:
-                    lf.write(name + '\n')
+            for document_id, document_digest, ground_truth_digest in executor.map(fn, chunk):
+                if document_id:
+                    cache_fp.write(f'{document_id} {document_digest} {ground_truth_digest or "-"}\n')
                     counter['uploaded'] += 1
-                    message = f'successfully uploaded {name}'
                 else:
-                    ef.write(name + '\n')
-                    message = f'failed to upload {name}: {reason}'
                     counter['failed'] += 1
-
-                print(message)
-
             step_time = time() - start_time
             minutes = int(step_time // 60)
             seconds = int(step_time % 60)
@@ -333,7 +369,7 @@ def create_datasets_parser(subparsers):
         help='delimiter to use if parsing a csv file',
     )
     create_documents_parser.add_argument(
-        '--use-cache',
+        '--no-cache',
         action='store_true',
         help='Use cached data from last time this command was executed in this folder.',
     )
