@@ -191,7 +191,7 @@ def _documents_from_dir(src_dir, accepted_document_types):
 @contextmanager
 def cache(input_path, no_cache):
     cache_file = Path.home() / '.lucidtech' / 'cache' / hashlib.md5(str(input_path).encode()).hexdigest()
-    cache_file.parent.mkdir(exist_ok=True)
+    cache_file.parent.mkdir(parents=True, exist_ok=True)
     already_uploaded = defaultdict(dict)
 
     if cache_file.exists():
