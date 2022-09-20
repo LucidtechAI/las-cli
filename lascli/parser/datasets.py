@@ -43,7 +43,7 @@ def temporary_directory():
     tmp_dir = _cache_dir() / uuid4().hex
     tmp_dir.mkdir(exist_ok=False)
     yield tmp_dir
-    shutil.rmtree(tmp_dir)
+    #shutil.rmtree(tmp_dir)
 
 
 def _create_documents_worker(
