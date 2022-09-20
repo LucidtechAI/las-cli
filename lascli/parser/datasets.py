@@ -4,7 +4,6 @@ import csv
 import hashlib
 import json
 import logging
-import shutil
 from argparse import ArgumentDefaultsHelpFormatter
 from collections import Counter, defaultdict
 from concurrent.futures import ThreadPoolExecutor, as_completed
@@ -38,28 +37,17 @@ def _cache_dir():
     return cache_dir
 
 
-@contextmanager
-def temporary_directory():
-    tmp_dir = _cache_dir() / uuid4().hex
-    tmp_dir.mkdir(exist_ok=False)
-    try:
-        yield tmp_dir
-    finally:
-        shutil.rmtree(tmp_dir)
-
-
 def _create_documents_worker(
-    document_and_ground_truth_path,
+    document_path_and_ground_truth,
     client,
     dataset_id,
     ground_truth_encoding,
     already_uploaded,
 ):
-    document_path, ground_truth_path = document_and_ground_truth_path
+    document_path, ground_truth = document_path_and_ground_truth
     attributes = {'metadata': {'originalFilePath': str(document_path)}}
 
-    if ground_truth_path:
-        ground_truth = read_ground_truth(ground_truth_path, ground_truth_encoding)
+    if ground_truth:
         attributes['ground_truth'] = ground_truth
         serialized_ground_truth = json.dumps(ground_truth, separators=(',', ':'), sort_keys=True).encode()
         ground_truth_digest = hashlib.md5(serialized_ground_truth).hexdigest()
@@ -76,7 +64,7 @@ def _create_documents_worker(
             new_ground_truth = ground_truth_digest and ground_truth_digest != cached_ground_truth_digest
             if new_ground_truth:
                 client.update_document(document_id, dataset_id=dataset_id, **attributes)
-                print(f'successfully updated {document_path} with {ground_truth_path}')
+                print(f'successfully updated {document_path} with ground_truth')
             else:
                 print(f'Already uploaded')
         else:
@@ -85,8 +73,8 @@ def _create_documents_worker(
                 dataset_id=dataset_id,
                 **attributes,
             )['documentId']
-            if ground_truth_path:
-                print(f'successfully uploaded {document_path} and {ground_truth_path}')
+            if ground_truth:
+                print(f'successfully uploaded {document_path} with ground_truth')
             else:
                 print(f'successfully uploaded {document_path} without ground truth')
         already_uploaded[document_digest] = {
@@ -162,7 +150,7 @@ def read_ground_truth(path, encoding):
     return read_json(path, encoding) or read_yaml(path, encoding)
 
 
-def _documents_from_dir(src_dir, accepted_document_types):
+def _documents_from_dir(src_dir, accepted_document_types, ground_truth_encoding):
     grouped_paths = defaultdict(list)
 
     for path in src_dir.iterdir():
@@ -187,22 +175,20 @@ def _documents_from_dir(src_dir, accepted_document_types):
                 document_path = path
 
         if document_path:
-            yield document_path, ground_truth_path
+            yield document_path, read_ground_truth(ground_truth_path, ground_truth_encoding)
         elif ground_truth_path:
             print(f'Missing document file for {ground_truth_path}')
 
 
 def read_csv(path, document_path_column, accepted_document_types, delimiter, encoding):
-    with path.open('r') as csv_file, temporary_directory() as tmp_dir:
+    with path.open('r') as csv_file:
         reader = csv.DictReader(csv_file, delimiter=delimiter)
         for row in reader:
             document_path = row.pop(document_path_column)
             ground_truth = [{'label': k, 'value': v} for k, v in row.items()]
-            ground_truth_path = tmp_dir / f'{uuid4().hex}.json'
-            ground_truth_path.write_text(json.dumps(ground_truth))
             kind = filetype.guess(document_path)
             if any(isinstance(kind, document_type) for document_type in accepted_document_types):
-                yield Path(document_path), ground_truth_path
+                yield Path(document_path), ground_truth
             else:
                 print(f'Document {document_path} is not one of the accepted document types {accepted_document_types}')
 
@@ -267,6 +253,7 @@ def create_documents(
         documents = _documents_from_dir(
             src_dir=input_path,
             accepted_document_types=accepted_document_types,
+            ground_truth_encoding=ground_truth_encoding,
         )
     else:
         raise ValueError(f'input_path must be a path to a file or directory. {input_path} is not valid')
@@ -281,18 +268,18 @@ def create_documents(
             already_uploaded=already_uploaded,
         )
         start_time = time()
-
-        for document_id, document_digest, ground_truth_digest in executor.map(fn, documents):
-            if document_id:
-                cache_fp.write(f'{document_id} {document_digest} {ground_truth_digest or "-"}\n')
-                counter['uploaded'] += 1
-            else:
-                counter['failed'] += 1
-        step_time = time() - start_time
-        minutes = int(step_time // 60)
-        seconds = int(step_time % 60)
-        documents_processed = counter['uploaded'] + counter['failed']
-        print(f'{minutes}m{seconds}s: {documents_processed} docs processed')
+        for chunk in group(documents, chunk_size):
+            for document_id, document_digest, ground_truth_digest in executor.map(fn, chunk):
+                if document_id:
+                    cache_fp.write(f'{document_id} {document_digest} {ground_truth_digest or "-"}\n')
+                    counter['uploaded'] += 1
+                else:
+                    counter['failed'] += 1
+            step_time = time() - start_time
+            minutes = int(step_time // 60)
+            seconds = int(step_time % 60)
+            documents_processed = counter['uploaded'] + counter['failed']
+            print(f'{minutes}m{seconds}s: {documents_processed} docs processed')
 
     return dict(counter)
 
