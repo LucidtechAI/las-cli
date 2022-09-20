@@ -4,6 +4,7 @@ import csv
 import hashlib
 import json
 import logging
+import textwrap
 from argparse import ArgumentDefaultsHelpFormatter
 from collections import Counter, defaultdict
 from concurrent.futures import ThreadPoolExecutor, as_completed
@@ -366,13 +367,14 @@ def create_datasets_parser(subparsers):
         'input_path',
         default=False,
         type=Path,
-        help='The input path can be provided in two ways: \n'
-             '1. Path to a folder of documents (.jpg, .png, .pdf, .tiff) '
-             'and corresponding ground truths (.json, .yaml, .yml) with the same file name \n'
-             '2. Path to a json file containing a dictionary with the keys being the path of the actual document, '
-             'and the value being keyword arguments that will be used to create that document \n'
-             '3. Path to a csv file where each row contains information about one document, '
-             'and the paths to the documents in the first column.'
+        help=textwrap.dedent(
+            'The input path can be provided in two ways: \n'
+            '1. Path to a folder of documents (.jpeg, .png, .pdf, .tiff) and corresponding ground truths (.json, .yaml, '
+            '.yml) with the same file name \n'
+            '2. Path to a csv file where each row contains ground truth values for the document and one column '
+            '(specified by --document-path-column) contains the path to the document (.jpeg, .png, .pdf, .tiff) for '
+            'that row.'
+        ),
     )
     create_documents_parser.add_argument('--chunk-size', default=500, type=int)
     create_documents_parser.add_argument(
