@@ -4,7 +4,7 @@ import csv
 import hashlib
 import json
 import logging
-import tempfile
+import shutil
 from argparse import ArgumentDefaultsHelpFormatter
 from collections import Counter, defaultdict
 from concurrent.futures import ThreadPoolExecutor, as_completed
@@ -36,6 +36,14 @@ def _cache_dir():
     cache_dir = Path.home() / '.lucidtech' / 'cache'
     cache_dir.mkdir(parents=True, exist_ok=True)
     return cache_dir
+
+
+@contextmanager
+def temporary_directory():
+    tmp_dir = _cache_dir() / uuid4().hex
+    tmp_dir.mkdir(exist_ok=False)
+    yield tmp_dir
+    shutil.rmtree(tmp_dir)
 
 
 def _create_documents_worker(
@@ -183,7 +191,7 @@ def _documents_from_dir(src_dir, accepted_document_types):
 
 
 def read_csv(path, document_path_column, accepted_document_types, delimiter, encoding):
-    with path.open('r') as csv_file, tempfile.TemporaryDirectory() as tmp_dir:
+    with path.open('r') as csv_file, temporary_directory() as tmp_dir:
         reader = csv.DictReader(csv_file, delimiter=delimiter)
         for row in reader:
             document_path = row.pop(document_path_column)
