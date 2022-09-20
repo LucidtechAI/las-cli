@@ -4,6 +4,7 @@ import csv
 import hashlib
 import json
 import logging
+import tempfile
 from argparse import ArgumentDefaultsHelpFormatter
 from collections import Counter, defaultdict
 from concurrent.futures import ThreadPoolExecutor, as_completed
@@ -12,6 +13,7 @@ from functools import partial
 from itertools import zip_longest
 from pathlib import Path
 from time import time
+from uuid import uuid4
 
 import filetype
 import yaml
@@ -27,7 +29,13 @@ def group(iterable, group_size):
     # See https://docs.python.org/3/library/itertools.html
     # group('ABCDEFG', 4) --> ABCD EFG
     args = [iter(iterable)] * group_size
-    return map(lambda g: list(filter(bool, g)), zip_longest(*args, fillvalue=None))
+    return map(lambda g: filter(bool, g), zip_longest(*args, fillvalue=None))
+
+
+def _cache_dir():
+    cache_dir = Path.home() / '.lucidtech' / 'cache'
+    cache_dir.mkdir(parents=True, exist_ok=True)
+    return cache_dir
 
 
 def _create_documents_worker(
@@ -38,7 +46,7 @@ def _create_documents_worker(
     already_uploaded,
 ):
     document_path, ground_truth_path = document_and_ground_truth_path
-    attributes = {'metadata': {'originalFilePath': document_path}}
+    attributes = {'metadata': {'originalFilePath': str(document_path)}}
 
     if ground_truth_path:
         ground_truth = read_ground_truth(ground_truth_path, ground_truth_encoding)
@@ -48,7 +56,7 @@ def _create_documents_worker(
     else:
         ground_truth_digest = None
 
-    document_content = Path(document_path).read_bytes()
+    document_content = document_path.read_bytes()
     document_digest = hashlib.md5(document_content).hexdigest()
 
     try:
@@ -126,20 +134,6 @@ def delete_dataset(las_client: Client, dataset_id, delete_documents):
     return las_client.delete_dataset(dataset_id, delete_documents=delete_documents)
 
 
-def parse_csv(csv_path, ground_truth_encoding, delimiter=','):
-    documents = {}
-    with csv_path.open(encoding=ground_truth_encoding) as csv_fp:
-        reader = csv.DictReader(csv_fp, delimiter=delimiter)
-        name_field = reader.fieldnames[0]
-        print(f'Assuming the document file names can be read from the column named {name_field}')
-
-        for row in reader:
-            doc_name = row.pop(name_field)
-            documents[doc_name] = [{'label': label, 'value': value} for label, value in row.items()]
-
-    return documents
-
-
 def read_json(path, encoding):
     try:
         return json.loads(path.read_text(encoding))
@@ -183,15 +177,40 @@ def _documents_from_dir(src_dir, accepted_document_types):
                 document_path = path
 
         if document_path:
-            yield str(document_path), ground_truth_path
-        else:
-            print(f'Missing document file for {name}')
+            yield document_path, ground_truth_path
+        elif ground_truth_path:
+            print(f'Missing document file for {ground_truth_path}')
+
+
+def read_csv(path, document_path_column, accepted_document_types, delimiter, encoding):
+    with path.open('r') as csv_file, tempfile.TemporaryDirectory() as tmp_dir:
+        reader = csv.DictReader(csv_file, delimiter=delimiter)
+        for row in reader:
+            document_path = row.pop(document_path_column)
+            ground_truth = [{'label': k, 'value': v} for k, v in row.items()]
+            ground_truth_path = Path(tmp_dir) / f'{uuid4().hex}.json'
+            ground_truth_path.write_text(json.dumps(ground_truth))
+            kind = filetype.guess(document_path)
+            if any(isinstance(kind, document_type) for document_type in accepted_document_types):
+                yield Path(document_path), ground_truth_path
+            else:
+                print(f'Document {document_path} is not one of the accepted document types {accepted_document_types}')
+
+
+def _documents_from_file(src_file, document_path_column, accepted_document_types, delimiter, ground_truth_encoding):
+    if src_file.suffix == '.csv':
+        yield from read_csv(
+            path=src_file,
+            document_path_column=document_path_column,
+            accepted_document_types=accepted_document_types,
+            delimiter=delimiter,
+            encoding=ground_truth_encoding,
+        )
 
 
 @contextmanager
 def cache(input_path, no_cache):
-    cache_file = Path.home() / '.lucidtech' / 'cache' / hashlib.md5(str(input_path).encode()).hexdigest()
-    cache_file.parent.mkdir(parents=True, exist_ok=True)
+    cache_file = _cache_dir() / hashlib.md5(str(input_path).encode()).hexdigest()
     already_uploaded = defaultdict(dict)
 
     if cache_file.exists():
@@ -222,15 +241,27 @@ def create_documents(
     num_threads,
     ground_truth_encoding,
     delimiter,
+    document_path_column,
     no_cache,
 ):
-    counter = Counter()
-
-    if input_path.is_dir():
-        documents = _documents_from_dir(input_path, [Pdf, Jpeg, Png, Tiff])
+    accepted_document_types = [Pdf, Jpeg, Png, Tiff]
+    if input_path.is_file():
+        documents = _documents_from_file(
+            src_file=input_path,
+            document_path_column=document_path_column,
+            accepted_document_types=accepted_document_types,
+            delimiter=delimiter,
+            ground_truth_encoding=ground_truth_encoding,
+        )
+    elif input_path.is_dir():
+        documents = _documents_from_dir(
+            src_dir=input_path,
+            accepted_document_types=accepted_document_types,
+        )
     else:
-        raise ValueError(f'input_path must be a path to a directory. {input_path} is not valid')
+        raise ValueError(f'input_path must be a path to a file or directory. {input_path} is not valid')
 
+    counter = Counter()
     with cache(input_path, no_cache) as (already_uploaded, cache_fp), ThreadPoolExecutor(max_workers=num_threads) as executor:
         fn = partial(
             _create_documents_worker,
@@ -241,18 +272,17 @@ def create_documents(
         )
         start_time = time()
 
-        for chunk in group(documents, chunk_size):
-            for document_id, document_digest, ground_truth_digest in executor.map(fn, chunk):
-                if document_id:
-                    cache_fp.write(f'{document_id} {document_digest} {ground_truth_digest or "-"}\n')
-                    counter['uploaded'] += 1
-                else:
-                    counter['failed'] += 1
-            step_time = time() - start_time
-            minutes = int(step_time // 60)
-            seconds = int(step_time % 60)
-            documents_processed = counter['uploaded'] + counter['failed']
-            print(f'{minutes}m{seconds}s: {documents_processed} docs processed')
+        for document_id, document_digest, ground_truth_digest in executor.map(fn, documents):
+            if document_id:
+                cache_fp.write(f'{document_id} {document_digest} {ground_truth_digest or "-"}\n')
+                counter['uploaded'] += 1
+            else:
+                counter['failed'] += 1
+        step_time = time() - start_time
+        minutes = int(step_time // 60)
+        seconds = int(step_time % 60)
+        documents_processed = counter['uploaded'] + counter['failed']
+        print(f'{minutes}m{seconds}s: {documents_processed} docs processed')
 
     return dict(counter)
 
@@ -368,6 +398,11 @@ def create_datasets_parser(subparsers):
         '--delimiter',
         default=',',
         help='delimiter to use if parsing a csv file',
+    )
+    create_documents_parser.add_argument(
+        '--document-path-column',
+        default='document_path',
+        help='Column in which the document path is specified if parsing a csv file',
     )
     create_documents_parser.add_argument(
         '--no-cache',
