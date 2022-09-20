@@ -205,8 +205,8 @@ def _documents_from_file(src_file, document_path_column, accepted_document_types
 
 
 @contextmanager
-def cache(input_path, no_cache):
-    cache_file = _cache_dir() / hashlib.md5(str(input_path).encode()).hexdigest()
+def cache(dataset_id, input_path, no_cache):
+    cache_file = _cache_dir() / hashlib.md5((dataset_id + str(input_path)).encode()).hexdigest()
     already_uploaded = defaultdict(dict)
 
     if cache_file.exists():
@@ -259,7 +259,7 @@ def create_documents(
         raise ValueError(f'input_path must be a path to a file or directory. {input_path} is not valid')
 
     counter = Counter()
-    with cache(input_path, no_cache) as (already_uploaded, cache_fp), ThreadPoolExecutor(max_workers=num_threads) as executor:
+    with cache(dataset_id, input_path, no_cache) as (already_uploaded, cache_fp), ThreadPoolExecutor(max_workers=num_threads) as executor:
         fn = partial(
             _create_documents_worker,
             client=las_client,

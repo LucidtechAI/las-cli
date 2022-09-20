@@ -77,16 +77,6 @@ def create_models_parser(subparsers):
         help='path to configuration of the fields that the model will predict',
     )
     create_parser.add_argument(
-        '--width',
-        type=int,
-        help='The number of pixels to be used for the input image width of your model',
-    )
-    create_parser.add_argument(
-        '--height',
-        type=int,
-        help='The number of pixels to be used for the input image height of your model',
-    )
-    create_parser.add_argument(
         '--preprocess-config',
         '-p',
         type=json_path,
@@ -113,8 +103,6 @@ def create_models_parser(subparsers):
         type=json_path,
         help='path to configuration of the fields that the model will predict',
     )
-    update_parser.add_argument('--width', type=int)
-    update_parser.add_argument('--height', type=int)
     update_parser.add_argument(
         '--preprocess-config',
         '-p',
