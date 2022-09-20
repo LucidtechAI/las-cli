@@ -42,8 +42,10 @@ def _cache_dir():
 def temporary_directory():
     tmp_dir = _cache_dir() / uuid4().hex
     tmp_dir.mkdir(exist_ok=False)
-    yield tmp_dir
-    #shutil.rmtree(tmp_dir)
+    try:
+        yield tmp_dir
+    finally:
+        shutil.rmtree(tmp_dir)
 
 
 def _create_documents_worker(
@@ -196,7 +198,7 @@ def read_csv(path, document_path_column, accepted_document_types, delimiter, enc
         for row in reader:
             document_path = row.pop(document_path_column)
             ground_truth = [{'label': k, 'value': v} for k, v in row.items()]
-            ground_truth_path = Path(tmp_dir) / f'{uuid4().hex}.json'
+            ground_truth_path = tmp_dir / f'{uuid4().hex}.json'
             ground_truth_path.write_text(json.dumps(ground_truth))
             kind = filetype.guess(document_path)
             if any(isinstance(kind, document_type) for document_type in accepted_document_types):
