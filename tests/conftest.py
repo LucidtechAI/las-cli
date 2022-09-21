@@ -84,13 +84,32 @@ def documents_dir():
     with tempfile.TemporaryDirectory() as tmp_dir:
         tmp_dir_path = pathlib.Path(tmp_dir)
 
-        for i, document in _documents_iter(tmp_dir_path):
+        for i, _ in _documents_iter(tmp_dir_path):
             json_path = tmp_dir_path / f'{i}.json'
             json_path.write_text(json.dumps(util.create_ground_truth()))
 
         yield tmp_dir
 
 
-@pytest.fixture(params=[documents_dir])
+def documents_file():
+    with tempfile.TemporaryDirectory() as tmp_dir:
+        tmp_dir_path = pathlib.Path(tmp_dir)
+        csv_path = tmp_dir_path / 'data.csv'
+
+        ground_truth = util.create_ground_truth()
+        field_names = [gt['label'] for gt in ground_truth] + ['document_path']
+
+        with csv_path.open('w') as csv_file:
+            writer = csv.DictWriter(csv_file, fieldnames=field_names)
+            writer.writeheader()
+            for i, document_path in _documents_iter(tmp_dir_path):
+                row = {gt['label']: gt['value'] for gt in ground_truth}
+                row['document_path'] = str(document_path)
+                writer.writerow(row)
+        
+        yield str(csv_path)
+
+
+@pytest.fixture(params=[documents_dir, documents_file])
 def create_documents_input(request):
     yield from request.param()

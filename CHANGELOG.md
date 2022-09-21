@@ -1,5 +1,10 @@
 # Changelog
 
+## Version 9.1.4 - 2022-09-20
+
+- Added CSV support in `datasets create-documents`
+- Removed deprecated `--width` and `--height` from `models create` and `models update`
+
 ## Version 9.1.3 - 2022-09-19
 
 - You may now upload documents without ground truth using `datasets create-documents`
