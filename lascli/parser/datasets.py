@@ -39,13 +39,13 @@ def _cache_dir():
 
 
 def _create_documents_worker(
-    document_path_and_ground_truth,
+    document_path,
+    ground_truth,
     client,
     dataset_id,
     ground_truth_encoding,
     already_uploaded,
 ):
-    document_path, ground_truth = document_path_and_ground_truth
     attributes = {'metadata': {'originalFilePath': str(document_path)}}
 
     if ground_truth:
@@ -203,6 +203,9 @@ def _documents_from_file(src_file, document_path_column, accepted_document_types
             delimiter=delimiter,
             encoding=ground_truth_encoding,
         )
+    else:
+        print('Only CSV file or directory is supported. Aborting.')
+        exit(1)
 
 
 @contextmanager
@@ -270,7 +273,7 @@ def create_documents(
         )
         start_time = time()
         for chunk in group(documents, chunk_size):
-            for document_id, document_digest, ground_truth_digest in executor.map(fn, chunk):
+            for document_id, document_digest, ground_truth_digest in executor.map(fn, *zip(*chunk)):
                 if document_id:
                     cache_fp.write(f'{document_id} {document_digest} {ground_truth_digest or "-"}\n')
                     counter['uploaded'] += 1
