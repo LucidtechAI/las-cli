@@ -210,7 +210,7 @@ def _documents_from_file(src_file, document_path_column, accepted_document_types
 
 @contextmanager
 def cache(dataset_id, input_path, no_cache):
-    cache_file = _cache_dir() / hashlib.md5((dataset_id + str(input_path)).encode()).hexdigest()
+    cache_file = _cache_dir() / hashlib.md5(dataset_id.encode()).hexdigest()
     already_uploaded = defaultdict(dict)
 
     if cache_file.exists():
