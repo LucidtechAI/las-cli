@@ -23,11 +23,22 @@ def test_transitions_create(parser, client, transition_type, in_schema, out_sche
 @pytest.mark.parametrize('in_schema', [('--in-schema', str(util.schema_path())), ()])
 @pytest.mark.parametrize('out_schema', [('--out-schema', str(util.schema_path())), ()])
 @pytest.mark.parametrize('assets', [('--assets', str(util.assets_folder() / 'assets.json')), ()])
-@pytest.mark.parametrize('environment', [('--environment', str(util.assets_folder() / 'secret.json')), ()])
+@pytest.mark.parametrize('image_url', [('--image-url', 'image:url'), ()])
+@pytest.mark.parametrize('secret_id', [
+    ('--secret-id', service.create_secret_id()),
+    ('--secret-id', 'null'),
+    (),
+])
+@pytest.mark.parametrize('environment', [
+    ('--environment', str(util.assets_folder() / 'secret.json')),
+    ('--environment', 'null'),
+    (),
+])
 @pytest.mark.parametrize('environment_secrets', [
     ('--environment-secrets', service.create_secret_id(), service.create_secret_id()),
     ('--environment-secrets', service.create_secret_id()),
-    ()
+    ('--environment-secrets', 'null'),
+    (),
 ])
 def test_transitions_update(
     parser,
@@ -36,6 +47,8 @@ def test_transitions_update(
     out_schema,
     name_and_description,
     assets,
+    image_url,
+    secret_id,
     environment,
     environment_secrets,
 ):
@@ -47,6 +60,8 @@ def test_transitions_update(
         *out_schema,
         *name_and_description,
         *assets,
+        *image_url,
+        *secret_id,
         *environment,
         *environment_secrets,
     ]
