@@ -10,6 +10,7 @@
 - Now supporting `transitions update --environment-secrets null` to clear all environment secrets from a transition
 - Added `--from-start-time` to `workflows list-executions`
 - Added `--to-start-time` to `workflows list-executions`
+- Added shorthand `-p` for `--profile`
 
 ## Version 9.1.4 - 2022-09-20
 
