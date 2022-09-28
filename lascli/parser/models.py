@@ -109,8 +109,8 @@ def create_models_parser(subparsers):
         type=json_path,
         help='path to configuration of the step before the prediction',
     )
-    update_parser.add_argument('--name', type=nullable, default=NotProvided)
-    update_parser.add_argument('--description', type=nullable, default=NotProvided)
+    update_parser.add_argument('--name', type=nullable(str), default=NotProvided)
+    update_parser.add_argument('--description', type=nullable(str), default=NotProvided)
     update_parser.add_argument(
         '--metadata',
         type=json_path,
@@ -118,7 +118,7 @@ def create_models_parser(subparsers):
     )
     update_parser.add_argument(
         '--training-id',
-        type=nullable,
+        type=nullable(str),
         default=NotProvided,
         help='Use training_id for model inference in POST /predictions. Specify "null" to make model inactive.',
     )
@@ -152,8 +152,8 @@ def create_models_parser(subparsers):
     update_data_bundles_parser = subparsers.add_parser('update-data-bundle')
     update_data_bundles_parser.add_argument('model_id')
     update_data_bundles_parser.add_argument('data_bundle_id')
-    update_data_bundles_parser.add_argument('--name', type=nullable, default=NotProvided)
-    update_data_bundles_parser.add_argument('--description', type=nullable, default=NotProvided)
+    update_data_bundles_parser.add_argument('--name', type=nullable(str), default=NotProvided)
+    update_data_bundles_parser.add_argument('--description', type=nullable(str), default=NotProvided)
     update_data_bundles_parser.set_defaults(cmd=update_data_bundle)
 
     delete_data_bundles_parser = subparsers.add_parser('delete-data-bundle')
@@ -185,7 +185,7 @@ def create_models_parser(subparsers):
     update_training_parser.add_argument('training_id')
     update_training_parser.add_argument('--cancel', action='store_true', default=False)
     update_training_parser.add_argument('--name')
-    update_training_parser.add_argument('--description', type=nullable, default=NotProvided)
+    update_training_parser.add_argument('--description', type=nullable(str), default=NotProvided)
     update_training_parser.add_argument(
         '--metadata',
         type=json_path,

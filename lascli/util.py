@@ -8,10 +8,12 @@ class NotProvided:
     pass
 
 
-def nullable(value):
-    if isinstance(value, str) and value == 'null':
-        return None
-    return value
+def nullable(_type=str):
+    def _nullable(value):
+        if isinstance(value, str) and value == 'null':
+            return None
+        return _type(value)
+    return _nullable
 
 
 def json_path(path):

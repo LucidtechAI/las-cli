@@ -55,8 +55,8 @@ def create_app_clients_parser(subparsers):
 
     update_app_client_parser = subparsers.add_parser('update')
     update_app_client_parser.add_argument('app_client_id')
-    update_app_client_parser.add_argument('--name', type=nullable, default=NotProvided)
-    update_app_client_parser.add_argument('--description', type=nullable, default=NotProvided)
+    update_app_client_parser.add_argument('--name', type=nullable(str), default=NotProvided)
+    update_app_client_parser.add_argument('--description', type=nullable(str), default=NotProvided)
     update_app_client_parser.set_defaults(cmd=update_app_client)
 
     delete_app_client_parser = subparsers.add_parser('delete')

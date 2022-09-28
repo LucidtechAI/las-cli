@@ -60,8 +60,8 @@ def create_secrets_parser(subparsers):
     update_secret_value_group = update_secret_parser.add_mutually_exclusive_group(required=False)
     update_secret_value_group.add_argument('--secret-data', metavar='KEY=VALUE', nargs='+')
     update_secret_value_group.add_argument('--secret-path', type=str, help='Path to JSON file')
-    update_secret_parser.add_argument('--name', type=nullable, default=NotProvided)
-    update_secret_parser.add_argument('--description', type=nullable, default=NotProvided)
+    update_secret_parser.add_argument('--name', type=nullable(str), default=NotProvided)
+    update_secret_parser.add_argument('--description', type=nullable(str), default=NotProvided)
     update_secret_parser.set_defaults(cmd=update_secret)
 
     delete_secret_parser = subparsers.add_parser('delete')

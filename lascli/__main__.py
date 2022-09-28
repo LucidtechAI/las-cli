@@ -40,7 +40,7 @@ def create_parser():
             https://kislyuk.github.io/argcomplete/
         '''),
     )
-    parser.add_argument('--profile')
+    parser.add_argument('--profile', '-p')
     parser.add_argument('--verbose', '-v', action='count', default=0)
     parser.add_argument('--version', action='version', version=f'%(prog)s {__version__}')
     subparsers = parser.add_subparsers()

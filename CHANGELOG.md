@@ -1,5 +1,16 @@
 # Changelog
 
+## Version 9.2.0 - 2022-09-28
+
+- Added `--image-url` to `transitions update`
+- Added `--secret-id` to `transitions update`
+- Added `--cpu` to `transitions update`
+- Added `--memory` to `transitions update`
+- Now supporting `transitions update --environment null` to clear all environment variables from a transition
+- Now supporting `transitions update --environment-secrets null` to clear all environment secrets from a transition
+- Added `--from-start-time` to `workflows list-executions`
+- Added `--to-start-time` to `workflows list-executions`
+
 ## Version 9.1.4 - 2022-09-20
 
 - Added CSV support in `datasets create-documents`

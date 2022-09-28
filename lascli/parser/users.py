@@ -51,11 +51,11 @@ def create_users_parser(subparsers):
 
     update_user_parser = subparsers.add_parser('update')
     update_user_parser.add_argument('user_id')
-    update_user_parser.add_argument('--name', type=nullable, default=NotProvided)
+    update_user_parser.add_argument('--name', type=nullable(str), default=NotProvided)
     update_user_parser.add_argument(
         '--avatar',
         help='Path to avatar JPEG image or "null" to remove avatar from user.',
-        type=nullable,
+        type=nullable(str),
         default=NotProvided
     )
     update_user_parser.set_defaults(cmd=update_user)

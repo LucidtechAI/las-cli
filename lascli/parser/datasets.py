@@ -347,8 +347,8 @@ def create_datasets_parser(subparsers):
 
     update_dataset_parser = subparsers.add_parser('update')
     update_dataset_parser.add_argument('dataset_id')
-    update_dataset_parser.add_argument('--name', type=nullable, default=NotProvided)
-    update_dataset_parser.add_argument('--description', type=nullable, default=NotProvided)
+    update_dataset_parser.add_argument('--name', type=nullable(str), default=NotProvided)
+    update_dataset_parser.add_argument('--description', type=nullable(str), default=NotProvided)
     update_dataset_parser.add_argument(
         '--metadata',
         type=json_path,
