@@ -20,13 +20,65 @@ def test_transitions_create(parser, client, transition_type, in_schema, out_sche
     util.main_parser(parser, client, args)
 
 
+
 @pytest.mark.parametrize('in_schema', [('--in-schema', str(util.schema_path())), ()])
 @pytest.mark.parametrize('out_schema', [('--out-schema', str(util.schema_path())), ()])
+def test_transitions_update(
+    parser,
+    client,
+    in_schema,
+    out_schema,
+    name_and_description,
+):
+    args = [
+        'transitions',
+        'update',
+        service.create_transition_id(),
+        *in_schema,
+        *out_schema,
+        *name_and_description,
+    ]
+
+    if len(args) == 3:  # patch call requires at least one change
+        with pytest.raises(Exception):
+            util.main_parser(parser, client, args)
+    else:
+        util.main_parser(parser, client, args)
+
+
 @pytest.mark.parametrize('assets', [('--assets', str(util.assets_folder() / 'assets.json')), ()])
+def test_transitions_update_manual(
+    parser,
+    client,
+    assets,
+):
+    args = [
+        'transitions',
+        'update',
+        service.create_transition_id(),
+        *assets,
+    ]
+
+    if len(args) == 3:  # patch call requires at least one change
+        with pytest.raises(Exception):
+            util.main_parser(parser, client, args)
+    else:
+        util.main_parser(parser, client, args)
+        
+
 @pytest.mark.parametrize('image_url', [('--image-url', 'image:url'), ()])
 @pytest.mark.parametrize('secret_id', [
     ('--secret-id', service.create_secret_id()),
     ('--secret-id', 'null'),
+    (),
+])
+@pytest.mark.parametrize('cpu', [
+    ('--cpu', '256'),
+    (),
+])
+@pytest.mark.parametrize('memory', [
+    ('--memory', '512'),
+    ('--memory', '1024'),
     (),
 ])
 @pytest.mark.parametrize('environment', [
@@ -40,15 +92,13 @@ def test_transitions_create(parser, client, transition_type, in_schema, out_sche
     ('--environment-secrets', 'null'),
     (),
 ])
-def test_transitions_update(
+def test_transitions_update_docker(
     parser,
     client,
-    in_schema,
-    out_schema,
-    name_and_description,
-    assets,
     image_url,
     secret_id,
+    cpu,
+    memory,
     environment,
     environment_secrets,
 ):
@@ -56,12 +106,10 @@ def test_transitions_update(
         'transitions',
         'update',
         service.create_transition_id(),
-        *in_schema,
-        *out_schema,
-        *name_and_description,
-        *assets,
         *image_url,
         *secret_id,
+        *cpu,
+        *memory,
         *environment,
         *environment_secrets,
     ]
