@@ -1,4 +1,4 @@
-name: Check that version is updated
+name: Check that CLI version is updated
 
 on:
   pull_request:
@@ -15,7 +15,7 @@ jobs:
       - name: Fetch repo
         run: git fetch
 
-      - name: Version check
+      - name: CLI Version check
         run: |
           if [ -z $(git diff origin/master HEAD -- lascli/__version__.py | grep version )]
           then

@@ -1,4 +1,4 @@
-name: Check that version is updated
+name: Check that SDK version is updated
 
 on:
   pull_request:
@@ -15,7 +15,7 @@ jobs:
       - name: Fetch repo
         run: git fetch
 
-      - name: Version check for python package
+      - name: SDK Version check
         id: check_sdk_version
         run: |
           if [ -z $(git diff origin/master HEAD -- requirements.txt | grep lucidtech-las)]
