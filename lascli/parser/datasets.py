@@ -199,7 +199,8 @@ def read_csv(path, document_path_column, accepted_document_types, delimiter, enc
     with path.open('r') as csv_file:
         reader = csv.DictReader(csv_file, delimiter=delimiter)
         for row in reader:
-            if document_path := find_document_path(Path(row.pop(document_path_column)), accepted_document_types):
+            document_path = find_document_path(Path(row.pop(document_path_column)), accepted_document_types)
+            if document_path:
                 yield document_path, [{'label': k, 'value': v} for k, v in row.items()]
             else:
                 print(f'Document {document_path} is not one of the accepted document types {accepted_document_types}')
