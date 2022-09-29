@@ -174,7 +174,7 @@ def _documents_from_dir(src_dir, accepted_document_types, ground_truth_encoding)
                 if ground_truth_path:
                     print(f'Ground truth file for {name} already found (Old: {ground_truth_path} New: {path})')
                 ground_truth_path = path
-            elif _is_acceptable_file_type(document_path, accepted_document_types):
+            elif _is_acceptable_file_type(path, accepted_document_types):
                 if document_path:
                     print(f'Document file for {name} already found (Old: {document_path} New: {path})')
                 document_path = path
