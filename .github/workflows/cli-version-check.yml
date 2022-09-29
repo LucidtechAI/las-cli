@@ -1,4 +1,4 @@
-name: Check that version is updated
+name: Check that CLI version is updated
 
 on:
   pull_request:
@@ -15,18 +15,10 @@ jobs:
       - name: Fetch repo
         run: git fetch
 
-      - name: Version check
+      - name: CLI Version check
         run: |
           if [ -z $(git diff origin/master HEAD -- lascli/__version__.py | grep version )]
           then
             echo "You should probably update version number"
-            exit 1
-          fi
-
-      - name: Version check for python package
-        run: |
-          if [ -z $(git diff origin/master HEAD -- requirements.txt | grep lucidtech-las)]
-          then
-            echo "You should probably update version number for the lucidtech-las pip package in requirements.txt"
             exit 1
           fi
