@@ -16,6 +16,10 @@ def get_transition(las_client: Client, transition_id):
 
 
 def update_transition(las_client: Client, transition_id, **optional_args):
+    environment_secrets_key = 'environment_secrets'
+    if environment_secrets_key in optional_args and optional_args[environment_secrets_key] == [None]:
+        optional_args[environment_secrets_key] = None
+
     return las_client.update_transition(transition_id, **optional_args)
 
 
@@ -79,9 +83,10 @@ def create_transitions_parser(subparsers):
 
     update_parser = subparsers.add_parser('update')
     update_parser.add_argument('transition_id')
-    update_parser.add_argument('--name', type=nullable, default=NotProvided)
-    update_parser.add_argument('--in-schema', type=json_path, help='path to input jsonschema')
-    update_parser.add_argument('--out-schema', type=json_path, help='path to output jsonschema')
+    update_parser.add_argument('--name', type=nullable(str), default=NotProvided)
+    update_parser.add_argument('--description', type=nullable(str), default=NotProvided)
+    update_parser.add_argument('--in-schema', type=json_path, help='Path to input jsonschema')
+    update_parser.add_argument('--out-schema', type=json_path, help='Path to output jsonschema')
     update_parser.add_argument(
         '--assets',
         type=json_path,
@@ -89,15 +94,31 @@ def create_transitions_parser(subparsers):
     )
     update_parser.add_argument(
         '--environment',
-        type=json_path,
+        type=nullable(json_path),
+        default=NotProvided,
         help='Path to json file with environment variables, only possible for a docker transition',
     )
     update_parser.add_argument(
         '--environment-secrets',
+        type=nullable(str),
+        default=NotProvided,
         nargs='+',
-        help='secretIds that that will be used as environment variables, only possible for a docker transition',
+        help='SecretIds that that will be used as environment variables, only possible for a docker transition',
     )
-    update_parser.add_argument('--description', type=nullable, default=NotProvided)
+    update_parser.add_argument('--image-url', help='Image url for a docker transition')
+    update_parser.add_argument(
+        '--secret-id',
+        type=nullable(str),
+        default=NotProvided,
+        help='SecretId for a secret containing username and password for a private docker image in a docker transition'
+    )
+    update_parser.add_argument('--cpu', type=int, choices=[256, 512, 1024], help='Cpu units for a docker transition')
+    update_parser.add_argument(
+        '--memory',
+        type=int,
+        choices=[512, 1024, 2048, 4096, 8192],
+        help='Memory in MiB for a docker transition',
+    )
     update_parser.set_defaults(cmd=update_transition)
 
     delete_parser = subparsers.add_parser(

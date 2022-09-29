@@ -2,6 +2,7 @@ import datetime
 import json
 import pathlib
 
+import dateparser
 from las import Client
 
 from lascli.util import nullable, NotProvided, json_path
@@ -76,8 +77,8 @@ def create_workflows_parser(subparsers):
 
     update_workflow_parser = subparsers.add_parser('update')
     update_workflow_parser.add_argument('workflow_id')
-    update_workflow_parser.add_argument('--name', type=nullable, default=NotProvided)
-    update_workflow_parser.add_argument('--description', type=nullable, default=NotProvided)
+    update_workflow_parser.add_argument('--name', type=nullable(str), default=NotProvided)
+    update_workflow_parser.add_argument('--description', type=nullable(str), default=NotProvided)
     update_workflow_parser.add_argument(
         '--error-config',
         type=json_path,
@@ -102,6 +103,8 @@ def create_workflows_parser(subparsers):
     list_executions_parser.add_argument('--sort-by')
     list_executions_parser.add_argument('--max-results', '-m', type=int)
     list_executions_parser.add_argument('--next-token', '-n', type=str)
+    list_executions_parser.add_argument('--from-start-time', type=dateparser.parse)
+    list_executions_parser.add_argument('--to-start-time', type=dateparser.parse)
     list_executions_parser.set_defaults(cmd=list_workflow_executions)
 
     get_workflow_parser = subparsers.add_parser('get')

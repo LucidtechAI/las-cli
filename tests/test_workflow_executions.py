@@ -32,7 +32,17 @@ def test_executions_create(parser, client):
     ('--order', 'descending'),
     (),
 ])
-def test_executions_list(parser, client, list_defaults, sort_by, order, status):
+@pytest.mark.parametrize('from_start_time', [
+    ('--from-start-time', '2022-01-01'),
+    ('--from-start-time', '3d'),
+    (),
+])
+@pytest.mark.parametrize('to_start_time', [
+    ('--to-start-time', '2022-01-01'),
+    ('--to-start-time', '3d'),
+    (),
+])
+def test_executions_list(parser, client, list_defaults, sort_by, order, status, from_start_time, to_start_time):
     args = [
         'workflows',
         'list-executions',
@@ -40,6 +50,8 @@ def test_executions_list(parser, client, list_defaults, sort_by, order, status):
         *list_defaults,
         *sort_by,
         *order,
+        *from_start_time,
+        *to_start_time,
     ]
     util.main_parser(parser, client, args)
 

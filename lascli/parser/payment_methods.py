@@ -51,8 +51,8 @@ def create_payment_methods_parser(subparsers):
         '--stripe-setup-intent-secret',
         help='Add this parameter to complete payment method setup',
     )
-    update_payment_method_parser.add_argument('--name', type=nullable, default=NotProvided)
-    update_payment_method_parser.add_argument('--description', type=nullable, default=NotProvided)
+    update_payment_method_parser.add_argument('--name', type=nullable(str), default=NotProvided)
+    update_payment_method_parser.add_argument('--description', type=nullable(str), default=NotProvided)
     update_payment_method_parser.set_defaults(cmd=update_payment_method)
 
     delete_payment_method_parser = subparsers.add_parser('delete')
