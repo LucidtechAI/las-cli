@@ -1,5 +1,14 @@
 # Changelog
 
+## Version 9.2.1 - 2022-09-29
+
+- Using a CSV file as input to `datasets create-documents` will now try to locate the document file specified by
+`document-path-column` in all sub-directories, e.g. if `document_path=foo/bar/baz.pdf` it will first see if
+`foo/bar/baz.pdf` points to an existing and valid file type, then it will check if `bar/baz.pdf` points to an existing
+and valid file type and so forth.
+- Fixed output bug in `datasets get-documents`. Now only counts number of documents from the dataset you are
+downloading, not the number of documents in the outdir_dir
+
 ## Version 9.2.0 - 2022-09-28
 
 - Added `--image-url` to `transitions update`
