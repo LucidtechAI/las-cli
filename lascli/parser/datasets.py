@@ -151,6 +151,13 @@ def read_ground_truth(path, encoding):
     return read_json(path, encoding) or read_yaml(path, encoding)
 
 
+def _is_acceptable_file_type(path, acceptable_file_types):
+    if not path.exists():
+        return False
+    kind = filetype.guess(path)
+    return any(isinstance(kind, file_type) for file_type in acceptable_file_types)
+
+
 def _documents_from_dir(src_dir, accepted_document_types, ground_truth_encoding):
     grouped_paths = defaultdict(list)
 
@@ -163,14 +170,11 @@ def _documents_from_dir(src_dir, accepted_document_types, ground_truth_encoding)
         ground_truth_path = None
 
         for path in paths:
-            kind = filetype.guess(path)
-            if not kind and path.suffix.lower() in ['.json', '.yaml', '.yml']:
+            if path.suffix.lower() in ['.json', '.yaml', '.yml']:
                 if ground_truth_path:
                     print(f'Ground truth file for {name} already found (Old: {ground_truth_path} New: {path})')
                 ground_truth_path = path
-            elif not kind:
-                continue
-            elif any(isinstance(kind, document_type) for document_type in accepted_document_types):
+            elif _is_acceptable_file_type(document_path, accepted_document_types):
                 if document_path:
                     print(f'Document file for {name} already found (Old: {document_path} New: {path})')
                 document_path = path
@@ -181,15 +185,22 @@ def _documents_from_dir(src_dir, accepted_document_types, ground_truth_encoding)
             print(f'Missing document file for {ground_truth_path}')
 
 
+def find_document_path(document_path, acceptable_document_types):
+    if _is_acceptable_file_type(document_path, acceptable_document_types):
+        return document_path
+    
+    for parent in reversed(document_path.parents):
+        new_document_path = document_path.relative_to(parent)
+        if _is_acceptable_file_type(new_document_path, acceptable_document_types):
+            return new_document_path
+
+
 def read_csv(path, document_path_column, accepted_document_types, delimiter, encoding):
     with path.open('r') as csv_file:
         reader = csv.DictReader(csv_file, delimiter=delimiter)
         for row in reader:
-            document_path = row.pop(document_path_column)
-            ground_truth = [{'label': k, 'value': v} for k, v in row.items()]
-            kind = filetype.guess(document_path)
-            if any(isinstance(kind, document_type) for document_type in accepted_document_types):
-                yield Path(document_path), ground_truth
+            if document_path := find_document_path(Path(row.pop(document_path_column)), accepted_document_types):
+                yield document_path, [{'label': k, 'value': v} for k, v in row.items()]
             else:
                 print(f'Document {document_path} is not one of the accepted document types {accepted_document_types}')
 
@@ -293,16 +304,21 @@ def get_documents(las_client: Client, dataset_id, output_dir, num_threads, chunk
     if output_dir.exists():
         for path in output_dir.iterdir():
             already_downloaded.add(path.stem)
-        print(f'Found {len(already_downloaded)} documents already downloaded')
     else:
         output_dir.mkdir()
 
-    not_downloaded = lambda document: document['documentId'] not in already_downloaded
-    print(f'Downloading documents in dataset {dataset_id} to {output_dir}')
-
+    already_downloaded_from_dataset = set()
     with ThreadPoolExecutor(max_workers=num_threads) as executor:
+        documents = []
+        for document in _list_all_documents_in_dataset(las_client, dataset_id):
+            if document['documentId'] in already_downloaded:
+                already_downloaded_from_dataset.add(document['documentId'])
+            else:
+                documents.append(document)
+        print(f'Found {len(already_downloaded_from_dataset)} documents already downloaded')
+
         start_time = time()
-        documents = filter(not_downloaded, _list_all_documents_in_dataset(las_client, dataset_id))
+        print(f'Downloading documents in dataset {dataset_id} to {output_dir}')
         for chunk in group(documents, chunk_size):
             futures = []
 
@@ -312,14 +328,14 @@ def get_documents(las_client: Client, dataset_id, output_dir, num_threads, chunk
             for future in as_completed(futures):
                 document = future.result()
                 if document:
-                    already_downloaded.add(document['documentId'])
+                    already_downloaded_from_dataset.add(document['documentId'])
 
             step_time = time() - start_time
             minutes = int(step_time // 60)
             seconds = int(step_time % 60)
-            print(f'{minutes}m{seconds}s: {len(already_downloaded)} downloaded')
+            print(f'{minutes}m{seconds}s: {len(already_downloaded_from_dataset)} downloaded')
 
-    return {'Total downloaded documents': len(already_downloaded)}
+    return {'Total downloaded documents': len(already_downloaded_from_dataset)}
 
 
 def create_datasets_parser(subparsers):
