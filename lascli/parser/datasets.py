@@ -148,6 +148,8 @@ def read_yaml(path, encoding):
 
 
 def read_ground_truth(path, encoding):
+    if not path:
+        return
     return read_json(path, encoding) or read_yaml(path, encoding)
 
 

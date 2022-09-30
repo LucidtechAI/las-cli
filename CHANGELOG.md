@@ -1,5 +1,9 @@
 # Changelog
 
+## Version 9.2.2 - 2022-09-30
+
+- Fixed a bug in `datasets create-documents`.
+
 ## Version 9.2.1 - 2022-09-29
 
 - Using a CSV file as input to `datasets create-documents` will now try to locate the document file specified by
