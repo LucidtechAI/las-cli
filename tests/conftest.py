@@ -3,6 +3,7 @@ import json
 import pathlib
 import string
 import tempfile
+from functools import partial
 from os import urandom
 
 from random import choice, randint
@@ -80,13 +81,14 @@ def _documents_iter(tmp_dir_path):
         yield i, jpeg_path
 
 
-def documents_dir():
+def documents_dir(with_ground_truth=True):
     with tempfile.TemporaryDirectory() as tmp_dir:
         tmp_dir_path = pathlib.Path(tmp_dir)
 
         for i, _ in _documents_iter(tmp_dir_path):
-            json_path = tmp_dir_path / f'{i}.json'
-            json_path.write_text(json.dumps(util.create_ground_truth()))
+            if with_ground_truth:
+                json_path = tmp_dir_path / f'{i}.json'
+                json_path.write_text(json.dumps(util.create_ground_truth()))
 
         yield tmp_dir
 
@@ -110,6 +112,6 @@ def documents_file():
         yield str(csv_path)
 
 
-@pytest.fixture(params=[documents_dir, documents_file])
+@pytest.fixture(params=[documents_dir, documents_file, partial(documents_dir, with_ground_truth=False)])
 def create_documents_input(request):
     yield from request.param()
