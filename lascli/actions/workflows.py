@@ -12,9 +12,6 @@ from typing import Optional
 from ..util import wrap_output, capture_return
 
 
-# FIXME: Get this from somewhere else.
-COMPONENT_ASSEST_URI = 'https://raw.githubusercontent.com/LucidtechAI/las-docs/master/tutorials/simple-demo/backend/src/Invoice/assets/jsRemoteComponent.js'  
-
 created_ids = collections.defaultdict(list)
  
 
@@ -62,7 +59,7 @@ def create_workflow_spec(
     }
     
 
-def create_field_config(las_client: Client, model_id: str):
+def create_form_config(las_client: Client, model_id: str):
     model = las_client.get_model(model_id)
     field_config = model['fieldConfig']
 
@@ -78,7 +75,12 @@ def create_field_config(las_client: Client, model_id: str):
             }
         }
 
-    return {field: transform(field) for field in field_config}
+    return {
+        'version': 'v1',
+        'config': {
+            'fields': {field: transform(field) for field in field_config}
+        }
+    }
     
 
 @wrap_output(start_msg='Creating secrets ...', end_msg='Done')
@@ -105,26 +107,20 @@ def create_secrets(las_client: Client, create_tag: str, username: str = None, pa
         name='Cradl credentials',
         description=create_tag,
     )
-        
+    
     return docker_secret.get('secretId'), cradl_secret['secretId']
 
 
-@wrap_output(start_msg='Creating remote component and field config asset ...', end_msg='Done')
+@wrap_output(start_msg='Creating form config asset ...', end_msg='Done')
 @capture_return(dest=created_ids['assets'])
-def create_assets(las_client: Client, model_id: str, create_tag: str):
-    component = las_client.create_asset(
-        content=requests.get(COMPONENT_ASSEST_URI).content,
-        name='Manual validation component',
-        description=create_tag,
-    )
-    
-    field_config = las_client.create_asset(
-        content=json.dumps(create_field_config(las_client, model_id)).encode('utf-8'),
-        name='Field configuration',
+def create_form_config_asset(las_client: Client, model_id: str, create_tag: str):
+    form_config = las_client.create_asset(
+        content=json.dumps(create_form_config(las_client, model_id)).encode('utf-8'),
+        name='Form configuration',
         description=create_tag,
     )
 
-    return component['assetId'], field_config['assetId']
+    return form_config['assetId']
 
 
 @wrap_output(start_msg='Creating dataset ...', end_msg='Done')
@@ -144,8 +140,7 @@ def create_transitions(
     dataset_id: str,
     preprocess_image: str,
     postprocess_image: str,
-    field_config_asset_id: str,
-    remote_component_asset_id: str,
+    form_config_asset_id: str,
     create_tag: str, 
     created_ids: dict, 
     docker_secret_id: str = None,
@@ -156,7 +151,7 @@ def create_transitions(
         'environmentSecrets': [cradl_secret_id],
         'environment': {
             'MODEL_ID': model_id,
-            'FIELD_CONFIG_ASSET_ID': field_config_asset_id,
+            'FORM_CONFIG_ASSET_ID': form_config_asset_id,
             'DATASET_ID': dataset_id,
         },
         **docker_auth_details
@@ -180,8 +175,7 @@ def create_transitions(
         transition_type='manual',
         parameters={
             'assets': {
-                'jsRemoteComponent': remote_component_asset_id,
-                'fieldConfig': field_config_asset_id
+                'formConfig': form_config_asset_id
             }
         },
         name=name,
@@ -205,7 +199,7 @@ def create_default_workflow(las_client: Client, name: str, **optional_args):
                 password=optional_args.get('password'),
             )
 
-            component_asset_id, field_config_id = create_assets(
+            form_config_id = create_form_config_asset(
                 las_client=las_client,
                 model_id=model_id,
                 create_tag=create_tag,
@@ -220,8 +214,7 @@ def create_default_workflow(las_client: Client, name: str, **optional_args):
             preprocess_id, postprocess_id, manual_id = create_transitions(
                 las_client=las_client,
                 cradl_secret_id=cradl_secret_id,
-                remote_component_asset_id=component_asset_id,
-                field_config_asset_id=field_config_id,
+                form_config_asset_id=form_config_id,
                 docker_secret_id=docker_secret_id,
                 preprocess_image=optional_args['preprocess_image'],
                 postprocess_image=optional_args['postprocess_image'],
