@@ -1,5 +1,15 @@
 # Changelog
 
+## Version 9.2.4 - 2022-10-13
+
+- Fixed a bug causing `datasets create-documents` to skip creating new documents for documents that have been deleted
+from the dataset since last upload.
+
+## Version 9.2.3 - 2022-10-12
+
+- Updated `workflows create-default` to use the default manual transition form component
+- Updated default `--preprocess-image` in `workflows create-default`
+
 ## Version 9.2.2 - 2022-09-30
 
 - Fixed a bug in `datasets create-documents`.

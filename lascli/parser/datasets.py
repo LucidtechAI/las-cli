@@ -20,6 +20,7 @@ import yaml
 from filetype.types.archive import Pdf
 from filetype.types.image import Png, Jpeg, Tiff
 from las import Client
+from las.client import NotFound
 from yaml.parser import ParserError
 
 from lascli.util import NotProvided, nullable, json_path
@@ -36,6 +37,18 @@ def _cache_dir():
     cache_dir = Path.home() / '.lucidtech' / 'cache'
     cache_dir.mkdir(parents=True, exist_ok=True)
     return cache_dir
+
+
+def _create_document(client, document_content, dataset_id, attributes):
+    document_id = client.create_document(
+        content=document_content,
+        dataset_id=dataset_id,
+        **attributes,
+    )['documentId']
+    document_path = attributes['metadata']['originalFilePath']
+    message = f'Successfully uploaded {document_path} %s ground_truth'
+    print(message % ('with' if 'ground_truth' in attributes else 'without'))
+    return document_id
 
 
 def _create_documents_worker(
@@ -64,20 +77,26 @@ def _create_documents_worker(
             cached_ground_truth_digest = already_uploaded[document_digest]['ground_truth_digest']
             new_ground_truth = ground_truth_digest and ground_truth_digest != cached_ground_truth_digest
             if new_ground_truth:
-                client.update_document(document_id, dataset_id=dataset_id, **attributes)
-                print(f'successfully updated {document_path} with ground_truth')
+                try:
+                    client.update_document(document_id, dataset_id=dataset_id, **attributes)
+                    print(f'Successfully updated {document_path} with ground_truth')
+                except NotFound as e:
+                    print(f'Document {document_id} not found, creating new document')
+                    document_id = _create_document(
+                        client=client,
+                        document_content=document_content,
+                        dataset_id=dataset_id,
+                        attributes=attributes,
+                    )
             else:
-                print(f'Already uploaded')
+                print(f'Already uploaded. Skipping')
         else:
-            document_id = client.create_document(
-                content=document_content,
+            document_id = _create_document(
+                client=client,
+                document_content=document_content,
                 dataset_id=dataset_id,
-                **attributes,
-            )['documentId']
-            if ground_truth:
-                print(f'successfully uploaded {document_path} with ground_truth')
-            else:
-                print(f'successfully uploaded {document_path} without ground truth')
+                attributes=attributes,
+            )
         already_uploaded[document_digest] = {
             'document_id': document_id,
             'ground_truth_digest': ground_truth_digest,
@@ -190,7 +209,7 @@ def _documents_from_dir(src_dir, accepted_document_types, ground_truth_encoding)
 def find_document_path(document_path, acceptable_document_types):
     if _is_acceptable_file_type(document_path, acceptable_document_types):
         return document_path
-    
+
     for parent in reversed(document_path.parents):
         new_document_path = document_path.relative_to(parent)
         if _is_acceptable_file_type(new_document_path, acceptable_document_types):
