@@ -39,16 +39,15 @@ def _cache_dir():
     return cache_dir
 
 
-def _create_document(document_content, dataset_id, attributes):
+def _create_document(client, document_content, dataset_id, attributes):
     document_id = client.create_document(
         content=document_content,
         dataset_id=dataset_id,
         **attributes,
     )['documentId']
-    if 'ground_truth' in attributes:
-        print(f'Successfully uploaded {document_path} with ground_truth')
-    else:
-        print(f'Successfully uploaded {document_path} without ground truth')
+    document_path = attributes['metadata']['originalFilePath']
+    message = f'Successfully uploaded {document_path} %s ground_truth'
+    print(message % ('with' if 'ground_truth' in attributes else 'without'))
     return document_id
 
 
@@ -84,6 +83,7 @@ def _create_documents_worker(
                 except NotFound as e:
                     print(f'Document {document_id} not found, creating new document')
                     document_id = _create_document(
+                        client=client,
                         document_content=document_content,
                         dataset_id=dataset_id,
                         attributes=attributes,
@@ -92,6 +92,7 @@ def _create_documents_worker(
                 print(f'Already uploaded. Skipping')
         else:
             document_id = _create_document(
+                client=client,
                 document_content=document_content,
                 dataset_id=dataset_id,
                 attributes=attributes,
