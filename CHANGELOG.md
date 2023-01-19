@@ -1,5 +1,10 @@
 # Changelog
 
+## Version 9.2.5 - 2023-01-19
+
+- Updated docker image version and added help text to `workflows create-default`
+- Added `workflows execute-default` command which executes a given default workflow on all documents in a dataset
+
 ## Version 9.2.4 - 2022-10-13
 
 - Fixed a bug causing `datasets create-documents` to skip creating new documents for documents that have been deleted

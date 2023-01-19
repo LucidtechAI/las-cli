@@ -1,6 +1,8 @@
+import argparse
 import datetime
 import json
 import pathlib
+import textwrap
 
 import dateparser
 from las import Client
@@ -48,6 +50,21 @@ def update_workflow_execution(las_client: Client, workflow_id, execution_id, nex
 
 def delete_workflow_execution(las_client: Client, workflow_id, execution_id):
     return las_client.delete_workflow_execution(workflow_id, execution_id)
+
+
+def execute_default_workflow(las_client: Client, workflow_id, dataset_id):
+    list_response = las_client.list_documents(dataset_id=dataset_id)
+    documents = list_response['documents']
+    while next_token := list_response.get('nextToken'):
+        list_response = las_client.list_documents(dataset_id=dataset_id, next_token=next_token)
+        documents.extend(list_response['documents'])
+
+    for document in documents:
+        input_content = {'documentId': document['documentId']}
+        print(f'Execution workflow: {workflow_id} with input: {input_content}')
+        las_client.execute_workflow(workflow_id, input_content)
+
+    return 'Success'
 
 
 def create_workflows_parser(subparsers):
@@ -133,13 +150,38 @@ def create_workflows_parser(subparsers):
     delete_workflow_execution_parser.add_argument('workflow_id')
     delete_workflow_execution_parser.add_argument('execution_id')
     delete_workflow_execution_parser.set_defaults(cmd=delete_workflow_execution)
-    
-    create_default_workflow_parser = subparsers.add_parser('create-default')
+
+    create_default_workflow_parser = subparsers.add_parser(
+        'create-default',
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+        description=textwrap.dedent('''
+            Create a workflow that adds ground truth to documents using predictions from a model with help from a
+            (human) operator if necessary. Execute the workflow with a single documentId. Example input JSON: 
+            {"documentId": "las:document:<abc>"}
+        '''),
+    )
     create_default_action = create_default_workflow_parser.add_mutually_exclusive_group(required=False)
     create_default_action.add_argument('--from-model-id', help='The model to generate the workflow for')
     create_default_workflow_parser.add_argument('name', help='Name of the workflow')
-    create_default_workflow_parser.add_argument('--preprocess-image', default='lucidtechai/preprocess:v2', help='Docker image for the preprocessor')
-    create_default_workflow_parser.add_argument('--postprocess-image', default='lucidtechai/postprocess', help='Docker image for the postprocessor')
+    create_default_workflow_parser.add_argument(
+        '--preprocess-image',
+        default='lucidtechai/preprocess:v2',
+        help='Docker image for the preprocessor',
+    )
+    create_default_workflow_parser.add_argument(
+        '--postprocess-image',
+        default='lucidtechai/postprocess:v2',
+        help='Docker image for the postprocessor',
+    )
     create_default_workflow_parser.set_defaults(cmd=workflows.create_default_workflow)
+
+    execute_default_workflow_parser = subparsers.add_parser(
+        'execute-default',
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+        description='Execute a default workflow on each document in a dataset',
+    )
+    execute_default_workflow_parser.add_argument('workflow_id')
+    execute_default_workflow_parser.add_argument('dataset_id')
+    execute_default_workflow_parser.set_defaults(cmd=execute_default_workflow)
 
     return parser
