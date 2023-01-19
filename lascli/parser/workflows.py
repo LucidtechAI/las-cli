@@ -55,9 +55,11 @@ def delete_workflow_execution(las_client: Client, workflow_id, execution_id):
 def execute_default_workflow(las_client: Client, workflow_id, dataset_id):
     list_response = las_client.list_documents(dataset_id=dataset_id)
     documents = list_response['documents']
-    while next_token := list_response.get('nextToken'):
+    next_token = list_response.get('nextToken')
+    while next_token:
         list_response = las_client.list_documents(dataset_id=dataset_id, next_token=next_token)
         documents.extend(list_response['documents'])
+        next_token = list_response.get('nextToken')
 
     for document in documents:
         input_content = {'documentId': document['documentId']}
