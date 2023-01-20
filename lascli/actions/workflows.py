@@ -237,6 +237,7 @@ def create_default_workflow(las_client: Client, name: str, **optional_args):
                 specification=spec,
                 name=name,
                 description=create_tag,
+                error_config={'manualRetry': True},
             )
 
             print(f'Created workflow {workflow["workflowId"]}')
