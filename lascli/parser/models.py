@@ -4,11 +4,19 @@ from lascli.util import NotProvided, nullable, json_path
 
 
 def create_model(las_client: Client, field_config, **optional_args):
+    if optional_args.get('base_model'):
+        base_model = optional_args.pop('base_model')
+        *organization_id, model_id = base_model.split('/')
+        base_model = {'modelId': model_id}
+        if organization_id:
+            base_model['organizationId'] = organization_id[0]
+        optional_args['base_model'] = base_model
+
     return las_client.create_model(field_config=field_config, **optional_args)
 
 
-def list_models(las_client: Client, max_results, next_token):
-    return las_client.list_models(max_results=max_results, next_token=next_token)
+def list_models(las_client: Client, owner, max_results, next_token):
+    return las_client.list_models(owner=owner, max_results=max_results, next_token=next_token)
 
 
 def delete_model(las_client: Client, model_id):
@@ -89,6 +97,10 @@ def create_models_parser(subparsers):
     )
     create_parser.add_argument('--name')
     create_parser.add_argument('--description')
+    create_parser.add_argument(
+        '--base-model',
+        help='Specify which model to use as base model. Example: las:organization:cradl/las:model:invoice',
+    )
     create_parser.set_defaults(cmd=create_model)
 
     get_parser = subparsers.add_parser('get')
@@ -129,6 +141,7 @@ def create_models_parser(subparsers):
     delete_parser.set_defaults(cmd=delete_model)
 
     list_parser = subparsers.add_parser('list')
+    list_parser.add_argument('--owner', '-o', nargs='+', help='Organizations whose models to list')
     list_parser.add_argument('--max-results', '-m', type=int, default=None)
     list_parser.add_argument('--next-token', '-n', type=str, default=None)
     list_parser.set_defaults(cmd=list_models)
