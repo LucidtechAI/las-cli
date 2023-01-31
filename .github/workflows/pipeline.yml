@@ -5,6 +5,7 @@ on:
     branch:
       - master
 
+
 jobs:
   build:
     runs-on: ubuntu-20.04
