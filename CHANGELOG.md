@@ -1,5 +1,10 @@
 # Changelog
 
+## Version 9.3.0 - 2023-01-30
+
+- Added `--base-model` to `models create`
+- Added `--owner` to `models list`
+
 ## Version 9.2.4 - 2022-10-13
 
 - Fixed a bug causing `datasets create-documents` to skip creating new documents for documents that have been deleted

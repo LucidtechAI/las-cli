@@ -4,7 +4,11 @@ from tests import service, util
 
 @pytest.mark.parametrize('metadata', [('--metadata', str(util.metadata_path())), ()])
 @pytest.mark.parametrize('preprocess_config', [('-p', str(util.preprocess_config_path())), ()])
-def test_models_create(parser, client, metadata, preprocess_config, name_and_description):
+@pytest.mark.parametrize('base_model', [
+    ('--base-model', f'{service.create_organization_id()}/{service.create_model_id()}'),
+    (),
+])
+def test_models_create(parser, client, metadata, preprocess_config, name_and_description, base_model):
     args = [
         'models',
         'create',
@@ -12,6 +16,7 @@ def test_models_create(parser, client, metadata, preprocess_config, name_and_des
         *metadata,
         *name_and_description,
         *preprocess_config,
+        *base_model,
     ]
     util.main_parser(parser, client, args)
 
@@ -37,11 +42,17 @@ def test_models_update(parser, client, metadata, preprocess_config, name_and_des
         util.main_parser(parser, client, args)
 
 
-def test_models_list(parser, client, list_defaults):
+@pytest.mark.parametrize('owner', [
+    ('--owner', service.create_organization_id()),
+    ('--owner', 'me', service.create_organization_id()),
+    (),
+])
+def test_models_list(parser, client, list_defaults, owner):
     args = [
         'models',
         'list',
         *list_defaults,
+        *owner,
     ]
     util.main_parser(parser, client, args)
 

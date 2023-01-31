@@ -5,9 +5,10 @@ on:
     branch:
       - master
 
+
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     strategy:
       max-parallel: 4
       matrix:
