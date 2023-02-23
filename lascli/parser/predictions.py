@@ -22,9 +22,9 @@ def create_predictions_parser(subparsers):
     create_predicton_parser.add_argument('model_id', help='Id of model to use for predictions')
     create_predicton_parser.add_argument('--training-id', help='Id of training to use for predictions')
     create_predicton_parser.add_argument('--auto-rotate', action='store_true', default=False)
-    create_predicton_parser.add_argument('--max-pages', type=int, default=None)
-    create_predicton_parser.add_argument('--rotation', type=int, default=None)
-    create_predicton_parser.add_argument('--image-quality', type=str, default=None, choices={'LOW', 'HIGH', None})
+    create_predicton_parser.add_argument('--max-pages', type=int)
+    create_predicton_parser.add_argument('--rotation', type=int)
+    create_predicton_parser.add_argument('--image-quality', type=str, choices={'LOW', 'HIGH'})
     create_predicton_parser.add_argument('--postprocess-config', type=json.loads, help=textwrap.dedent('''
         Post processing configuration for predictions
         {
