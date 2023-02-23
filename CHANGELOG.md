@@ -1,5 +1,9 @@
 # Changelog
 
+## Version 9.4.0 - 2023-02-23
+
+- Added `--rotation` to `predictions create`
+
 ## Version 9.3.0 - 2023-01-30
 
 - Added `--base-model` to `models create`
