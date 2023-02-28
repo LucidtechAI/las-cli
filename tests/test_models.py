@@ -44,7 +44,7 @@ def test_models_update(parser, client, metadata, preprocess_config, name_and_des
 
 @pytest.mark.parametrize('owner', [
     ('--owner', service.create_organization_id()),
-    ('--owner', 'me', service.create_organization_id()),
+    ('--owner', 'me'),
     (),
 ])
 def test_models_list(parser, client, list_defaults, owner):
