@@ -1,5 +1,10 @@
 # Changelog
 
+## Version 9.5.0 - 2023-04-18
+
+- Added `deployment-environments get`
+- Added `deployment-environments list`
+
 ## Version 9.4.0 - 2023-02-23
 
 - Added `--rotation` to `predictions create`

@@ -1,6 +1,6 @@
 from las import Client
 
-from lascli.util import NotProvided, nullable, json_path
+from lascli.util import NotProvided, nullable, json_path, nullable_json_path
 
 
 def create_model(las_client: Client, field_config, **optional_args):
@@ -56,6 +56,7 @@ def delete_data_bundle(las_client: Client, model_id, data_bundle_id):
 def update_data_bundle(las_client: Client, model_id, data_bundle_id, **optional_args):
     return las_client.update_data_bundle(model_id, data_bundle_id, **optional_args)
 
+
 def create_training(las_client: Client, model_id, data_bundle_ids, instance_type, **optional_args):
     return las_client.create_training(
         model_id=model_id,
@@ -72,7 +73,11 @@ def list_trainings(las_client: Client, model_id, max_results, next_token):
 def update_training(las_client: Client, model_id, training_id, **optional_args):
     if optional_args.pop('cancel'):
         optional_args['status'] = 'cancelled'
-    return las_client.update_training(model_id, training_id, **optional_args)
+    return las_client.update_training(
+        model_id,
+        training_id,
+        **optional_args,
+    )
 
 
 def create_models_parser(subparsers):
@@ -125,8 +130,9 @@ def create_models_parser(subparsers):
     update_parser.add_argument('--description', type=nullable(str), default=NotProvided)
     update_parser.add_argument(
         '--metadata',
-        type=json_path,
+        type=nullable_json_path,
         help='path to json file with whatever you need, maximum limit 4kB',
+        default=NotProvided,
     )
     update_parser.add_argument(
         '--training-id',
@@ -197,13 +203,15 @@ def create_models_parser(subparsers):
     update_training_parser.add_argument('model_id')
     update_training_parser.add_argument('training_id')
     update_training_parser.add_argument('--cancel', action='store_true', default=False)
-    update_training_parser.add_argument('--name')
+    update_training_parser.add_argument('--name', type=nullable(str), default=NotProvided)
     update_training_parser.add_argument('--description', type=nullable(str), default=NotProvided)
     update_training_parser.add_argument(
         '--metadata',
-        type=json_path,
+        type=nullable_json_path,
         help='path to json file with whatever you need, maximum limit 4kB',
+        default=NotProvided,
     )
+    update_training_parser.add_argument('--deployment-environment-id', type=nullable, default=NotProvided)
     update_training_parser.set_defaults(cmd=update_training)
 
     return parser

@@ -49,3 +49,6 @@ def capture_return(dest: list):
     return inner
 
 
+def nullable_json_path(path):
+    path = nullable(path)
+    return json_path(path)

@@ -5,7 +5,7 @@ from tests import service, util
 @pytest.mark.parametrize('owner', [['--owner', service.create_organization_id()], []])
 def test_plans_list(parser, client, list_defaults, owner):
     args = [
-        'plans',
+        'deployment-environments',
         'list',
         *list_defaults,
         *owner,
@@ -15,7 +15,7 @@ def test_plans_list(parser, client, list_defaults, owner):
 
 def test_plans_get(parser, client):
     args = [
-        'plans',
+        'deployment-environments',
         'get',
         service.create_plan_id(),
     ]
