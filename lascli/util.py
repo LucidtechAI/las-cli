@@ -50,7 +50,7 @@ def capture_return(dest: list):
 
 
 def nullable_json_path(path):
-    path = nullable(path)
+    path = nullable(str)(path)
     return json_path(path)
 
 

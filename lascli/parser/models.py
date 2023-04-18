@@ -101,7 +101,7 @@ def create_models_parser(subparsers):
     create_parser.add_argument(
         '--metadata',
         type=json_path,
-        help='path to json file with whatever you need, maximum limit 4kB',
+        help='path to json file with custom metadata, maximum limit 4kB',
     )
     create_parser.add_argument('--name')
     create_parser.add_argument('--description')
@@ -211,7 +211,7 @@ def create_models_parser(subparsers):
     create_training_parser.add_argument(
         '--metadata',
         type=json_path,
-        help='path to json file with whatever you need, maximum limit 4kB',
+        help='path to json file with custom metadata, maximum limit 4kB',
     )
     create_training_parser.set_defaults(cmd=create_training)
 
@@ -230,7 +230,7 @@ def create_models_parser(subparsers):
     update_training_parser.add_argument(
         '--metadata',
         type=nullable_json_path,
-        help='path to json file with whatever you need, maximum limit 4kB',
+        help='path to json file with custom metadata, maximum limit 4kB',
         default=NotProvided,
     )
     update_training_parser.add_argument('--deployment-environment-id', type=nullable, default=NotProvided)

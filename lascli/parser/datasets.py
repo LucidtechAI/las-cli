@@ -370,7 +370,7 @@ def create_datasets_parser(subparsers):
     create_dataset_parser.add_argument(
         '--metadata',
         type=json_path,
-        help='path to json file with whatever you need, maximum limit 4kB',
+        help='path to json file with custom metadata, maximum limit 4kB',
     )
     create_dataset_parser.set_defaults(cmd=post_datasets)
 
@@ -390,7 +390,7 @@ def create_datasets_parser(subparsers):
     update_dataset_parser.add_argument(
         '--metadata',
         type=json_path,
-        help='path to json file with whatever you need, maximum limit 4kB',
+        help='path to json file with custom metadata, maximum limit 4kB',
     )
     update_dataset_parser.set_defaults(cmd=update_dataset)
 
