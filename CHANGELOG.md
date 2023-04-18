@@ -4,6 +4,9 @@
 
 - Added `deployment-environments get`
 - Added `deployment-environments list`
+- Added `--postprocess-config` to `models update`
+- Updated `--preprocess-config` in `models update` to also accept inline JSON
+- Updated `--postprocess-config` in `predictions create` to also accept path to a JSON file
 
 ## Version 9.4.0 - 2023-02-23
 
