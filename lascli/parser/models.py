@@ -3,7 +3,7 @@ from argparse import RawTextHelpFormatter
 
 from las import Client
 
-from lascli.util import NotProvided, nullable, json_path, nullable_json_path, json_or_json_path
+from lascli.util import NotProvided, nullable, json_path, json_or_json_path
 
 
 def create_model(las_client: Client, field_config, **optional_args):
@@ -146,9 +146,8 @@ def create_models_parser(subparsers):
     update_parser.add_argument('--description', type=nullable(str), default=NotProvided)
     update_parser.add_argument(
         '--metadata',
-        type=nullable_json_path,
+        type=json_path,
         help='path to json file with custom metadata, maximum limit 4kB',
-        default=NotProvided,
     )
     update_parser.add_argument(
         '--training-id',
@@ -248,9 +247,8 @@ def create_models_parser(subparsers):
     update_training_parser.add_argument('--description', type=nullable(str), default=NotProvided)
     update_training_parser.add_argument(
         '--metadata',
-        type=nullable_json_path,
+        type=json_path,
         help='path to json file with custom metadata, maximum limit 4kB',
-        default=NotProvided,
     )
     update_training_parser.add_argument('--deployment-environment-id', type=nullable, default=NotProvided)
     update_training_parser.set_defaults(cmd=update_training)
