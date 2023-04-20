@@ -57,7 +57,7 @@ def nullable_json_path(path):
 def json_or_json_path(value):
     if not value:
         return
-    
+
     try:
         return json.loads(value)
     except json.JSONDecodeError:

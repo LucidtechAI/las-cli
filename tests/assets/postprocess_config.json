@@ -1,0 +1,7 @@
+{
+  "strategy": "BEST_N_PAGES",
+  "parameters": {
+    "n": 3,
+    "collapse": true
+  }
+}

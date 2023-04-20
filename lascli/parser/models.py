@@ -92,12 +92,31 @@ def create_models_parser(subparsers):
         type=json_path,
         help='path to configuration of the fields that the model will predict',
     )
-    create_parser.add_argument(
-        '--preprocess-config',
-        '-p',
-        type=json_path,
-        help='path to configuration of the step before the prediction',
-    )
+    create_parser.add_argument('--preprocess-config', '-p', type=json_or_json_path, help=textwrap.dedent('''
+        Path or inline JSON with the pre processing configuration for predictions made by this model
+        {
+            "autoRotate": true | false,                 (required)
+            "imageQuality": "LOW" | "HIGH",             (required)
+            "maxPages": 1 - 3                           (required)
+        }
+        Examples:
+        {"imageQuality": "HIGH", "autoRotate": false, "maxPages": 3}
+        {"imageQuality": "LOW", "autoRotate": true, "maxPages": 1}
+    '''))
+    create_parser.add_argument('--postprocess-config', type=json_or_json_path, help=textwrap.dedent('''
+        Path or inline JSON with the post processing configuration for predictions made by this model
+        {
+            "strategy": "BEST_FIRST" | "BEST_N_PAGES",  (required)
+            "parameters": {                             (required if strategy=BEST_N_PAGES, omit otherwise)
+                "n": int,                               (required if strategy=BEST_N_PAGES, omit otherwise)
+                "collapse": true | false (default)      (optional if strategy=BEST_N_PAGES, omit otherwise)
+            }
+        }
+        Examples:
+        {"strategy": "BEST_FIRST"}
+        {"strategy": "BEST_N_PAGES", "parameters": {"n": 3}}
+        {"strategy": "BEST_N_PAGES", "parameters": {"n": 3, "collapse": true}}
+    '''))
     create_parser.add_argument(
         '--metadata',
         type=json_path,

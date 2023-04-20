@@ -4,6 +4,8 @@
 
 - Added `deployment-environments get`
 - Added `deployment-environments list`
+- Added `--postprocess-config` to `models create`
+- Updated `--preprocess-config` in `models create` to also accept inline JSON
 - Added `--postprocess-config` to `models update`
 - Updated `--preprocess-config` in `models update` to also accept inline JSON
 - Updated `--postprocess-config` in `predictions create` to also accept path to a JSON file

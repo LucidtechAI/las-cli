@@ -21,8 +21,9 @@ def test_predictions_list(parser, client, list_defaults, sort_by, order):
 @pytest.mark.parametrize('max_pages', [['--max-pages', '3'], []])
 @pytest.mark.parametrize('image_quality', [['--image-quality', 'HIGH'], ['--image-quality', 'LOW'], []])
 @pytest.mark.parametrize('postprocess_config', [
-    ['--postprocess-config', json.dumps({'strategy': 'BEST_FIRST'})],
-    [],
+    ('--postprocess-config', str(util.postprocess_config_path())),
+    ('--postprocess-config', util.postprocess_config_path().read_text()),
+    (),
 ])
 def test_predictions_create(parser, client, auto_rotate, max_pages, image_quality, postprocess_config, rotation):
     args = [
