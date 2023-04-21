@@ -1,6 +1,9 @@
+import textwrap
+from argparse import RawTextHelpFormatter
+
 from las import Client
 
-from lascli.util import NotProvided, nullable, json_path
+from lascli.util import NotProvided, nullable, json_path, json_or_json_path
 
 
 def create_model(las_client: Client, field_config, **optional_args):
@@ -56,6 +59,7 @@ def delete_data_bundle(las_client: Client, model_id, data_bundle_id):
 def update_data_bundle(las_client: Client, model_id, data_bundle_id, **optional_args):
     return las_client.update_data_bundle(model_id, data_bundle_id, **optional_args)
 
+
 def create_training(las_client: Client, model_id, data_bundle_ids, instance_type, **optional_args):
     return las_client.create_training(
         model_id=model_id,
@@ -72,7 +76,11 @@ def list_trainings(las_client: Client, model_id, max_results, next_token):
 def update_training(las_client: Client, model_id, training_id, **optional_args):
     if optional_args.pop('cancel'):
         optional_args['status'] = 'cancelled'
-    return las_client.update_training(model_id, training_id, **optional_args)
+    return las_client.update_training(
+        model_id,
+        training_id,
+        **optional_args,
+    )
 
 
 def create_models_parser(subparsers):
@@ -84,16 +92,35 @@ def create_models_parser(subparsers):
         type=json_path,
         help='path to configuration of the fields that the model will predict',
     )
-    create_parser.add_argument(
-        '--preprocess-config',
-        '-p',
-        type=json_path,
-        help='path to configuration of the step before the prediction',
-    )
+    create_parser.add_argument('--preprocess-config', '-p', type=json_or_json_path, help=textwrap.dedent('''
+        Path or inline JSON with the pre processing configuration for predictions made by this model
+        {
+            "autoRotate": true | false,                 (required)
+            "imageQuality": "LOW" | "HIGH",             (required)
+            "maxPages": 1 - 3                           (required)
+        }
+        Examples:
+        {"imageQuality": "HIGH", "autoRotate": false, "maxPages": 3}
+        {"imageQuality": "LOW", "autoRotate": true, "maxPages": 1}
+    '''))
+    create_parser.add_argument('--postprocess-config', type=json_or_json_path, help=textwrap.dedent('''
+        Path or inline JSON with the post processing configuration for predictions made by this model
+        {
+            "strategy": "BEST_FIRST" | "BEST_N_PAGES",  (required)
+            "parameters": {                             (required if strategy=BEST_N_PAGES, omit otherwise)
+                "n": int,                               (required if strategy=BEST_N_PAGES, omit otherwise)
+                "collapse": true | false (default)      (optional if strategy=BEST_N_PAGES, omit otherwise)
+            }
+        }
+        Examples:
+        {"strategy": "BEST_FIRST"}
+        {"strategy": "BEST_N_PAGES", "parameters": {"n": 3}}
+        {"strategy": "BEST_N_PAGES", "parameters": {"n": 3, "collapse": true}}
+    '''))
     create_parser.add_argument(
         '--metadata',
         type=json_path,
-        help='path to json file with whatever you need, maximum limit 4kB',
+        help='path to json file with custom metadata, maximum limit 4kB',
     )
     create_parser.add_argument('--name')
     create_parser.add_argument('--description')
@@ -107,7 +134,7 @@ def create_models_parser(subparsers):
     get_parser.add_argument('model_id')
     get_parser.set_defaults(cmd=get_model)
 
-    update_parser = subparsers.add_parser('update')
+    update_parser = subparsers.add_parser('update', formatter_class=RawTextHelpFormatter)
     update_parser.add_argument('model_id')
     update_parser.add_argument(
         '--field-config',
@@ -115,18 +142,12 @@ def create_models_parser(subparsers):
         type=json_path,
         help='path to configuration of the fields that the model will predict',
     )
-    update_parser.add_argument(
-        '--preprocess-config',
-        '-p',
-        type=json_path,
-        help='path to configuration of the step before the prediction',
-    )
     update_parser.add_argument('--name', type=nullable(str), default=NotProvided)
     update_parser.add_argument('--description', type=nullable(str), default=NotProvided)
     update_parser.add_argument(
         '--metadata',
         type=json_path,
-        help='path to json file with whatever you need, maximum limit 4kB',
+        help='path to json file with custom metadata, maximum limit 4kB',
     )
     update_parser.add_argument(
         '--training-id',
@@ -134,6 +155,31 @@ def create_models_parser(subparsers):
         default=NotProvided,
         help='Use training_id for model inference in POST /predictions. Specify "null" to make model inactive.',
     )
+    update_parser.add_argument('--preprocess-config', type=json_or_json_path, help=textwrap.dedent('''
+        Path or inline JSON with the pre processing configuration for predictions made by this model
+        {
+            "autoRotate": true | false,                 (required)
+            "imageQuality": "LOW" | "HIGH",             (required)
+            "maxPages": 1 - 3                           (required)
+        }
+        Examples:
+        {"imageQuality": "HIGH", "autoRotate": false, "maxPages": 3}
+        {"imageQuality": "LOW", "autoRotate": true, "maxPages": 1}
+    '''))
+    update_parser.add_argument('--postprocess-config', type=json_or_json_path, help=textwrap.dedent('''
+        Path or inline JSON with the post processing configuration for predictions made by this model
+        {
+            "strategy": "BEST_FIRST" | "BEST_N_PAGES",  (required)
+            "parameters": {                             (required if strategy=BEST_N_PAGES, omit otherwise)
+                "n": int,                               (required if strategy=BEST_N_PAGES, omit otherwise)
+                "collapse": true | false (default)      (optional if strategy=BEST_N_PAGES, omit otherwise)
+            }
+        }
+        Examples:
+        {"strategy": "BEST_FIRST"}
+        {"strategy": "BEST_N_PAGES", "parameters": {"n": 3}}
+        {"strategy": "BEST_N_PAGES", "parameters": {"n": 3, "collapse": true}}
+    '''))
     update_parser.set_defaults(cmd=update_model)
 
     delete_parser = subparsers.add_parser('delete')
@@ -183,7 +229,7 @@ def create_models_parser(subparsers):
     create_training_parser.add_argument(
         '--metadata',
         type=json_path,
-        help='path to json file with whatever you need, maximum limit 4kB',
+        help='path to json file with custom metadata, maximum limit 4kB',
     )
     create_training_parser.set_defaults(cmd=create_training)
 
@@ -197,13 +243,14 @@ def create_models_parser(subparsers):
     update_training_parser.add_argument('model_id')
     update_training_parser.add_argument('training_id')
     update_training_parser.add_argument('--cancel', action='store_true', default=False)
-    update_training_parser.add_argument('--name')
+    update_training_parser.add_argument('--name', type=nullable(str), default=NotProvided)
     update_training_parser.add_argument('--description', type=nullable(str), default=NotProvided)
     update_training_parser.add_argument(
         '--metadata',
         type=json_path,
-        help='path to json file with whatever you need, maximum limit 4kB',
+        help='path to json file with custom metadata, maximum limit 4kB',
     )
+    update_training_parser.add_argument('--deployment-environment-id', type=nullable, default=NotProvided)
     update_training_parser.set_defaults(cmd=update_training)
 
     return parser

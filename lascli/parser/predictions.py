@@ -4,6 +4,8 @@ from argparse import RawTextHelpFormatter
 
 from las import Client
 
+from lascli.util import json_or_json_path
+
 
 def post_predictions(las_client: Client, document_id, model_id, **optional_args):
     return las_client.create_prediction(document_id, model_id, **optional_args)
@@ -25,8 +27,8 @@ def create_predictions_parser(subparsers):
     create_predicton_parser.add_argument('--max-pages', type=int)
     create_predicton_parser.add_argument('--rotation', type=int)
     create_predicton_parser.add_argument('--image-quality', type=str, choices={'LOW', 'HIGH'})
-    create_predicton_parser.add_argument('--postprocess-config', type=json.loads, help=textwrap.dedent('''
-        Post processing configuration for predictions
+    create_predicton_parser.add_argument('--postprocess-config', type=json_or_json_path, help=textwrap.dedent('''
+        Path or inline JSON with the post processing configuration for this prediction
         {
             "strategy": "BEST_FIRST" | "BEST_N_PAGES",  (required)
             "parameters": {                             (required if strategy=BEST_N_PAGES, omit otherwise)

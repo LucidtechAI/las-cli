@@ -3,12 +3,30 @@ from tests import service, util
 
 
 @pytest.mark.parametrize('metadata', [('--metadata', str(util.metadata_path())), ()])
-@pytest.mark.parametrize('preprocess_config', [('-p', str(util.preprocess_config_path())), ()])
+@pytest.mark.parametrize('preprocess_config', [
+    ('-p', str(util.preprocess_config_path())),
+    ('--preprocess-config', str(util.preprocess_config_path())),
+    ('--preprocess-config', util.preprocess_config_path().read_text()),
+    (),
+])
+@pytest.mark.parametrize('postprocess_config', [
+    ('--postprocess-config', str(util.postprocess_config_path())),
+    ('--postprocess-config', util.postprocess_config_path().read_text()),
+    (),
+])
 @pytest.mark.parametrize('base_model', [
     ('--base-model', f'{service.create_organization_id()}/{service.create_model_id()}'),
     (),
 ])
-def test_models_create(parser, client, metadata, preprocess_config, name_and_description, base_model):
+def test_models_create(
+    parser, 
+    client, 
+    metadata, 
+    preprocess_config, 
+    postprocess_config, 
+    name_and_description, 
+    base_model,
+):
     args = [
         'models',
         'create',
@@ -16,15 +34,33 @@ def test_models_create(parser, client, metadata, preprocess_config, name_and_des
         *metadata,
         *name_and_description,
         *preprocess_config,
+        *postprocess_config,
         *base_model,
     ]
     util.main_parser(parser, client, args)
 
 
 @pytest.mark.parametrize('metadata', [('--metadata', str(util.metadata_path())), ()])
-@pytest.mark.parametrize('preprocess_config', [('--preprocess-config', str(util.preprocess_config_path())), ()])
+@pytest.mark.parametrize('preprocess_config', [
+    ('--preprocess-config', str(util.preprocess_config_path())),
+    ('--preprocess-config', util.preprocess_config_path().read_text()),
+    (),
+])
+@pytest.mark.parametrize('postprocess_config', [
+    ('--postprocess-config', str(util.postprocess_config_path())),
+    ('--postprocess-config', util.postprocess_config_path().read_text()),
+    (),
+])
 @pytest.mark.parametrize('field_config', [('--field-config', str(util.field_config_path())), ()])
-def test_models_update(parser, client, metadata, preprocess_config, name_and_description, field_config):
+def test_models_update(
+    parser, 
+    client, 
+    metadata, 
+    preprocess_config, 
+    postprocess_config, 
+    name_and_description, 
+    field_config,
+):
     args = [
         'models',
         'update',
@@ -32,6 +68,7 @@ def test_models_update(parser, client, metadata, preprocess_config, name_and_des
         *metadata,
         *name_and_description,
         *preprocess_config,
+        *postprocess_config,
         *field_config,
     ]
 
@@ -44,7 +81,7 @@ def test_models_update(parser, client, metadata, preprocess_config, name_and_des
 
 @pytest.mark.parametrize('owner', [
     ('--owner', service.create_organization_id()),
-    ('--owner', 'me', service.create_organization_id()),
+    ('--owner', 'me'),
     (),
 ])
 def test_models_list(parser, client, list_defaults, owner):

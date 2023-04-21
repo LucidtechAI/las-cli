@@ -17,6 +17,7 @@ from .parser import (
     create_app_clients_parser,
     create_assets_parser,
     create_datasets_parser,
+    create_deployment_environments_parser,
     create_documents_parser,
     create_logs_parser,
     create_models_parser,
@@ -48,6 +49,7 @@ def create_parser():
     create_app_clients_parser(subparsers)
     create_assets_parser(subparsers)
     create_datasets_parser(subparsers)
+    create_deployment_environments_parser(subparsers)
     create_documents_parser(subparsers)
     create_logs_parser(subparsers)
     create_models_parser(subparsers)

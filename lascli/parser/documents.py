@@ -123,7 +123,7 @@ def create_documents_parser(subparsers):
     create_document_parser.add_argument(
         '--metadata',
         type=json_path,
-        help='path to json file with whatever you need, maximum limit 4kB',
+        help='path to json file with custom metadata, maximum limit 4kB',
     )
     create_document_ground_truth_group = create_document_parser.add_mutually_exclusive_group(required=False)
     create_document_ground_truth_group.add_argument('--ground-truth-fields', metavar='KEY=VALUE', nargs='+')
@@ -139,7 +139,7 @@ def create_documents_parser(subparsers):
     update_document_parser.add_argument(
         '--metadata',
         type=json_path,
-        help='path to json file with whatever you need, maximum limit 4kB',
+        help='path to json file with custom metadata, maximum limit 4kB',
     )
     update_document_parser.set_defaults(cmd=update_document)
 

@@ -24,6 +24,10 @@ def preprocess_config_path():
     return assets_folder() / 'preprocess_config.json'
 
 
+def postprocess_config_path():
+    return assets_folder() / 'postprocess_config.json'
+
+
 def field_config_path():
     return assets_folder() / 'field_config.json'
 
