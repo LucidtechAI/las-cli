@@ -2,16 +2,21 @@ import pytest
 from tests import service, util
 
 
+@pytest.mark.parametrize('data_scientist_assistance', [
+    ('--data-scientist-assistance',),
+    (),
+])
 @pytest.mark.parametrize('data_bundle_ids', [
     (service.create_data_bundle_id(), service.create_data_bundle_id()),
     [service.create_data_bundle_id()]
 ])
-def test_trainings_create(parser, client, data_bundle_ids, name_and_description, metadata):
+def test_trainings_create(parser, client, data_scientist_assistance, data_bundle_ids, name_and_description, metadata):
     args = [
         'models',
         'create-training',
         service.create_model_id(),
         *data_bundle_ids,
+        *data_scientist_assistance,
         *name_and_description,
     ]
     util.main_parser(parser, client, args)

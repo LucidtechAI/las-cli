@@ -16,25 +16,26 @@ def test_predictions_list(parser, client, list_defaults, sort_by, order):
     util.main_parser(parser, client, args)
 
 
-@pytest.mark.parametrize('rotation', [['--rotation', '90'], []])
-@pytest.mark.parametrize('auto_rotate', [['--auto-rotate'], []])
-@pytest.mark.parametrize('max_pages', [['--max-pages', '3'], []])
-@pytest.mark.parametrize('image_quality', [['--image-quality', 'HIGH'], ['--image-quality', 'LOW'], []])
+@pytest.mark.parametrize('preprocess_config', [
+    ('--preprocess-config', json.dumps({'rotation': 0, 'autoRotate': True, 'maxPages': 1, 'imageQuality': 'LOW'})),
+    ('--preprocess-config', json.dumps({'rotation': 90, 'autoRotate': False, 'maxPages': 2, 'imageQuality': 'HIGH'})),
+    ('--preprocess-config', json.dumps({'rotation': 180, 'maxPages': 3})),
+    ('--preprocess-config', json.dumps({'rotation': 270, 'autoRotate': True, 'imageQuality': 'HIGH'})),
+    ('--preprocess-config', json.dumps({'autoRotate': False, 'pages': [0, 1, -1], 'imageQuality': 'LOW'})),
+    (),
+])
 @pytest.mark.parametrize('postprocess_config', [
     ('--postprocess-config', str(util.postprocess_config_path())),
     ('--postprocess-config', util.postprocess_config_path().read_text()),
     (),
 ])
-def test_predictions_create(parser, client, auto_rotate, max_pages, image_quality, postprocess_config, rotation):
+def test_predictions_create(parser, client, preprocess_config, postprocess_config):
     args = [
         'predictions',
         'create',
         service.create_document_id(),
         service.create_model_id(),
-        *auto_rotate,
-        *image_quality,
-        *max_pages,
+        *preprocess_config,
         *postprocess_config,
-        *rotation,
     ]
     util.main_parser(parser, client, args)

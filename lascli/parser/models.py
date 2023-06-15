@@ -46,9 +46,7 @@ def list_data_bundles(las_client: Client, model_id, max_results, next_token):
 
 
 def list_all_data_bundles(las_client: Client):
-    print('Getting models...')
     models = las_client.list_models()['models']
-    print(f'Found {len(models)} models')
     return {model['modelId']: las_client.list_data_bundles(model['modelId']) for model in models}
 
 
@@ -60,11 +58,11 @@ def update_data_bundle(las_client: Client, model_id, data_bundle_id, **optional_
     return las_client.update_data_bundle(model_id, data_bundle_id, **optional_args)
 
 
-def create_training(las_client: Client, model_id, data_bundle_ids, instance_type, **optional_args):
+def create_training(las_client: Client, model_id, data_bundle_ids, data_scientist_assistance, **optional_args):
     return las_client.create_training(
         model_id=model_id,
         data_bundle_ids=data_bundle_ids,
-        instance_type=instance_type,
+        data_scientist_assistance=data_scientist_assistance or None,
         **optional_args,
     )
 
@@ -95,13 +93,16 @@ def create_models_parser(subparsers):
     create_parser.add_argument('--preprocess-config', '-p', type=json_or_json_path, help=textwrap.dedent('''
         Path or inline JSON with the pre processing configuration for predictions made by this model
         {
-            "autoRotate": true | false,                 (required)
-            "imageQuality": "LOW" | "HIGH",             (required)
-            "maxPages": 1 - 3                           (required)
+            'autoRotate': True | False                          (optional)
+            'maxPages': 1 - 3                                   (optional)
+            'imageQuality': 'LOW' | 'HIGH'                      (optional)
+            'pages': List with up to 3 page-indices to process  (optional)
+            'rotation': 0, 90, 180 or 270                       (optional)
         }
         Examples:
-        {"imageQuality": "HIGH", "autoRotate": false, "maxPages": 3}
-        {"imageQuality": "LOW", "autoRotate": true, "maxPages": 1}
+        {'pages': [0, 1, 5], 'autoRotate': True}
+        {'pages': [0, 1, -1], 'rotation': 90, 'imageQuality': 'HIGH'}
+        {'maxPages': 3, 'imageQuality': 'LOW'}
     '''))
     create_parser.add_argument('--postprocess-config', type=json_or_json_path, help=textwrap.dedent('''
         Path or inline JSON with the post processing configuration for predictions made by this model
@@ -158,13 +159,16 @@ def create_models_parser(subparsers):
     update_parser.add_argument('--preprocess-config', type=json_or_json_path, help=textwrap.dedent('''
         Path or inline JSON with the pre processing configuration for predictions made by this model
         {
-            "autoRotate": true | false,                 (required)
-            "imageQuality": "LOW" | "HIGH",             (required)
-            "maxPages": 1 - 3                           (required)
+            'autoRotate': True | False                          (optional)
+            'maxPages': 1 - 3                                   (optional)
+            'imageQuality': 'LOW' | 'HIGH'                      (optional)
+            'pages': List with up to 3 page-indices to process  (optional)
+            'rotation': 0, 90, 180 or 270                       (optional)
         }
         Examples:
-        {"imageQuality": "HIGH", "autoRotate": false, "maxPages": 3}
-        {"imageQuality": "LOW", "autoRotate": true, "maxPages": 1}
+        {'pages': [0, 1, 5], 'autoRotate': True}
+        {'pages': [0, 1, -1], 'rotation': 90, 'imageQuality': 'HIGH'}
+        {'maxPages': 3, 'imageQuality': 'LOW'}
     '''))
     update_parser.add_argument('--postprocess-config', type=json_or_json_path, help=textwrap.dedent('''
         Path or inline JSON with the post processing configuration for predictions made by this model
@@ -223,7 +227,6 @@ def create_models_parser(subparsers):
     create_training_parser = subparsers.add_parser('create-training')
     create_training_parser.add_argument('model_id')
     create_training_parser.add_argument('data_bundle_ids', nargs='+')
-    create_training_parser.add_argument('--instance-type')
     create_training_parser.add_argument('--name')
     create_training_parser.add_argument('--description')
     create_training_parser.add_argument(
@@ -231,6 +234,7 @@ def create_models_parser(subparsers):
         type=json_path,
         help='path to json file with custom metadata, maximum limit 4kB',
     )
+    create_training_parser.add_argument('--data-scientist-assistance', action='store_true')
     create_training_parser.set_defaults(cmd=create_training)
 
     list_trainings_parser = subparsers.add_parser('list-trainings')

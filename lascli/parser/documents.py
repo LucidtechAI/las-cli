@@ -72,21 +72,28 @@ def create_document(
     ground_truth_path,
     **optional_args,
 ):
-    content = pathlib.Path(document_path).read_bytes()
+    if document_path:
+        content = document_path.read_bytes()
 
-    if not content_type:
-        guessed_type = filetype.guess(content)
-        assert guessed_type, 'Could not determine content type of document. ' \
-                             'Please provide it manually with --content-type'
-        content_type = guessed_type.mime
+        if not content_type:
+            guessed_type = filetype.guess(content)
+            assert guessed_type, 'Could not determine content type of document. ' \
+                'Please provide it manually with --content-type'
+            content_type = guessed_type.mime
+            
+        content_args = {
+            'content': content,
+            'content_type': content_type,
+        }
+    else:
+        content_args = {}
 
     ground_truth = _create_ground_truth_dict(ground_truth_fields, ground_truth_path)
     return las_client.create_document(
-        content,
-        content_type,
         consent_id=consent_id,
         dataset_id=dataset_id,
         ground_truth=ground_truth,
+        **content_args,
         **optional_args,
     )
 
@@ -116,7 +123,7 @@ def create_documents_parser(subparsers):
     list_documents_parser.set_defaults(cmd=list_documents)
 
     create_document_parser = subparsers.add_parser('create')
-    create_document_parser.add_argument('document_path')
+    create_document_parser.add_argument('--document-path', type=pathlib.Path)
     create_document_parser.add_argument('--content-type')
     create_document_parser.add_argument('--consent-id')
     create_document_parser.add_argument('--dataset-id')
