@@ -30,19 +30,11 @@ def get_document(
     document_id,
     download_content,
     output_content,
-    density,
-    height,
-    page,
-    rotation,
-    width,
+    **optional_args,
 ):
     document = las_client.get_document(
-        document_id=document_id, 
-        width=width,
-        height=height,
-        page=page,
-        density=density,
-        rotation=rotation,
+        document_id=document_id,
+        **optional_args,
     )
 
     if download_content:
