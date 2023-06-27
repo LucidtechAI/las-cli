@@ -25,19 +25,34 @@ def _create_ground_truth_dict(ground_truth_fields, ground_truth_path):
     return ground_truth
 
 
-def get_document(las_client: Client, document_id, download_content, output_content):
-    document_resp = las_client.get_document(document_id)
-    content = document_resp['content']
+def get_document(
+    las_client: Client,
+    document_id,
+    download_content,
+    output_content,
+    density,
+    height,
+    page,
+    rotation,
+    width,
+):
+    document = las_client.get_document(
+        document_id=document_id, 
+        width=width,
+        height=height,
+        page=page,
+        density=density,
+        rotation=rotation,
+    )
 
     if download_content:
-        logging.info(f'Downloading content to {download_content}')
-        binary = base64.b64decode(content)
-        pathlib.Path(download_content).write_bytes(binary)
+        content = base64.b64decode(document['content'])
+        pathlib.Path(download_content).write_bytes(content)
 
-    if output_content:
-        return document_resp
-    else:
-        return {**document_resp, 'content': document_resp['content'][:10] + '... [TRUNCATED]'}
+    if not output_content:
+        document.pop('content', None)
+
+    return document
 
 
 def list_documents(las_client: Client, consent_id, dataset_id, **optional_args):
@@ -104,6 +119,11 @@ def create_documents_parser(subparsers):
     get_document_parser.add_argument('document_id')
     get_document_parser.add_argument('--output-content', action='store_true')
     get_document_parser.add_argument('-d', '--download-content')
+    get_document_parser.add_argument('--density', type=int)
+    get_document_parser.add_argument('--height', type=int)
+    get_document_parser.add_argument('--page', type=int)
+    get_document_parser.add_argument('--rotation', type=int, choices={0, 90, 180, 270})
+    get_document_parser.add_argument('--width', type=int)
     get_document_parser.set_defaults(cmd=get_document)
 
     list_documents_parser = subparsers.add_parser('list')

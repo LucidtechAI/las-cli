@@ -38,6 +38,7 @@ def parser():
 @pytest.fixture(scope='module')
 def client():
     client = Client()
+    client._make_fileserver_request = lambda *args, **kwargs: b''
     return client
 
 
