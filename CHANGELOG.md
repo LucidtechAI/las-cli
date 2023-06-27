@@ -1,5 +1,13 @@
 # Changelog
 
+## Version 10.1.0 - 2023-06-27
+
+- Added optional keyword argument `--width` to `documents get`
+- Added optional keyword argument `--height` to `documents get`
+- Added optional keyword argument `--density` to `documents get`
+- Added optional keyword argument `--page` to `documents get`
+- Added optional keyword argument `--rotation` to `documents get`
+
 ## Version 9.5.0 - 2023-04-18
 
 - Added `deployment-environments get`

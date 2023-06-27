@@ -59,7 +59,12 @@ def test_documents_list(parser, client, dataset_id, consent_id, list_defaults, s
 
 @pytest.mark.parametrize('output_content', [('--output-content',), ()])
 @pytest.mark.parametrize('download_content', [('--download-content', service.temporary_named_file()), ()])
-def test_documents_get(parser, client, output_content, download_content):
+@pytest.mark.parametrize('width', [('--width', '100'), ()])
+@pytest.mark.parametrize('height', [('--height', '100'), ()])
+@pytest.mark.parametrize('page', [('--page', '1'), ()])
+@pytest.mark.parametrize('density', [('--density', '100'), ()])
+@pytest.mark.parametrize('rotation', [('--rotation', '90'), ()])
+def test_documents_get(parser, client, output_content, download_content, width, height, page, density, rotation):
     with pytest.MonkeyPatch.context() as mp:
         mp.setattr('base64.b64decode', lambda *args: b'foo')
         args = [
@@ -67,6 +72,11 @@ def test_documents_get(parser, client, output_content, download_content):
             'get',
             service.create_document_id(),
             *output_content,
+            *width,
+            *height,
+            *page,
+            *density,
+            *rotation,
             *download_content,
         ]
         util.main_parser(parser, client, args)
