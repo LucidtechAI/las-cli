@@ -47,6 +47,7 @@ def create_users_parser(subparsers):
     create_user_parser.add_argument('app_client_id')
     create_user_parser.add_argument('--name')
     create_user_parser.add_argument('--avatar', help='Path to avatar JPEG image.')
+    create_user_parser.add_argument('--role-ids', nargs='+')
     create_user_parser.set_defaults(cmd=create_user)
 
     update_user_parser = subparsers.add_parser('update')
@@ -58,6 +59,7 @@ def create_users_parser(subparsers):
         type=nullable(str),
         default=NotProvided
     )
+    update_user_parser.add_argument('--role-ids', nargs='+')
     update_user_parser.set_defaults(cmd=update_user)
 
     list_users_parser = subparsers.add_parser('list')

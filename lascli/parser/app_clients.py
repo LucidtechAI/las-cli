@@ -46,6 +46,7 @@ def create_app_clients_parser(subparsers):
     create_app_client_parser.add_argument('--callback-urls', nargs='+')
     create_app_client_parser.add_argument('--login-urls', nargs='+')
     create_app_client_parser.add_argument('--default-login-url')
+    create_app_client_parser.add_argument('--role-ids', nargs='+')
     create_app_client_parser.set_defaults(cmd=create_app_client)
 
     list_app_clients_parser = subparsers.add_parser('list')
@@ -57,6 +58,7 @@ def create_app_clients_parser(subparsers):
     update_app_client_parser.add_argument('app_client_id')
     update_app_client_parser.add_argument('--name', type=nullable(str), default=NotProvided)
     update_app_client_parser.add_argument('--description', type=nullable(str), default=NotProvided)
+    update_app_client_parser.add_argument('--role-ids', nargs='+')
     update_app_client_parser.set_defaults(cmd=update_app_client)
 
     delete_app_client_parser = subparsers.add_parser('delete')
