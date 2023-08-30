@@ -30,6 +30,7 @@ def test_app_clients_create_secret(parser, client, name_and_description):
 
 
 def test_app_clients_update(parser, client, name_and_description):
+    print('Name and desc', name_and_description)
     args = [
         'app-clients',
         'update',
@@ -37,7 +38,7 @@ def test_app_clients_update(parser, client, name_and_description):
         *name_and_description,
     ]
 
-    if len(args) == 3:  # patch call requires at least one change
+    if len(args) <= 3:  # patch call requires at least one change
         with pytest.raises(Exception):
             util.main_parser(parser, client, args)
     else:
