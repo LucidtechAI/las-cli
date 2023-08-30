@@ -2,6 +2,8 @@
 
 ## Version 11.0.0 - 2023-08-30
 
+- Added `roles list`
+- Added `roles get`
 - Added optional keyword argument `--role-ids` to `app-clients create`
 - Added optional keyword argument `--role-ids` to `app-clients update`
 - Added optional keyword argument `--role-ids` to `users create`
