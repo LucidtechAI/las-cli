@@ -2,4 +2,4 @@ PyYAML>=6.0.0
 argcomplete>=2.0.0
 dateparser>=1.1.1
 filetype>=1.0.13
-lucidtech-las~=9.2
+lucidtech-las~=9.3

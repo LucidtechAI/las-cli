@@ -1,5 +1,14 @@
 # Changelog
 
+## Version 11.0.0 - 2023-08-30
+
+- Added optional keyword argument `--role-ids` to `app-clients create`
+- Added optional keyword argument `--role-ids` to `app-clients update`
+- Added optional keyword argument `--role-ids` to `users create`
+- Added optional keyword argument `--role-ids` to `users update`
+- Removed deprecated optional keyword arguments `--avatar` and `--name` from `users create`
+- Removed deprecated optional keyword arguments `--avatar` and `--name` from `users update`
+
 ## Version 10.1.0 - 2023-06-27
 
 - Added optional keyword argument `--width` to `documents get`

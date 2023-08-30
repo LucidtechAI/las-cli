@@ -10,9 +10,10 @@ def create_app_client(
     callback_urls,
     login_urls,
     default_login_url,
+    role_ids,
     **optional_args
 ):
-    return las_client.create_app_client(
+    args = dict(
         generate_secret=generate_secret,
         logout_urls=logout_urls,
         callback_urls=callback_urls,
@@ -20,14 +21,27 @@ def create_app_client(
         default_login_url=default_login_url,
         **optional_args,
     )
+    
+    if role_ids:
+        args['role_ids'] = role_ids
+    
+    return las_client.create_app_client(**args)
 
 
 def list_app_clients(las_client: Client, max_results=None, next_token=None):
     return las_client.list_app_clients(max_results=max_results, next_token=next_token)
 
 
-def update_app_client(las_client: Client, app_client_id, **optional_args):
-    return las_client.update_app_client(app_client_id, **optional_args)
+def update_app_client(las_client: Client, app_client_id, role_ids, **optional_args):
+    args = dict(
+        app_client_id=app_client_id,
+        **optional_args,
+    )
+
+    if role_ids:
+        args['role_ids'] = role_ids
+
+    return las_client.update_app_client(**args)
 
 
 def delete_app_client(las_client: Client, app_client_id):
