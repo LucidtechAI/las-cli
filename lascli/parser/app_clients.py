@@ -10,10 +10,9 @@ def create_app_client(
     callback_urls,
     login_urls,
     default_login_url,
-    role_ids,
     **optional_args
 ):
-    args = dict(
+    return las_client.create_app_client(
         generate_secret=generate_secret,
         logout_urls=logout_urls,
         callback_urls=callback_urls,
@@ -21,27 +20,14 @@ def create_app_client(
         default_login_url=default_login_url,
         **optional_args,
     )
-    
-    if role_ids:
-        args['role_ids'] = role_ids
-    
-    return las_client.create_app_client(**args)
 
 
 def list_app_clients(las_client: Client, max_results=None, next_token=None):
     return las_client.list_app_clients(max_results=max_results, next_token=next_token)
 
 
-def update_app_client(las_client: Client, app_client_id, role_ids, **optional_args):
-    args = dict(
-        app_client_id=app_client_id,
-        **optional_args,
-    )
-
-    if role_ids:
-        args['role_ids'] = role_ids
-
-    return las_client.update_app_client(**args)
+def update_app_client(las_client: Client, app_client_id, **optional_args):
+    return las_client.update_app_client(app_client_id=app_client_id, **optional_args)
 
 
 def delete_app_client(las_client: Client, app_client_id):
@@ -60,7 +46,7 @@ def create_app_clients_parser(subparsers):
     create_app_client_parser.add_argument('--callback-urls', nargs='+')
     create_app_client_parser.add_argument('--login-urls', nargs='+')
     create_app_client_parser.add_argument('--default-login-url')
-    create_app_client_parser.add_argument('--role-ids', nargs='+')
+    create_app_client_parser.add_argument('--role-ids', nargs='+', default=NotProvided)
     create_app_client_parser.set_defaults(cmd=create_app_client)
 
     list_app_clients_parser = subparsers.add_parser('list')
@@ -72,7 +58,7 @@ def create_app_clients_parser(subparsers):
     update_app_client_parser.add_argument('app_client_id')
     update_app_client_parser.add_argument('--name', type=nullable(str), default=NotProvided)
     update_app_client_parser.add_argument('--description', type=nullable(str), default=NotProvided)
-    update_app_client_parser.add_argument('--role-ids', nargs='+')
+    update_app_client_parser.add_argument('--role-ids', nargs='+', default=NotProvided)
     update_app_client_parser.set_defaults(cmd=update_app_client)
 
     delete_app_client_parser = subparsers.add_parser('delete')
