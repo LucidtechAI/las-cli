@@ -9,6 +9,7 @@ from .organizations import create_organizations_parser
 from .payment_methods import create_payment_methods_parser
 from .plans import create_plans_parser
 from .predictions import create_predictions_parser
+from .roles import create_roles_parser
 from .secrets import create_secrets_parser
 from .transitions import create_transitions_parser
 from .users import create_users_parser
