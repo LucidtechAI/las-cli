@@ -74,9 +74,9 @@ def create_workflows_parser(subparsers):
         help='path to the execution completed configuration for the workflow',
     )
     create_workflow_parser.add_argument(
-        '--metadata', 
-        type=json_or_json_path, 
-        help='Add additional custom information about the workflow',
+        '--metadata',
+        type=json_or_json_path,
+        help='Add additional custom information about the workflow (JSON or path to JSON file)',
     )
     create_workflow_parser.set_defaults(cmd=create_workflow)
 
@@ -95,9 +95,9 @@ def create_workflows_parser(subparsers):
         help='path to the execution completed configuration for the workflow',
     )
     update_workflow_parser.add_argument(
-        '--metadata', 
-        type=json_or_json_path, 
-        help='Add additional custom information about the workflow',
+        '--metadata',
+        type=json_or_json_path,
+        help='Add additional custom information about the workflow (JSON or path to JSON file)',
     )
     update_workflow_parser.set_defaults(cmd=update_workflow)
 
