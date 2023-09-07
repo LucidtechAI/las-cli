@@ -5,7 +5,8 @@ from unittest.mock import patch
 
 @pytest.mark.parametrize('completed_config', [('--completed-config', str(util.transition_parameters_path())), ()])
 @pytest.mark.parametrize('error_config', [('--error-config', str(util.error_config_path())), ()])
-def test_workflows_create(parser, client, name_and_description, error_config, completed_config):
+@pytest.mark.parametrize('metadata', [('--metadata', str(util.metadata_path())), ()])
+def test_workflows_create(parser, client, name_and_description, error_config, completed_config, metadata):
     args = [
         'workflows',
         'create',
@@ -13,13 +14,15 @@ def test_workflows_create(parser, client, name_and_description, error_config, co
         *name_and_description,
         *error_config,
         *completed_config,
+        *metadata,
     ]
     util.main_parser(parser, client, args)
 
 
 @pytest.mark.parametrize('completed_config', [('--completed-config', str(util.transition_parameters_path())), ()])
 @pytest.mark.parametrize('error_config', [('--error-config', str(util.error_config_path())), ()])
-def test_workflows_update(parser, client, name_and_description, error_config, completed_config):
+@pytest.mark.parametrize('metadata', [('--metadata', str(util.metadata_path())), ()])
+def test_workflows_update(parser, client, name_and_description, error_config, completed_config, metadata):
     args = [
         'workflows',
         'update',
@@ -27,6 +30,7 @@ def test_workflows_update(parser, client, name_and_description, error_config, co
         *name_and_description,
         *error_config,
         *completed_config,
+        *metadata,
     ]
 
     if len(args) == 3:  # patch call requires at least one change
@@ -73,10 +77,10 @@ def test_workflows_create_default(
     create_workflow,
     create_transition,
     get_model,
-    create_dataset, 
-    create_asset, 
+    create_dataset,
+    create_asset,
     create_secret,
-    parser, 
+    parser,
     client,
 ):
     args = [
@@ -86,7 +90,7 @@ def test_workflows_create_default(
         '--from-model-id',
         service.create_model_id()
  ]
-    
+
     create_workflow.return_value = {'workflowId': service.create_workflow_id()}
     create_transition.return_value = {'transitionId': service.create_training_id()}
     create_asset.return_value = {'assetId': service.create_asset_id()}
@@ -100,9 +104,9 @@ def test_workflows_create_default(
         }
     }
 
-   
+
     util.main_parser(parser, client, args)
-    
+
 
 @patch('las.Client.delete_dataset')
 @patch('las.Client.delete_transition')
@@ -117,15 +121,15 @@ def test_workflows_create_default(
 def test_workflows_create_default_cleanup(
     create_transition,
     get_model,
-    create_dataset, 
-    create_asset, 
-    create_secret, 
+    create_dataset,
+    create_asset,
+    create_secret,
     create_workflow,
-    delete_asset, 
-    delete_secret, 
-    delete_transition, 
+    delete_asset,
+    delete_secret,
+    delete_transition,
     delete_dataset,
-    parser, 
+    parser,
     client,
 ):
     args = [
@@ -149,7 +153,7 @@ def test_workflows_create_default_cleanup(
     }
 
     util.main_parser(parser, client, args)
-    
+
     delete_asset.assert_called()
     delete_secret.assert_called()
     delete_transition.assert_called()

@@ -1,23 +1,28 @@
 # Changelog
 
+## Version 11.1.0 - 2023-09-07
+
+- Added optional parameter `--metadata` to `workflows create`
+- Added optional parameter `--metadata` to `workflows update`
+
 ## Version 11.0.0 - 2023-08-30
 
 - Added `roles list`
 - Added `roles get`
-- Added optional keyword argument `--role-ids` to `app-clients create`
-- Added optional keyword argument `--role-ids` to `app-clients update`
-- Added optional keyword argument `--role-ids` to `users create`
-- Added optional keyword argument `--role-ids` to `users update`
-- Removed deprecated optional keyword arguments `--avatar` and `--name` from `users create`
-- Removed deprecated optional keyword arguments `--avatar` and `--name` from `users update`
+- Added optional parameter `--role-ids` to `app-clients create`
+- Added optional parameter `--role-ids` to `app-clients update`
+- Added optional parameter `--role-ids` to `users create`
+- Added optional parameter `--role-ids` to `users update`
+- Removed deprecated optional parameters `--avatar` and `--name` from `users create`
+- Removed deprecated optional parameters `--avatar` and `--name` from `users update`
 
 ## Version 10.1.0 - 2023-06-27
 
-- Added optional keyword argument `--width` to `documents get`
-- Added optional keyword argument `--height` to `documents get`
-- Added optional keyword argument `--density` to `documents get`
-- Added optional keyword argument `--page` to `documents get`
-- Added optional keyword argument `--rotation` to `documents get`
+- Added optional parameter `--width` to `documents get`
+- Added optional parameter `--height` to `documents get`
+- Added optional parameter `--density` to `documents get`
+- Added optional parameter `--page` to `documents get`
+- Added optional parameter `--rotation` to `documents get`
 
 ## Version 9.5.0 - 2023-04-18
 
