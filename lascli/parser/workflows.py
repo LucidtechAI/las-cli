@@ -5,7 +5,7 @@ import pathlib
 import dateparser
 from las import Client
 
-from lascli.util import nullable, NotProvided, json_path
+from lascli.util import nullable, NotProvided, json_path, json_or_json_path
 from lascli.actions import workflows
 
 
@@ -73,6 +73,11 @@ def create_workflows_parser(subparsers):
         type=json_path,
         help='path to the execution completed configuration for the workflow',
     )
+    create_workflow_parser.add_argument(
+        '--metadata',
+        type=json_or_json_path,
+        help='Add additional custom information about the workflow (JSON or path to JSON file)',
+    )
     create_workflow_parser.set_defaults(cmd=create_workflow)
 
     update_workflow_parser = subparsers.add_parser('update')
@@ -88,6 +93,11 @@ def create_workflows_parser(subparsers):
         '--completed-config',
         type=json_path,
         help='path to the execution completed configuration for the workflow',
+    )
+    update_workflow_parser.add_argument(
+        '--metadata',
+        type=json_or_json_path,
+        help='Add additional custom information about the workflow (JSON or path to JSON file)',
     )
     update_workflow_parser.set_defaults(cmd=update_workflow)
 
@@ -133,7 +143,7 @@ def create_workflows_parser(subparsers):
     delete_workflow_execution_parser.add_argument('workflow_id')
     delete_workflow_execution_parser.add_argument('execution_id')
     delete_workflow_execution_parser.set_defaults(cmd=delete_workflow_execution)
-    
+
     create_default_workflow_parser = subparsers.add_parser('create-default')
     create_default_action = create_default_workflow_parser.add_mutually_exclusive_group(required=False)
     create_default_action.add_argument('--from-model-id', help='The model to generate the workflow for')
