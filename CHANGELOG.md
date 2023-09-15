@@ -1,5 +1,9 @@
 # Changelog
 
+## Version 11.2.0 - 2023-09-14
+
+- Added optional parameter `--model-id` to `predictions list`
+
 ## Version 11.1.0 - 2023-09-07
 
 - Added optional parameter `--metadata` to `workflows create`

@@ -58,6 +58,7 @@ def create_predictions_parser(subparsers):
     list_predictions_parser.add_argument('--next-token', '-n', default=None)
     list_predictions_parser.add_argument('--sort-by', choices={'createdTime'})
     list_predictions_parser.add_argument('--order', choices={'ascending', 'descending'})
+    list_predictions_parser.add_argument('--model-id')
     list_predictions_parser.set_defaults(cmd=list_predictions)
 
     return parser
