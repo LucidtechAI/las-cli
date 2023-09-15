@@ -5,13 +5,15 @@ from tests import service, util
 
 @pytest.mark.parametrize('sort_by', [('--sort-by', 'createdTime')])
 @pytest.mark.parametrize('order', [('--order', 'ascending'), ('--order', 'descending')])
-def test_predictions_list(parser, client, list_defaults, sort_by, order):
+@pytest.mark.parametrize('model_id', [('--model-id', service.create_model_id())])
+def test_predictions_list(parser, client, list_defaults, sort_by, order, model_id):
     args = [
         'predictions',
         'list',
         *list_defaults,
         *sort_by,
         *order,
+        *model_id,
     ]
     util.main_parser(parser, client, args)
 
