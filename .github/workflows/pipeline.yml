@@ -33,7 +33,7 @@ jobs:
       - name: Start prism
         run: |
           make prism-start
-          sleep 3
+          sleep 10
 
       - name: Run tests
         run: |
