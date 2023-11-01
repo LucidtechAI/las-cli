@@ -23,7 +23,7 @@ from las import Client
 from las.client import NotFound
 from yaml.parser import ParserError
 
-from lascli.util import NotProvided, nullable, json_path
+from lascli.util import NotProvided, nullable, json_path, json_or_json_path
 
 
 def group(iterable, group_size):
@@ -360,6 +360,18 @@ def get_documents(las_client: Client, dataset_id, output_dir, num_threads, chunk
     return {'Total downloaded documents': len(already_downloaded_from_dataset)}
 
 
+def create_transformation(las_client: Client, dataset_id, operations):
+    return las_client.create_transformation(dataset_id=dataset_id, operations=operations)
+
+
+def list_transformations(las_client: Client, dataset_id, **optional_args):
+    return las_client.list_transformations(dataset_id, **optional_args)
+
+
+def delete_transformation(las_client: Client, dataset_id, transformation_id):
+    return las_client.delete_transformation(dataset_id, transformation_id)
+
+
 def create_datasets_parser(subparsers):
     parser = subparsers.add_parser('datasets')
     subparsers = parser.add_subparsers()
@@ -457,5 +469,33 @@ def create_datasets_parser(subparsers):
     get_documents_parser.add_argument('--num-threads', default=32, type=int, help='Number of threads to use')
     get_documents_parser.add_argument('--chunk-size', default=100, type=int)
     get_documents_parser.set_defaults(cmd=get_documents)
+
+    create_transformation_parser = subparsers.add_parser('create-transformation')
+    create_transformation_parser.add_argument('dataset_id')
+    create_transformation_parser.add_argument('operations', type=json_or_json_path, help=textwrap.dedent('''
+        Path or inline JSON with list of transformation operations
+        [
+          {
+              "type": "remove-duplicates" | ""                    (required)
+              "options": {}                                       (optional)
+          },
+          ...
+        ]  
+        Examples:
+        [{"type": "remove-duplicates", "options": {}}]
+    '''))
+    create_transformation_parser.set_defaults(cmd=create_transformation)
+
+    list_transformations_parser = subparsers.add_parser('list-transformations')
+    list_transformations_parser.add_argument('dataset_id')
+    list_transformations_parser.add_argument('--status', '-s', nargs='+', help='Only return those with the given status')
+    list_transformations_parser.add_argument('--max-results', '-m', type=int, default=None)
+    list_transformations_parser.add_argument('--next-token', '-n', type=str, default=None)
+    list_transformations_parser.set_defaults(cmd=list_transformations)
+
+    delete_transformations_parser = subparsers.add_parser('delete-transformation')
+    delete_transformations_parser.add_argument('dataset_id')
+    delete_transformations_parser.add_argument('transformation_id')
+    delete_transformations_parser.set_defaults(cmd=delete_transformation)
 
     return parser

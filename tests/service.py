@@ -79,6 +79,10 @@ def create_role_id():
     return f'las:role:{uuid4().hex}'
 
 
+def create_transformation_id():
+    return f'las:dataset-transformation:{uuid4().hex}'
+
+
 def create_email():
     return 'foo@bar.com'
 
