@@ -476,7 +476,7 @@ def create_datasets_parser(subparsers):
         Path or inline JSON with list of transformation operations
         [
           {
-              "type": "remove-duplicates"                         (required)
+              "type": "remove-duplicates",                        (required)
               "options": {}                                       (optional)
           },
           ...
