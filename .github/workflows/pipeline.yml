@@ -5,7 +5,6 @@ on:
     branch:
       - master
 
-
 jobs:
   build:
     runs-on: ubuntu-22.04
@@ -39,6 +38,6 @@ jobs:
       - name: Run tests
         run: |
           docker logs -f $(cat /tmp/prism.cid) &
-          python -m pytest
+          tox -r -e py
           kill %1
           make prism-stop
