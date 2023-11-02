@@ -22,6 +22,16 @@ def test_trainings_create(parser, client, data_scientist_assistance, data_bundle
     util.main_parser(parser, client, args)
 
 
+def test_trainings_get(parser, client):
+    args = [
+        'models',
+        'get-training',
+        service.create_model_id(),
+        service.create_training_id(),
+    ]
+    util.main_parser(parser, client, args)
+
+
 def test_trainings_list(parser, client, list_defaults):
     args = [
         'models',

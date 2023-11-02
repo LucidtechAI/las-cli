@@ -15,6 +15,16 @@ def test_data_bundles_create(parser, client, dataset_ids, name_and_description):
         *name_and_description,
     ]
     util.main_parser(parser, client, args)
+    
+    
+def test_data_bundles_get(parser, client):
+    args = [
+        'models',
+        'get-data-bundle',
+        service.create_model_id(),
+        service.create_data_bundle_id(),
+    ]
+    util.main_parser(parser, client, args)
 
 
 def test_data_bundles_list(parser, client, list_defaults):
