@@ -89,7 +89,7 @@ def test_workflows_create_default(
         'create-default',
         'My workflow',
         '--from-model-id',
-        service.create_model_id()
+        service.create_model_id(),
     ]
 
     create_workflow.return_value = {'workflowId': service.create_workflow_id()}
@@ -102,7 +102,7 @@ def test_workflows_create_default(
         'fieldConfig': {
             'field1': {'type': 'numeric', 'description': 'Display1'},
             'field2': {'type': 'date', 'description': 'Display2'},
-        }
+        },
     }
 
     util.main_parser(parser, client, args)

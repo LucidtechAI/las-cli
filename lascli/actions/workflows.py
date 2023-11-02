@@ -92,7 +92,7 @@ def create_secrets(las_client: Client, create_tag: str, username: str = None, pa
         docker_secret = las_client.create_secret(
             data={
                 'username': username,
-                'password': password
+                'password': password,
             },
             name='Docker credentials',
             description=create_tag,
