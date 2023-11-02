@@ -41,6 +41,10 @@ def create_data_bundle(las_client: Client, model_id, dataset_ids, **optional_arg
     return las_client.create_data_bundle(model_id=model_id, dataset_ids=dataset_ids, **optional_args)
 
 
+def get_data_bundle(las_client: Client, model_id, data_bundle_id):
+    return las_client.get_data_bundle(model_id=model_id, data_bundle_id=data_bundle_id)
+
+
 def list_data_bundles(las_client: Client, model_id, max_results, next_token):
     return las_client.list_data_bundles(model_id, max_results=max_results, next_token=next_token)
 
@@ -65,6 +69,10 @@ def create_training(las_client: Client, model_id, data_bundle_ids, data_scientis
         data_scientist_assistance=data_scientist_assistance or None,
         **optional_args,
     )
+
+
+def get_training(las_client: Client, model_id, training_id):
+    return las_client.get_training(model_id=model_id, training_id=training_id)
 
 
 def list_trainings(las_client: Client, model_id, max_results, next_token):
@@ -203,6 +211,11 @@ def create_models_parser(subparsers):
     create_data_bundle_parser.add_argument('--description')
     create_data_bundle_parser.set_defaults(cmd=create_data_bundle)
 
+    get_data_bundle_parser = subparsers.add_parser('get-data-bundle')
+    get_data_bundle_parser.add_argument('model_id')
+    get_data_bundle_parser.add_argument('data_bundle_id')
+    get_data_bundle_parser.set_defaults(cmd=get_data_bundle)
+
     list_data_bundles_parser = subparsers.add_parser('list-data-bundles')
     list_data_bundles_parser.add_argument('model_id')
     list_data_bundles_parser.add_argument('--max-results', '-m', type=int, default=None)
@@ -236,6 +249,11 @@ def create_models_parser(subparsers):
     )
     create_training_parser.add_argument('--data-scientist-assistance', action='store_true')
     create_training_parser.set_defaults(cmd=create_training)
+
+    get_training_parser = subparsers.add_parser('get-training')
+    get_training_parser.add_argument('model_id')
+    get_training_parser.add_argument('training_id')
+    get_training_parser.set_defaults(cmd=get_training)
 
     list_trainings_parser = subparsers.add_parser('list-trainings')
     list_trainings_parser.add_argument('model_id')
