@@ -1,5 +1,10 @@
 # Changelog
 
+## Version 12.1.0 - 2023-11-01
+
+- Updated `--create-default-workflow` in `workflows create-default` to use the latest docker images and automatically
+add `modelId` to the form config
+
 ## Version 12.0.0 - 2023-11-01
 
 - Added `datasets create-transformation`

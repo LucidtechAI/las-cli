@@ -13,13 +13,13 @@ from ..util import wrap_output, capture_return
 
 
 created_ids = collections.defaultdict(list)
- 
+
 
 def create_workflow_spec(
-    model_id: str, 
-    preprocess_transition_id: str, 
+    model_id: str,
+    preprocess_transition_id: str,
     manual_transition_id: str,
-    postprocess_transition_id: str, 
+    postprocess_transition_id: str,
     tag: str,
 ):
     return {
@@ -57,7 +57,7 @@ def create_workflow_spec(
             }
         }
     }
-    
+
 
 def create_form_config(las_client: Client, model_id: str):
     model = las_client.get_model(model_id)
@@ -78,10 +78,11 @@ def create_form_config(las_client: Client, model_id: str):
     return {
         'version': 'v1',
         'config': {
+            'modelId': model_id,
             'fields': {field: transform(field) for field in field_config}
         }
     }
-    
+
 
 @wrap_output(start_msg='Creating secrets ...', end_msg='Done')
 @capture_return(dest=created_ids['secrets'])
@@ -91,12 +92,12 @@ def create_secrets(las_client: Client, create_tag: str, username: str = None, pa
         docker_secret = las_client.create_secret(
             data={
                 'username': username,
-                'password': password 
+                'password': password,
             },
             name='Docker credentials',
             description=create_tag,
         )
-        
+
     cradl_secret = las_client.create_secret(
         data={
             'LAS_CLIENT_ID': las_client.credentials.client_id,
@@ -107,7 +108,7 @@ def create_secrets(las_client: Client, create_tag: str, username: str = None, pa
         name='Cradl credentials',
         description=create_tag,
     )
-    
+
     return docker_secret.get('secretId'), cradl_secret['secretId']
 
 
@@ -128,21 +129,21 @@ def create_form_config_asset(las_client: Client, model_id: str, create_tag: str)
 def create_dataset(las_client: Client, name: str, create_tag: str):
     dataset = las_client.create_dataset(name=name, description=f'Dataset for {name} model. {create_tag}')
     return dataset['datasetId']
-    
+
 
 @wrap_output(start_msg='Creating transitions ...', end_msg='Done')
 @capture_return(dest=created_ids['transitions'])
 def create_transitions(
-    las_client: Client, 
-    cradl_secret_id: str, 
+    las_client: Client,
+    cradl_secret_id: str,
     name: str,
     model_id: str,
     dataset_id: str,
     preprocess_image: str,
     postprocess_image: str,
     form_config_asset_id: str,
-    create_tag: str, 
-    created_ids: dict, 
+    create_tag: str,
+    created_ids: dict,
     docker_secret_id: str = None,
 ):
     docker_auth_details = {'secretId': docker_secret_id} if docker_secret_id else {}
@@ -156,14 +157,14 @@ def create_transitions(
         },
         **docker_auth_details
     }
-    
+
     preprocess = las_client.create_transition(
         transition_type='docker',
         parameters={'imageUrl': preprocess_image, **common_params},
         name=f'Preprocess transition for workflow {name}',
         description=create_tag,
     )
-    
+
     postprocess = las_client.create_transition(
         transition_type='docker',
         parameters={'imageUrl': postprocess_image, **common_params},
@@ -189,7 +190,7 @@ def create_default_workflow(las_client: Client, name: str, **optional_args):
     timestamp = datetime.now()
     create_tag = f'Created by CLI at {timestamp.isoformat()} (tag:{uuid.uuid4().hex})'
     model_id = optional_args.get('from_model_id')
-    
+
     if model_id:
         try:
             docker_secret_id, cradl_secret_id = create_secrets(
@@ -204,7 +205,7 @@ def create_default_workflow(las_client: Client, name: str, **optional_args):
                 model_id=model_id,
                 create_tag=create_tag,
             )
-            
+
             dataset_id = create_dataset(
                 las_client=las_client,
                 name=f'Dataset for {name}',
@@ -232,7 +233,7 @@ def create_default_workflow(las_client: Client, name: str, **optional_args):
                 manual_transition_id=manual_id,
                 tag=create_tag,
             )
-            
+
             workflow = las_client.create_workflow(
                 specification=spec,
                 name=name,
@@ -246,7 +247,7 @@ def create_default_workflow(las_client: Client, name: str, **optional_args):
             traceback.print_exc()
 
             print('Cleaning up resources ...')
-            
+
             def for_each(fn, resources, msg=None):
                 for resource in filter(lambda r: r, resources or []):
                     try:
