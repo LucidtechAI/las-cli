@@ -1,5 +1,13 @@
 # Changelog
 
+## Version 12.0.0 - 2023-11-01
+
+- Added `datasets create-transformation`
+- Added `datasets delete-transformation`
+- Added `datasets list-transformations`
+- Added Python 3.11 support
+- Removed Python 3.6 and 3.7 support as they have reached end of life
+
 ## Version 11.2.0 - 2023-09-14
 
 - Added optional parameter `--model-id` to `predictions list`

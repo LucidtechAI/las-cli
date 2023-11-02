@@ -1,3 +1,5 @@
+import json
+
 import pytest
 from tests import service, util
 
@@ -79,5 +81,38 @@ def test_datasets_get_documents(parser, client):
         'datasets',
         'get-documents',
         service.create_dataset_id(),
+    ]
+    util.main_parser(parser, client, args)
+
+
+@pytest.mark.parametrize('operations', [
+    (json.dumps([{'type': 'remove-duplicates', 'options': {}}]),)
+])
+def test_datasets_create_transformation(parser, client, operations):
+    args = [
+        'datasets',
+        'create-transformation',
+        service.create_dataset_id(),
+        *operations,
+    ]
+    util.main_parser(parser, client, args)
+
+
+def test_datasets_list_transformations(parser, client, list_defaults):
+    args = [
+        'datasets',
+        'list-transformations',
+        service.create_dataset_id(),
+        *list_defaults,
+    ]
+    util.main_parser(parser, client, args)
+
+
+def test_datasets_delete_transformation(parser, client):
+    args = [
+        'datasets',
+        'delete-transformation',
+        service.create_dataset_id(),
+        service.create_transformation_id(),
     ]
     util.main_parser(parser, client, args)
