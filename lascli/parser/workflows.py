@@ -1,6 +1,8 @@
 import datetime
 import json
 import pathlib
+import textwrap
+from argparse import RawTextHelpFormatter
 
 import dateparser
 from las import Client
@@ -59,19 +61,60 @@ def create_workflows_parser(subparsers):
     list_workflows_parser.add_argument('--next-token', '-n', type=str)
     list_workflows_parser.set_defaults(cmd=list_workflows)
 
-    create_workflow_parser = subparsers.add_parser('create')
+    create_workflow_parser = subparsers.add_parser('create', formatter_class=RawTextHelpFormatter)
     create_workflow_parser.add_argument('specification', type=json_path, help='path to specification')
     create_workflow_parser.add_argument('--name')
     create_workflow_parser.add_argument('--description')
     create_workflow_parser.add_argument(
+        '--email-config',
+        type=json_or_json_path,
+        help=textwrap.dedent('''
+            Path or inline JSON with configuration to enable email input to workflow. The required secretId must have
+            permissions to call POST /workflows/:id/executions
+            {
+                "secretId": string,                 (required)
+                "allowedOrigins": list[str],        (optional, list of regexp determining allowed email origins)
+                "additionalWorkflowInput": dict,    (optional, static input always passed to executions)
+            }
+            Examples:
+            {"secretId": "las:secret:<uuid>"}
+            {"secretId": "las:secret:<uuid>", "allowedOrigins": [".+@myemaildomain.com"]}
+            {"secretId": "las:secret:<uuid>", "allowedOrigins": ["foobar@myemaildomain.com"]}
+            {"secretId": "las:secret:<uuid>", "additionalWorkflowInput": {"foo": "bar"}}
+        '''),
+    )
+    create_workflow_parser.add_argument(
         '--error-config',
-        type=json_path,
-        help='path to the error configuration for the workflow',
+        type=json_or_json_path,
+        help=textwrap.dedent('''
+            Path or inline JSON with the error configuration for the workflow
+            {
+                "manualRetry": boolean,     (optional, failing transitions will become retryable if set to true)
+                "email": str                (optional, failing transitions will send an error summary to this email)
+            }
+            Examples:
+            {"manualRetry": true}
+            {"manualRetry": true, "email": "foobar@myemaildomain.com"}
+        '''),
     )
     create_workflow_parser.add_argument(
         '--completed-config',
-        type=json_path,
-        help='path to the execution completed configuration for the workflow',
+        type=json_or_json_path,
+        help=textwrap.dedent('''
+            Path or inline JSON with the completed configuration for the workflow. The code provided will be run after
+            a workflow execution has completed regardless of its final status.
+            {
+                "imageUrl": str,            (required, docker image URL)
+                "secretId": str,            (optional, containing username and password if the docker image is private)
+                "environment": dict,        (optional, environment variables passed to the docker container)
+                "environmentSecrets": list  (optional, secrets passed to the docker container as environment variables)
+            }
+            Examples:
+            {"imageUrl": "library/repo:tag"}
+            {"imageUrl": "library/repo:tag", "secretId": "las:secret:<uuid>"}
+            {"imageUrl": "foo/bar:tag", "environment": {"SOME_KEY": "SOME_VALUE"}}
+            {"imageUrl": "foo/bar:tag", "environment": {"foo": "bar"}, "environmentSecrets": ["las:secret:<uuid>"]}
+        '''),
     )
     create_workflow_parser.add_argument(
         '--metadata',
@@ -80,19 +123,61 @@ def create_workflows_parser(subparsers):
     )
     create_workflow_parser.set_defaults(cmd=create_workflow)
 
-    update_workflow_parser = subparsers.add_parser('update')
+    update_workflow_parser = subparsers.add_parser('update', formatter_class=RawTextHelpFormatter)
     update_workflow_parser.add_argument('workflow_id')
     update_workflow_parser.add_argument('--name', type=nullable(str), default=NotProvided)
     update_workflow_parser.add_argument('--description', type=nullable(str), default=NotProvided)
     update_workflow_parser.add_argument(
+        '--email-config',
+        default=NotProvided,
+        type=nullable(json_or_json_path),
+        help=textwrap.dedent('''
+            Path or inline JSON with configuration to enable email input to workflow. The required secretId must have
+            permissions to call POST /workflows/:id/executions
+            {
+                "secretId": string,                 (required)
+                "allowedOrigins": list[str],        (optional, list of regexp determining allowed email origins)
+                "additionalWorkflowInput": dict,    (optional, static input always passed to executions)
+            }
+            Examples:
+            {"secretId": "las:secret:<uuid>"}
+            {"secretId": "las:secret:<uuid>", "allowedOrigins": [".+@myemaildomain.com"]}
+            {"secretId": "las:secret:<uuid>", "allowedOrigins": ["foobar@myemaildomain.com"]}
+            {"secretId": "las:secret:<uuid>", "additionalWorkflowInput": {"foo": "bar"}}
+        ''')
+    )
+    update_workflow_parser.add_argument(
         '--error-config',
-        type=json_path,
-        help='path to the error configuration for the workflow',
+        type=json_or_json_path,
+        help=textwrap.dedent('''
+            Path or inline JSON with the error configuration for the workflow
+            {
+                "manualRetry": boolean,     (optional, failing transitions will become retryable if set to true)
+                "email": str                (optional, failing transitions will send an error summary to this email)
+            }
+            Examples:
+            {"manualRetry": true}
+            {"manualRetry": true, "email": "foobar@myemaildomain.com"}
+        '''),
     )
     update_workflow_parser.add_argument(
         '--completed-config',
-        type=json_path,
-        help='path to the execution completed configuration for the workflow',
+        type=json_or_json_path,
+        help=textwrap.dedent('''
+            Path or inline JSON with the completed configuration for the workflow. The code provided will be run after
+            a workflow execution has completed regardless of its final status.
+            {
+                "imageUrl": str,            (required, docker image URL)
+                "secretId": str,            (optional, containing username and password if the docker image is private)
+                "environment": dict,        (optional, environment variables passed to the docker container)
+                "environmentSecrets": list  (optional, secrets passed to the docker container as environment variables)
+            }
+            Examples:
+            {"imageUrl": "library/repo:tag"}
+            {"imageUrl": "library/repo:tag", "secretId": "las:secret:<uuid>"}
+            {"imageUrl": "foo/bar:tag", "environment": {"SOME_KEY": "SOME_VALUE"}}
+            {"imageUrl": "foo/bar:tag", "environment": {"foo": "bar"}, "environmentSecrets": ["las:secret:<uuid>"]}
+        '''),
     )
     update_workflow_parser.add_argument(
         '--metadata',

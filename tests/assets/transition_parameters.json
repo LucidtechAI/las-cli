@@ -1,6 +1,10 @@
 {
-  "imageUrl": "image:url",
+  "imageUrl": "library/repo:tag",
   "secretId": "las:secret:6285cd4e42ba4c749aebd3227ad95a32",
+  "environment": {
+    "foo": "bar",
+    "bar": "baz"
+  },
   "environmentSecrets": [
     "las:secret:6285cd4e42ba4c749aebd3227ad95a32",
     "las:secret:6285cd4e42ba4c749aebd3227ad95a32"

@@ -1,0 +1,6 @@
+{
+  "secretId": "las:secret:14ca43bb112f48d4857634e55d3f5d5c",
+  "allowedOrigins": [".+", "foobar@myemaildomain.com"],
+  "additionalWorkflowInput": {"foo": "bar"}
+}
+

@@ -1,5 +1,14 @@
 # Changelog
 
+## Version 12.3.0 - 2023-11-20
+
+- Added optional parameter `--email-config` to `workflows create`
+- Added optional parameter `--email-config` to `workflows update`
+- Now able to also specify inline JSON for optional parameter `--error-config` in `workflows create`
+- Now able to also specify inline JSON for optional parameter `--error-config` in `workflows update`
+- Now able to also specify inline JSON for optional parameter `--completed-config` in `workflows create`
+- Now able to also specify inline JSON for optional parameter `--completed-config` in `workflows update`
+
 ## Version 12.2.0 - 2023-11-02
 
 - Added `models get-data-bundle`
