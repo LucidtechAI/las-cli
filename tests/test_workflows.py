@@ -1,34 +1,73 @@
-import pytest
-from tests import service, util
+import json
 from unittest.mock import patch
 
+import pytest
+from tests import service, util
 
-@pytest.mark.parametrize('completed_config', [('--completed-config', str(util.transition_parameters_path())), ()])
-@pytest.mark.parametrize('error_config', [('--error-config', str(util.error_config_path())), ()])
-@pytest.mark.parametrize('metadata', [('--metadata', str(util.metadata_path())), ()])
-def test_workflows_create(parser, client, name_and_description, error_config, completed_config, metadata):
+
+@pytest.mark.parametrize('completed_config', [
+    ('--completed-config', str(util.transition_parameters_path())),
+    ('--completed-config', util.transition_parameters_path().read_text()), 
+    ()
+])
+@pytest.mark.parametrize('error_config', [
+    ('--error-config', str(util.error_config_path())),
+    ('--error-config', util.error_config_path().read_text()), 
+    ()
+])
+@pytest.mark.parametrize('email_config', [
+    ('--email-config', str(util.email_config_path())),
+    ('--email-config', util.email_config_path().read_text()), 
+    ()
+])
+@pytest.mark.parametrize('metadata', [
+    ('--metadata', str(util.metadata_path())),
+    ('--metadata', util.metadata_path().read_text()), 
+    ()
+])
+def test_workflows_create(parser, client, name_and_description, error_config, completed_config, email_config, metadata):
     args = [
         'workflows',
         'create',
         str(util.assets_folder() / 'workflow_specification.json'),
         *name_and_description,
         *error_config,
+        *email_config,
         *completed_config,
         *metadata,
     ]
     util.main_parser(parser, client, args)
 
 
-@pytest.mark.parametrize('completed_config', [('--completed-config', str(util.transition_parameters_path())), ()])
-@pytest.mark.parametrize('error_config', [('--error-config', str(util.error_config_path())), ()])
-@pytest.mark.parametrize('metadata', [('--metadata', str(util.metadata_path())), ()])
-def test_workflows_update(parser, client, name_and_description, error_config, completed_config, metadata):
+@pytest.mark.parametrize('completed_config', [
+    ('--completed-config', str(util.transition_parameters_path())),
+    ('--completed-config', util.transition_parameters_path().read_text()), 
+    ()
+])
+@pytest.mark.parametrize('error_config', [
+    ('--error-config', str(util.error_config_path())),
+    ('--error-config', util.error_config_path().read_text()), 
+    ()
+])
+@pytest.mark.parametrize('email_config', [
+    ('--email-config', str(util.email_config_path())),
+    ('--email-config', util.email_config_path().read_text()),
+    ('--email-config', 'null'),
+    ()
+])
+@pytest.mark.parametrize('metadata', [
+    ('--metadata', str(util.metadata_path())),
+    ('--metadata', util.metadata_path().read_text()), 
+    ()
+])
+def test_workflows_update(parser, client, name_and_description, error_config, completed_config, email_config, metadata):
     args = [
         'workflows',
         'update',
         service.create_workflow_id(),
         *name_and_description,
         *error_config,
+        *email_config,
         *completed_config,
         *metadata,
     ]
