@@ -1,5 +1,9 @@
 # Changelog
 
+## Version 12.4.0 - 2023-11-24
+
+- Added `app-clients get`
+
 ## Version 12.3.0 - 2023-11-20
 
 - Added optional parameter `--email-config` to `workflows create`

@@ -22,6 +22,10 @@ def create_app_client(
     )
 
 
+def get_app_client(las_client: Client, app_client_id):
+    return las_client.get_app_client(app_client_id)
+
+
 def list_app_clients(las_client: Client, max_results=None, next_token=None):
     return las_client.list_app_clients(max_results=max_results, next_token=next_token)
 
@@ -48,6 +52,10 @@ def create_app_clients_parser(subparsers):
     create_app_client_parser.add_argument('--default-login-url')
     create_app_client_parser.add_argument('--role-ids', nargs='+', default=NotProvided)
     create_app_client_parser.set_defaults(cmd=create_app_client)
+
+    get_app_client_parser = subparsers.add_parser('get')
+    get_app_client_parser.add_argument('app_client_id')
+    get_app_client_parser.set_defaults(cmd=get_app_client)
 
     list_app_clients_parser = subparsers.add_parser('list')
     list_app_clients_parser.add_argument('--max-results', '-m', type=int, default=None)
