@@ -3,7 +3,7 @@ from argparse import RawTextHelpFormatter
 
 from las import Client
 
-from lascli.util import NotProvided, nullable, json_path, json_or_json_path
+from lascli.util import NotProvided, nullable, json_path, json_or_json_path, int_range
 
 
 def create_model(las_client: Client, field_config, **optional_args):
@@ -26,8 +26,8 @@ def delete_model(las_client: Client, model_id):
     return las_client.delete_model(model_id=model_id)
 
 
-def get_model(las_client: Client, model_id):
-    return las_client.get_model(model_id=model_id)
+def get_model(las_client: Client, model_id, statistics_last_n_days):
+    return las_client.get_model(model_id=model_id, statistics_last_n_days=statistics_last_n_days)
 
 
 def update_model(las_client: Client, model_id, **optional_args):
@@ -141,6 +141,7 @@ def create_models_parser(subparsers):
 
     get_parser = subparsers.add_parser('get')
     get_parser.add_argument('model_id')
+    get_parser.add_argument('--statistics-last-n-days', type=int_range(1, 30))
     get_parser.set_defaults(cmd=get_model)
 
     update_parser = subparsers.add_parser('update', formatter_class=RawTextHelpFormatter)
