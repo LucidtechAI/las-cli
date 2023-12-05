@@ -233,7 +233,7 @@ def create_workflows_parser(subparsers):
     create_default_action = create_default_workflow_parser.add_mutually_exclusive_group(required=False)
     create_default_action.add_argument('--from-model-id', help='The model to generate the workflow for')
     create_default_workflow_parser.add_argument('name', help='Name of the workflow')
-    create_default_workflow_parser.add_argument('--preprocess-image', default='lucidtechai/preprocess:v2.1.0', help='Docker image for the preprocessor')
+    create_default_workflow_parser.add_argument('--preprocess-image', default='lucidtechai/preprocess:v2.3.0', help='Docker image for the preprocessor')
     create_default_workflow_parser.add_argument('--postprocess-image', default='lucidtechai/postprocess:v2.2.0', help='Docker image for the postprocessor')
     create_default_workflow_parser.set_defaults(cmd=workflows.create_default_workflow)
 
