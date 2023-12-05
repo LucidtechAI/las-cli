@@ -45,7 +45,7 @@ def get_workflow_execution(las_client: Client, workflow_id, execution_id):
 
 
 def update_workflow_execution(las_client: Client, workflow_id, execution_id, next_transition_id, status):
-    return las_client.update_workflow_execution(workflow_id, execution_id, next_transition_id, status)
+    return las_client.update_workflow_execution(workflow_id, execution_id, next_transition_id=next_transition_id, status=status)
 
 
 def delete_workflow_execution(las_client: Client, workflow_id, execution_id):
