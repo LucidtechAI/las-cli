@@ -1,5 +1,8 @@
 # Changelog
 
+## Version 12.4.0 - 2023-12-05
+- Updated default `--preprocess-image` in `create-default` workflow
+
 ## Version 12.3.0 - 2023-11-20
 
 - Added optional parameter `--email-config` to `workflows create`
