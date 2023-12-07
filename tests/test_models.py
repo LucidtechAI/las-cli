@@ -95,7 +95,7 @@ def test_models_list(parser, client, list_defaults, owner):
 
 
 @pytest.mark.parametrize('statistics_last_n_days', [
-    ('--statistics-last-n-days', 14),
+    ('--statistics-last-n-days', '14'),
     (),
 ])
 def test_models_get(parser, client, statistics_last_n_days):
