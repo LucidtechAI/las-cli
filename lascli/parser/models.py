@@ -3,7 +3,7 @@ from argparse import RawTextHelpFormatter
 
 from las import Client
 
-from lascli.util import NotProvided, nullable, json_path, json_or_json_path
+from lascli.util import NotProvided, nullable, json_path, json_or_json_path, int_range
 
 
 def create_model(las_client: Client, field_config, **optional_args):
@@ -26,8 +26,8 @@ def delete_model(las_client: Client, model_id):
     return las_client.delete_model(model_id=model_id)
 
 
-def get_model(las_client: Client, model_id):
-    return las_client.get_model(model_id=model_id)
+def get_model(las_client: Client, model_id, statistics_last_n_days):
+    return las_client.get_model(model_id=model_id, statistics_last_n_days=statistics_last_n_days)
 
 
 def update_model(las_client: Client, model_id, **optional_args):
@@ -101,16 +101,16 @@ def create_models_parser(subparsers):
     create_parser.add_argument('--preprocess-config', '-p', type=json_or_json_path, help=textwrap.dedent('''
         Path or inline JSON with the pre processing configuration for predictions made by this model
         {
-            'autoRotate': True | False                          (optional)
-            'maxPages': 1 - 3                                   (optional)
-            'imageQuality': 'LOW' | 'HIGH'                      (optional)
-            'pages': List with up to 3 page-indices to process  (optional)
-            'rotation': 0, 90, 180 or 270                       (optional)
+            "autoRotate": True | False                          (optional)
+            "maxPages": 1 - 3                                   (optional)
+            "imageQuality": "LOW" | "HIGH"                      (optional)
+            "pages": List with up to 3 page-indices to process  (optional)
+            "rotation": 0, 90, 180 or 270                       (optional)
         }
         Examples:
-        {'pages': [0, 1, 5], 'autoRotate': True}
-        {'pages': [0, 1, -1], 'rotation': 90, 'imageQuality': 'HIGH'}
-        {'maxPages': 3, 'imageQuality': 'LOW'}
+        {"pages": [0, 1, 5], "autoRotate": True}
+        {"pages": [0, 1, -1], "rotation": 90, "imageQuality": "HIGH"}
+        {"maxPages": 3, "imageQuality": "LOW"}
     '''))
     create_parser.add_argument('--postprocess-config', type=json_or_json_path, help=textwrap.dedent('''
         Path or inline JSON with the post processing configuration for predictions made by this model
@@ -122,7 +122,7 @@ def create_models_parser(subparsers):
             }
         }
         Examples:
-        {"strategy": "BEST_FIRST"}
+        {"strategy": "BEST_FIRST", "outputFormat": "v2"}
         {"strategy": "BEST_N_PAGES", "parameters": {"n": 3}}
         {"strategy": "BEST_N_PAGES", "parameters": {"n": 3, "collapse": true}}
     '''))
@@ -141,6 +141,7 @@ def create_models_parser(subparsers):
 
     get_parser = subparsers.add_parser('get')
     get_parser.add_argument('model_id')
+    get_parser.add_argument('--statistics-last-n-days', type=int_range(1, 30))
     get_parser.set_defaults(cmd=get_model)
 
     update_parser = subparsers.add_parser('update', formatter_class=RawTextHelpFormatter)
@@ -167,16 +168,16 @@ def create_models_parser(subparsers):
     update_parser.add_argument('--preprocess-config', type=json_or_json_path, help=textwrap.dedent('''
         Path or inline JSON with the pre processing configuration for predictions made by this model
         {
-            'autoRotate': True | False                          (optional)
-            'maxPages': 1 - 3                                   (optional)
-            'imageQuality': 'LOW' | 'HIGH'                      (optional)
-            'pages': List with up to 3 page-indices to process  (optional)
-            'rotation': 0, 90, 180 or 270                       (optional)
+            "autoRotate": True | False                          (optional)
+            "maxPages": 1 - 3                                   (optional)
+            "imageQuality": "LOW" | "HIGH"                      (optional)
+            "pages": List with up to 3 page-indices to process  (optional)
+            "rotation": 0, 90, 180 or 270                       (optional)
         }
         Examples:
-        {'pages': [0, 1, 5], 'autoRotate': True}
-        {'pages': [0, 1, -1], 'rotation': 90, 'imageQuality': 'HIGH'}
-        {'maxPages': 3, 'imageQuality': 'LOW'}
+        {"pages": [0, 1, 5], "autoRotate": True}
+        {"pages": [0, 1, -1], "rotation": 90, "imageQuality": "HIGH"}
+        {"maxPages": 3, "imageQuality": "LOW"}
     '''))
     update_parser.add_argument('--postprocess-config', type=json_or_json_path, help=textwrap.dedent('''
         Path or inline JSON with the post processing configuration for predictions made by this model
@@ -188,7 +189,7 @@ def create_models_parser(subparsers):
             }
         }
         Examples:
-        {"strategy": "BEST_FIRST"}
+        {"strategy": "BEST_FIRST", "outputFormat": "v2"}
         {"strategy": "BEST_N_PAGES", "parameters": {"n": 3}}
         {"strategy": "BEST_N_PAGES", "parameters": {"n": 3, "collapse": true}}
     '''))

@@ -1,3 +1,4 @@
+import argparse
 import collections
 import contextlib
 import json
@@ -64,3 +65,16 @@ def json_or_json_path(value):
         pass
 
     raise Exception('Could not interpret input as neither JSON nor a path containing JSON')
+
+
+def int_range(min_value, max_value):
+    def checker(arg):
+        try:
+            value = int(arg)
+        except ValueError:
+            raise argparse.ArgumentTypeError('must be an integer')
+        if not (min_value <= value <= max_value):
+            raise argparse.ArgumentTypeError(f'must be in range [{min_value}..{max_value}]')
+        return value
+
+    return checker

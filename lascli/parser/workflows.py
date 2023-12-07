@@ -44,8 +44,8 @@ def get_workflow_execution(las_client: Client, workflow_id, execution_id):
     return las_client.get_workflow_execution(workflow_id, execution_id)
 
 
-def update_workflow_execution(las_client: Client, workflow_id, execution_id, next_transition_id):
-    return las_client.update_workflow_execution(workflow_id, execution_id, next_transition_id)
+def update_workflow_execution(las_client: Client, workflow_id, execution_id, next_transition_id, status):
+    return las_client.update_workflow_execution(workflow_id, execution_id, next_transition_id=next_transition_id, status=status)
 
 
 def delete_workflow_execution(las_client: Client, workflow_id, execution_id):
@@ -218,9 +218,15 @@ def create_workflows_parser(subparsers):
     update_workflow_execution_parser = subparsers.add_parser('update-execution')
     update_workflow_execution_parser.add_argument('workflow_id')
     update_workflow_execution_parser.add_argument('execution_id')
-    update_workflow_execution_parser.add_argument(
-        'next_transition_id',
-        help='use las:transition:commons-failed to end an execution',
+    update_workflow_execution_group = update_workflow_execution_parser.add_mutually_exclusive_group()
+    update_workflow_execution_group.add_argument(
+        '--next-transition-id',
+        help='Specify which transition to continue from. Use las:transition:commons-failed to end an execution',
+    )
+    update_workflow_execution_group.add_argument(
+        '--status',
+        choices={'completed', 'succeeded'},
+        help='Change status of workflow execution, can only update from succeeded to completed and vice versa',
     )
     update_workflow_execution_parser.set_defaults(cmd=update_workflow_execution)
 
