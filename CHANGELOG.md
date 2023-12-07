@@ -6,6 +6,7 @@
 - Added optional parameter `--status` to `workflows update-execution`
 - Added optional parameter `--next-transition-id` to `workflows update-execution`
 - Removed mandatory parameter `next_transition_id` from `workflows update-execution`
+- Added optional parameter `--statistics-last-n-days` to `models get`
 
 ## Version 12.4.0 - 2023-12-05
 
