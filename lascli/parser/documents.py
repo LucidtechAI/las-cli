@@ -116,6 +116,7 @@ def create_documents_parser(subparsers):
     get_document_parser.add_argument('--page', type=int)
     get_document_parser.add_argument('--rotation', type=int, choices={0, 90, 180, 270})
     get_document_parser.add_argument('--width', type=int)
+    get_document_parser.add_argument('--quality', choices={'auto', 'low'})
     get_document_parser.set_defaults(cmd=get_document)
 
     list_documents_parser = subparsers.add_parser('list')
