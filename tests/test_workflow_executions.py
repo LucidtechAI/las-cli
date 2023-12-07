@@ -66,12 +66,16 @@ def test_executions_get(parser, client):
     util.main_parser(parser, client, args)
 
 
-def test_executions_update(parser, client):
+@pytest.mark.parametrize('optional_args', [
+    ('--next-transition-id', service.create_transition_id()),
+    ('--status', 'completed'),
+])
+def test_executions_update(parser, client, optional_args):
     args = [
         'workflows',
         'update-execution',
         service.create_workflow_id(),
         service.create_workflow_execution_id(),
-        service.create_transition_id(),
+        *optional_args,
     ]
     util.main_parser(parser, client, args)

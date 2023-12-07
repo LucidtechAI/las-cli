@@ -1,5 +1,12 @@
 # Changelog
 
+## Version 13.0.0 - 2023-12-07
+
+- Added `app-clients get`
+- Added optional parameter `--status` to `workflows update-execution`
+- Added optional parameter `--next-transition-id` to `workflows update-execution`
+- Removed mandatory parameter `next_transition_id` from `workflows update-execution`
+
 ## Version 12.4.0 - 2023-12-05
 
 - Updated default `--preprocess-image` in `create-default` workflow
