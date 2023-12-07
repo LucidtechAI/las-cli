@@ -54,12 +54,21 @@ def test_app_clients_update(parser, client, name_and_description, role_ids):
         *name_and_description,
         *role_ids,
     ]
-    
+
     if len(args) <= 3:  # patch call requires at least one change
         with pytest.raises(Exception):
             util.main_parser(parser, client, args)
     else:
         util.main_parser(parser, client, args)
+
+
+def test_app_clients_get(parser, client):
+    args = [
+        'app-clients',
+        'get',
+        service.create_app_client_id(),
+    ]
+    util.main_parser(parser, client, args)
 
 
 def test_app_clients_list(parser, client, list_defaults):
@@ -71,7 +80,6 @@ def test_app_clients_list(parser, client, list_defaults):
     util.main_parser(parser, client, args)
 
 
-@pytest.mark.skip
 def test_app_clients_delete(parser, client):
     args = [
         'app-clients',
