@@ -1,5 +1,9 @@
 # Changelog
 
+## Version 13.1.0 - 2023-12-08
+
+- Added optional parameter `--quality` to `documents get`
+
 ## Version 13.0.0 - 2023-12-07
 
 - Added `app-clients get`
