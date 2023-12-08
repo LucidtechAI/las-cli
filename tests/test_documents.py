@@ -64,7 +64,19 @@ def test_documents_list(parser, client, dataset_id, consent_id, list_defaults, s
 @pytest.mark.parametrize('page', [('--page', '1'), ()])
 @pytest.mark.parametrize('density', [('--density', '100'), ()])
 @pytest.mark.parametrize('rotation', [('--rotation', '90'), ()])
-def test_documents_get(parser, client, output_content, download_content, width, height, page, density, rotation):
+@pytest.mark.parametrize('quality', [('--quality', 'low'), ()])
+def test_documents_get(
+    parser, 
+    client, 
+    output_content, 
+    download_content, 
+    width, 
+    height, 
+    page, 
+    density, 
+    rotation, 
+    quality,
+):
     with pytest.MonkeyPatch.context() as mp:
         mp.setattr('base64.b64decode', lambda *args: b'foo')
         args = [
@@ -78,11 +90,11 @@ def test_documents_get(parser, client, output_content, download_content, width, 
             *density,
             *rotation,
             *download_content,
+            *quality,
         ]
         util.main_parser(parser, client, args)
 
 
-@pytest.mark.skip
 def test_documents_delete(parser, client):
     args = [
         'documents',
@@ -92,7 +104,6 @@ def test_documents_delete(parser, client):
     util.main_parser(parser, client, args)
 
 
-@pytest.mark.skip
 @pytest.mark.parametrize('dataset_id', service.optional_resource_id('dataset'))
 @pytest.mark.parametrize('consent_id', service.optional_resource_id('consent'))
 def test_documents_delete_all(parser, client, consent_id, dataset_id, list_defaults):
