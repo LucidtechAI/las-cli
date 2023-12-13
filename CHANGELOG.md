@@ -1,5 +1,9 @@
 # Changelog
 
+## Version 13.2.0 - 2023-12-13
+
+- Added optional parameter `--status` to `workflows update`
+
 ## Version 13.1.0 - 2023-12-08
 
 - Added optional parameter `--quality` to `documents get`
