@@ -184,6 +184,11 @@ def create_workflows_parser(subparsers):
         type=json_or_json_path,
         help='Add additional custom information about the workflow (JSON or path to JSON file)',
     )
+    update_workflow_parser.add_argument(
+        '--status',
+        choices={'development', 'production'},
+        help='Set status of workflow to development or production',
+    )
     update_workflow_parser.set_defaults(cmd=update_workflow)
 
     execute_workflow_parser = subparsers.add_parser('execute')

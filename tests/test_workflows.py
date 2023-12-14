@@ -60,7 +60,21 @@ def test_workflows_create(parser, client, name_and_description, error_config, co
     ('--metadata', util.metadata_path().read_text()), 
     ()
 ])
-def test_workflows_update(parser, client, name_and_description, error_config, completed_config, email_config, metadata):
+@pytest.mark.parametrize('status', [
+    ('--status', 'development'),
+    ('--status', 'production'), 
+    ()
+])
+def test_workflows_update(
+    parser, 
+    client, 
+    name_and_description, 
+    error_config, 
+    completed_config, 
+    email_config, 
+    metadata,
+    status,
+):
     args = [
         'workflows',
         'update',
@@ -70,6 +84,7 @@ def test_workflows_update(parser, client, name_and_description, error_config, co
         *email_config,
         *completed_config,
         *metadata,
+        *status,
     ]
 
     if len(args) == 3:  # patch call requires at least one change
