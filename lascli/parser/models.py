@@ -270,8 +270,9 @@ def create_models_parser(subparsers):
     update_training_parser.add_argument('--description', type=nullable(str), default=NotProvided)
     update_training_parser.add_argument(
         '--metadata',
-        type=json_path,
+        type=nullable(json_path),
         help='path to json file with custom metadata, maximum limit 4kB',
+        default=NotProvided,
     )
     update_training_parser.add_argument('--deployment-environment-id', type=nullable, default=NotProvided)
     update_training_parser.set_defaults(cmd=update_training)

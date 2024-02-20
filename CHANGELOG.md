@@ -1,5 +1,9 @@
 # Changelog
 
+## Version 13.2.1 - 2024-02-20
+
+- Bugfix `models update-training` no longer attempts to send `null` for `metadata` when not specified
+
 ## Version 13.2.0 - 2023-12-13
 
 - Added optional parameter `--status` to `workflows update`
