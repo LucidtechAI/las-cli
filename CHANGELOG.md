@@ -1,6 +1,6 @@
 # Changelog
 
-## Version 13.2.1 - 2024-06-13
+## Version 13.2.2 - 2024-06-13
 
 - Bugfix `models update-training` now works as intended when specifying `--deployment-environment-id`
 
