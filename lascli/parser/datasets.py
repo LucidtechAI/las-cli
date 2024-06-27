@@ -121,7 +121,7 @@ def _get_document_worker(las_client: Client, document_id, output_dir):
         return None
 
 
-def _list_all_documents_in_dataset(las_client: Client, dataset_id):
+def list_all_documents_in_dataset(las_client: Client, dataset_id):
     list_response = las_client.list_documents(dataset_id=dataset_id)
     yield from list_response['documents']
     next_token = list_response.get('nextToken')
@@ -332,7 +332,7 @@ def get_documents(las_client: Client, dataset_id, output_dir, num_threads, chunk
     already_downloaded_from_dataset = set()
     with ThreadPoolExecutor(max_workers=num_threads) as executor:
         documents = []
-        for document in _list_all_documents_in_dataset(las_client, dataset_id):
+        for document in list_all_documents_in_dataset(las_client, dataset_id):
             if document['documentId'] in already_downloaded:
                 already_downloaded_from_dataset.add(document['documentId'])
             else:
@@ -480,7 +480,7 @@ def create_datasets_parser(subparsers):
               "options": {}                                       (optional)
           },
           ...
-        ]  
+        ]
         Examples:
         [{"type": "remove-duplicates", "options": {}}]
     '''))

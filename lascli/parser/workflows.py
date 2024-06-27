@@ -8,8 +8,9 @@ from functools import partial
 import dateparser
 from las import Client
 
-from lascli.util import nullable, NotProvided, json_path, json_or_json_path
+from .datasets import list_all_documents_in_dataset
 from lascli.actions import workflows
+from lascli.util import nullable, NotProvided, json_path, json_or_json_path
 
 
 def list_workflows(las_client: Client, **optional_args):
@@ -34,18 +35,11 @@ def execute_workflow(las_client: Client, workflow_id, path):
 
 
 def execute_all_workflow(las_client: Client, workflow_id, dataset_id):
-    list_fn = partial(las_client.list_documents, dataset_id=dataset_id)
-    list_response = list_fn()
-    documents = list_response['documents']
-    while next_token := list_response['nextToken']:
-        list_response = list_fn(next_token=next_token)
-        documents.extend(list_response['documents'])
-
     executions = []
-    for i, document in enumerate(documents):
+    for i, document in enumerate(list_all_documents_in_dataset(las_client, dataset_id)):
         content = {'documentId': document['documentId'], 'source': 'CLI', 'initialSleepInSeconds': i * 4}
-        if originalFilePath := document.get('metadata', {}).get('originalFilePath'):
-            file_path = pathlib.Path(originalFilePath)
+        if original_file_path := (document.get('metadata') or {}).get('originalFilePath'):
+            file_path = pathlib.Path(original_file_path)
             content['title'] = file_path.name
         execution = las_client.execute_workflow(workflow_id, content)
         print(json.dumps(execution, indent=2))

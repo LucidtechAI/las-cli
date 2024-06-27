@@ -12,6 +12,16 @@ def test_executions_create(parser, client):
     util.main_parser(parser, client, args)
 
 
+def test_executions_create_all(parser, client):
+    args = [
+        'workflows',
+        'execute-all',
+        service.create_workflow_id(),
+        service.create_dataset_id(),
+    ]
+    util.main_parser(parser, client, args)
+
+
 @pytest.mark.parametrize('sort_by', [
     ('--sort-by', 'startTime'),
     ('--sort-by', 'endTime'),
