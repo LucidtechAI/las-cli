@@ -2,6 +2,7 @@ import datetime
 import json
 import pathlib
 import textwrap
+import time
 from argparse import RawTextHelpFormatter
 from functools import partial
 
@@ -42,8 +43,9 @@ def execute_all_workflow(las_client: Client, workflow_id, dataset_id):
             file_path = pathlib.Path(original_file_path)
             content['title'] = file_path.name
         execution = las_client.execute_workflow(workflow_id, content)
-        print(json.dumps(execution, indent=2))
         executions.append(execution)
+        print(f'Execution {execution["executionId"]} started on {document["documentId"]}')
+        time.sleep(1)
 
     return f'Started {len(executions)} executions'
 
