@@ -2,13 +2,16 @@ import datetime
 import json
 import pathlib
 import textwrap
+import time
 from argparse import RawTextHelpFormatter
+from functools import partial
 
 import dateparser
 from las import Client
 
-from lascli.util import nullable, NotProvided, json_path, json_or_json_path
+from .datasets import list_all_documents_in_dataset
 from lascli.actions import workflows
+from lascli.util import nullable, NotProvided, json_path, json_or_json_path
 
 
 def list_workflows(las_client: Client, **optional_args):
@@ -30,6 +33,21 @@ def update_workflow(las_client: Client, workflow_id, **optional_args):
 def execute_workflow(las_client: Client, workflow_id, path):
     content = json.loads(pathlib.Path(path).read_text())
     return las_client.execute_workflow(workflow_id, content)
+
+
+def execute_all_workflow(las_client: Client, workflow_id, dataset_id):
+    executions = []
+    for i, document in enumerate(list_all_documents_in_dataset(las_client, dataset_id)):
+        content = {'documentId': document['documentId'], 'source': 'CLI', 'initialSleepInSeconds': i * 4}
+        if original_file_path := (document.get('metadata') or {}).get('originalFilePath'):
+            file_path = pathlib.Path(original_file_path)
+            content['title'] = file_path.name
+        execution = las_client.execute_workflow(workflow_id, content)
+        executions.append(execution)
+        print(f'Execution {execution["executionId"]} started on {document["documentId"]}')
+        time.sleep(1)
+
+    return f'Started {len(executions)} executions'
 
 
 def list_workflow_executions(las_client: Client, workflow_id, **optional_args):
@@ -195,6 +213,11 @@ def create_workflows_parser(subparsers):
     execute_workflow_parser.add_argument('workflow_id')
     execute_workflow_parser.add_argument('path', help='path to json-file with input to the first state of the workflow')
     execute_workflow_parser.set_defaults(cmd=execute_workflow)
+
+    execute_workflow_parser = subparsers.add_parser('execute-all')
+    execute_workflow_parser.add_argument('workflow_id')
+    execute_workflow_parser.add_argument('dataset_id', help='Start execution on all documents in dataset')
+    execute_workflow_parser.set_defaults(cmd=execute_all_workflow)
 
     list_executions_parser = subparsers.add_parser('list-executions')
     list_executions_parser.add_argument('workflow_id')

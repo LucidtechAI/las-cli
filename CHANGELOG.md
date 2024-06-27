@@ -1,5 +1,9 @@
 # Changelog
 
+## Version 13.3.0 - 2024-06-27
+
+- Added `workflows execute-all` which starts an execution on all documents in a dataset
+
 ## Version 13.2.2 - 2024-06-13
 
 - Bugfix `models update-training` now works as intended when specifying `--deployment-environment-id`
