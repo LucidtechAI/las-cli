@@ -3,6 +3,7 @@ import json
 import pathlib
 import textwrap
 from argparse import RawTextHelpFormatter
+from functools import partial
 
 import dateparser
 from las import Client
@@ -30,6 +31,27 @@ def update_workflow(las_client: Client, workflow_id, **optional_args):
 def execute_workflow(las_client: Client, workflow_id, path):
     content = json.loads(pathlib.Path(path).read_text())
     return las_client.execute_workflow(workflow_id, content)
+
+
+def execute_all_workflow(las_client: Client, workflow_id, dataset_id):
+    list_fn = partial(las_client.list_documents, dataset_id=dataset_id)
+    list_response = list_fn()
+    documents = list_response['documents']
+    while next_token := list_response['nextToken']:
+        list_response = list_fn(next_token=next_token)
+        documents.extend(list_response['documents'])
+
+    executions = []
+    for i, document in enumerate(documents):
+        content = {'documentId': document['documentId'], 'source': 'CLI', 'initialSleepInSeconds': i * 4}
+        if originalFilePath := document.get('metadata', {}).get('originalFilePath'):
+            file_path = pathlib.Path(originalFilePath)
+            content['title'] = file_path.name
+        execution = las_client.execute_workflow(workflow_id, content)
+        print(json.dumps(execution, indent=2))
+        executions.append(execution)
+
+    return f'Started {len(executions)} executions'
 
 
 def list_workflow_executions(las_client: Client, workflow_id, **optional_args):
@@ -195,6 +217,11 @@ def create_workflows_parser(subparsers):
     execute_workflow_parser.add_argument('workflow_id')
     execute_workflow_parser.add_argument('path', help='path to json-file with input to the first state of the workflow')
     execute_workflow_parser.set_defaults(cmd=execute_workflow)
+
+    execute_workflow_parser = subparsers.add_parser('execute-all')
+    execute_workflow_parser.add_argument('workflow_id')
+    execute_workflow_parser.add_argument('dataset_id', help='Start execution on all documents in dataset')
+    execute_workflow_parser.set_defaults(cmd=execute_all_workflow)
 
     list_executions_parser = subparsers.add_parser('list-executions')
     list_executions_parser.add_argument('workflow_id')
