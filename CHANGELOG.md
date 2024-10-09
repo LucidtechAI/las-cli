@@ -1,5 +1,9 @@
 # Changelog
 
+## Version 13.2.3 - 2024-10-09
+
+- Bugfix `transitions update-execution` now supports additional keyword arguments
+
 ## Version 13.2.2 - 2024-06-13
 
 - Bugfix `models update-training` now works as intended when specifying `--deployment-environment-id`

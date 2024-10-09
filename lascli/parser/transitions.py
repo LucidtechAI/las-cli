@@ -45,12 +45,14 @@ def update_transition_execution(
     execution_id,
     status,
     start_time=None,
+    **kwargs,
 ):
     return las_client.update_transition_execution(
         transition_id,
         execution_id,
         status,
         start_time=start_time,
+        **kwargs,
     )
 
 
