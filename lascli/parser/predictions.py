@@ -11,6 +11,10 @@ def create_prediction(las_client: Client, document_id, model_id, **optional_args
     return las_client.create_prediction(document_id, model_id, **optional_args)
 
 
+def get_prediction(las_client: Client, prediction_id, **optional_args):
+    return las_client.get_prediction(prediction_id, **optional_args)
+
+
 def list_predictions(las_client: Client, **optional_args):
     return las_client.list_predictions(**optional_args)
 
@@ -51,6 +55,7 @@ def create_predictions_parser(subparsers):
         {"strategy": "BEST_N_PAGES", "parameters": {"n": 3}}
         {"strategy": "BEST_N_PAGES", "parameters": {"n": 3, "collapse": true}}
     '''))
+    create_predicton_parser.add_argument('--run-async', action='store_true', help='Create prediction async')
     create_predicton_parser.set_defaults(cmd=create_prediction)
 
     list_predictions_parser = subparsers.add_parser('list')
@@ -60,5 +65,9 @@ def create_predictions_parser(subparsers):
     list_predictions_parser.add_argument('--order', choices={'ascending', 'descending'})
     list_predictions_parser.add_argument('--model-id')
     list_predictions_parser.set_defaults(cmd=list_predictions)
+
+    get_prediction_parser = subparsers.add_parser('get')
+    get_prediction_parser.add_argument('prediction_id')
+    get_prediction_parser.set_defaults(cmd=get_prediction)
 
     return parser
