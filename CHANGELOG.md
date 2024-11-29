@@ -1,8 +1,12 @@
 # Changelog
 
-## Version 13.2.3 - 2024-10-09
+## Version 13.3.0 - 2024-11-29
 
 - Bugfix `transitions update-execution` now supports additional keyword arguments
+- Added optional parameter `--run-async` to `predictions create`
+- Added `predictions get`
+- Added optional parameter `--statistics-last-n-days` to `models get-training`
+- Added optional parameter `--max-elements` to `models get-training`
 
 ## Version 13.2.2 - 2024-06-13
 
