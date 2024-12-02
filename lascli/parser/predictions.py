@@ -8,6 +8,7 @@ from lascli.util import json_or_json_path
 
 
 def create_prediction(las_client: Client, document_id, model_id, **optional_args):
+    optional_args['run_async'] = optional_args.pop('async', None)
     return las_client.create_prediction(document_id, model_id, **optional_args)
 
 
@@ -55,7 +56,7 @@ def create_predictions_parser(subparsers):
         {"strategy": "BEST_N_PAGES", "parameters": {"n": 3}}
         {"strategy": "BEST_N_PAGES", "parameters": {"n": 3, "collapse": true}}
     '''))
-    create_predicton_parser.add_argument('--run-async', action='store_true', help='Create prediction async')
+    create_predicton_parser.add_argument('--async', action='store_true', help='Create prediction async')
     create_predicton_parser.set_defaults(cmd=create_prediction)
 
     list_predictions_parser = subparsers.add_parser('list')
