@@ -6,36 +6,26 @@ from tests import service, util
     ('docker', ('--parameters', str(util.transition_parameters_path()))),
     ('manual', ()),
 ])
-@pytest.mark.parametrize('in_schema', [('--in-schema', str(util.schema_path())), ()])
-@pytest.mark.parametrize('out_schema', [('--out-schema', str(util.schema_path())), ()])
-def test_transitions_create(parser, client, transition_type, in_schema, out_schema, name_and_description, parameters):
+def test_transitions_create(parser, client, transition_type, name_and_description, parameters):
     args = [
         'transitions',
         'create',
         transition_type,
-        *in_schema,
-        *out_schema,
         *name_and_description,
     ]
     util.main_parser(parser, client, args)
 
 
 
-@pytest.mark.parametrize('in_schema', [('--in-schema', str(util.schema_path())), ()])
-@pytest.mark.parametrize('out_schema', [('--out-schema', str(util.schema_path())), ()])
 def test_transitions_update(
     parser,
     client,
-    in_schema,
-    out_schema,
     name_and_description,
 ):
     args = [
         'transitions',
         'update',
         service.create_transition_id(),
-        *in_schema,
-        *out_schema,
         *name_and_description,
     ]
 
@@ -64,7 +54,7 @@ def test_transitions_update_manual(
             util.main_parser(parser, client, args)
     else:
         util.main_parser(parser, client, args)
-        
+
 
 @pytest.mark.parametrize('image_url', [('--image-url', 'image:url'), ()])
 @pytest.mark.parametrize('secret_id', [
