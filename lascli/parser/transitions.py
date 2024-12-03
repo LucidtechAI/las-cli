@@ -67,8 +67,6 @@ def create_transitions_parser(subparsers):
     create_parser = subparsers.add_parser('create')
     create_parser.add_argument('transition_type', choices=["docker", "manual"])
     create_parser.add_argument('--parameters', '-p', type=json_path, help='path to parameters to the docker image')
-    create_parser.add_argument('--in-schema', type=json_path, help='path to input jsonschema')
-    create_parser.add_argument('--out-schema', type=json_path, help='path to output jsonschema')
     create_parser.add_argument('--name')
     create_parser.add_argument('--description')
     create_parser.set_defaults(cmd=create_transition)
@@ -87,8 +85,6 @@ def create_transitions_parser(subparsers):
     update_parser.add_argument('transition_id')
     update_parser.add_argument('--name', type=nullable(str), default=NotProvided)
     update_parser.add_argument('--description', type=nullable(str), default=NotProvided)
-    update_parser.add_argument('--in-schema', type=json_path, help='Path to input jsonschema')
-    update_parser.add_argument('--out-schema', type=json_path, help='Path to output jsonschema')
     update_parser.add_argument(
         '--assets',
         type=json_path,

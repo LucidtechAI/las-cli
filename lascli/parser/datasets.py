@@ -321,7 +321,7 @@ def create_documents(
     return dict(counter)
 
 
-def get_documents(las_client: Client, dataset_id, output_dir, num_threads, chunk_size):
+def get_documents(las_client: Client, dataset_id, output_dir, num_threads, chunk_size, max_results):
     already_downloaded = set()
     if output_dir.exists():
         for path in output_dir.iterdir():
@@ -337,6 +337,8 @@ def get_documents(las_client: Client, dataset_id, output_dir, num_threads, chunk
                 already_downloaded_from_dataset.add(document['documentId'])
             else:
                 documents.append(document)
+            if max_results and max_results <= len(documents):
+                break
         print(f'Found {len(already_downloaded_from_dataset)} documents already downloaded')
 
         start_time = time()
@@ -468,6 +470,7 @@ def create_datasets_parser(subparsers):
     get_documents_parser.add_argument('output_dir', type=Path, help='Path to download directory')
     get_documents_parser.add_argument('--num-threads', default=32, type=int, help='Number of threads to use')
     get_documents_parser.add_argument('--chunk-size', default=100, type=int)
+    get_documents_parser.add_argument('--max-results', default=0, type=int)
     get_documents_parser.set_defaults(cmd=get_documents)
 
     create_transformation_parser = subparsers.add_parser('create-transformation')
@@ -480,7 +483,7 @@ def create_datasets_parser(subparsers):
               "options": {}                                       (optional)
           },
           ...
-        ]  
+        ]
         Examples:
         [{"type": "remove-duplicates", "options": {}}]
     '''))

@@ -71,8 +71,12 @@ def create_training(las_client: Client, model_id, data_bundle_ids, data_scientis
     )
 
 
-def get_training(las_client: Client, model_id, training_id):
-    return las_client.get_training(model_id=model_id, training_id=training_id)
+def get_training(las_client: Client, model_id, training_id, statistics_last_n_days):
+    return las_client.get_training(
+        model_id=model_id,
+        training_id=training_id,
+        statistics_last_n_days=statistics_last_n_days,
+    )
 
 
 def list_trainings(las_client: Client, model_id, max_results, next_token):
@@ -254,6 +258,7 @@ def create_models_parser(subparsers):
     get_training_parser = subparsers.add_parser('get-training')
     get_training_parser.add_argument('model_id')
     get_training_parser.add_argument('training_id')
+    get_training_parser.add_argument('--statistics-last-n-days', type=int_range(1, 30))
     get_training_parser.set_defaults(cmd=get_training)
 
     list_trainings_parser = subparsers.add_parser('list-trainings')
